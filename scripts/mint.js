@@ -7,7 +7,7 @@ const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(API_URL);
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0xAB2C0BEEe5d0423bFF745579c717f020Df48675E";
+const contractAddress = "0x3f8340db4950C3d1519193FD7f4DB181bB926a70";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mintNFT(flowRate) {
@@ -18,7 +18,7 @@ async function mintNFT(flowRate) {
     'from': PUBLIC_KEY,
     'to': contractAddress,
     'nonce': nonce,
-    'gas': 300000,
+    'gas': 500000,
     'maxPriorityFeePerGas': 1999999987,
     'data': nftContract.methods.createNFT(flowRate).encodeABI()
   };
@@ -163,7 +163,7 @@ async function issueNFT(tokenId, newOwner) {
       'from': PUBLIC_KEY,
       'to': contractAddress,
       'nonce': nonce,
-      'gas': 300000,
+      'gas': 500000,
       'maxPriorityFeePerGas': 1999999987,
       'data': nftContract.methods.issueNFT(tokenId, newOwner).encodeABI()
     };
@@ -183,10 +183,10 @@ async function issueNFT(tokenId, newOwner) {
     });
   }
 
-// mintNFT("19290123456790"); // 50 per month
-//issueNFT(0, "0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661");
+//mintNFT("19290123456790"); // 50 per month
+issueNFT(0, "0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661");
 //getPrice();
 //swap();
 //comp();
-//withdrawTokens("0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD"); // cDAI
-upgrade();
+//withdrawTokens("0x3ED99f859D586e043304ba80d8fAe201D4876D57"); // cDAIx
+//upgrade();

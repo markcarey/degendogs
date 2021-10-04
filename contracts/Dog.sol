@@ -71,13 +71,13 @@ contract Dog is ERC721, Ownable {
         
         // hardcoding to make testing faster
         ERC721(
-            "NFT test",//_name,  
-            "NFT"//_symbol
+            "Degen Dog",//_name,  
+            "DOG"//_symbol
             ) {
                 
             // just hardcoding to make testing faster
-        _host = ISuperfluid(0x22ff293e14F1EC3A09B137e9e06084AFd63adDF9);
-        _cfa = IConstantFlowAgreementV1(0xEd6BcbF6907D4feEEe8a8875543249bEa9D308E8);
+        _host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
+        _cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
         //_acceptedToken = ISuperToken(0xF2d68898557cCb2Cf4C10c3Ef2B034b2a69DAD00);
         _acceptedToken = ISuperToken(cDAIx);
 
@@ -85,8 +85,8 @@ contract Dog is ERC721, Ownable {
         assert(address(_cfa) != address(0));
         assert(address(_acceptedToken) != address(0));
 
-        // host =  0x22ff293e14F1EC3A09B137e9e06084AFd63adDF9
-        // CFAv1 = 0xEd6BcbF6907D4feEEe8a8875543249bEa9D308E8
+        // host =  0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3
+        // CFAv1 = 0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F
         // fDAIx = 0xF2d68898557cCb2Cf4C10c3Ef2B034b2a69DAD00
 
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);

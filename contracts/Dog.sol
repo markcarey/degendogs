@@ -62,6 +62,8 @@ contract Dog is ERC721, Ownable {
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
     ISuperToken private _acceptedToken; // accepted token
+    
+    uint256 public latestExchangeRate; // multiply ETH by this to get amount of super tokens
 
     mapping(uint256 => int96) public flowRates;
     struct Flow {
@@ -119,7 +121,7 @@ contract Dog is ERC721, Ownable {
         return price;
     }
 
-    function _swap() internal {
+    function _swap(uint256 amountIn) internal returns (uint256) {
         //require(msg.value > 0, "Must pass non 0 ETH amount");
         uint256 min = uint256( _chainlink_price() );
         min = min.mul(97);
@@ -131,7 +133,7 @@ contract Dog is ERC721, Ownable {
         address tokenOut = DAI;
         uint24 fee = 3000;
         address recipient = address(this);
-        uint256 amountIn = address(this).balance; // msg.value; 
+        //uint256 amountIn = address(this).balance; // msg.value; 
         uint256 amountOutMinimum = min;
         uint160 sqrtPriceLimitX96 = 0;
 
@@ -146,37 +148,44 @@ contract Dog is ERC721, Ownable {
             sqrtPriceLimitX96
         );
 
-        uniswapRouter.exactInputSingle{ value: amountIn }(params);
+        uint256 amountOut = uniswapRouter.exactInputSingle{ value: amountIn }(params);
         uniswapRouter.refundETH();
 
         // refund leftover ETH to user
         //(bool success,) = msg.sender.call{ value: address(this).balance }("");
         //require(success, "refund failed");
+        return amountOut;
     }
 
-    function _comp() internal {
+    function _comp(uint256 tokens) internal returns (uint256) {
         // Create a reference to the underlying asset contract, like DAI.
         Erc20 underlying = Erc20(DAI);
 
         // Create a reference to the corresponding cToken contract, like cDAI
         CErc20 cToken = CErc20(cDAI);
 
-        uint256 _numTokensToSupply = underlying.balanceOf(address(this));
+        uint256 _numTokensBefore = cToken.balanceOf(address(this));
+
+        //uint256 _numTokensToSupply = underlying.balanceOf(address(this));
+        uint256 _numTokensToSupply = tokens;
 
         // Amount of current exchange rate from cToken to underlying
-        //uint256 exchangeRateMantissa = cToken.exchangeRateCurrent();
-        //emit MyLog("Exchange Rate (scaled up): ", exchangeRateMantissa);
-
-        // Amount added to you supply balance this block
-        //uint256 supplyRateMantissa = cToken.supplyRatePerBlock();
-        //emit MyLog("Supply Rate: (scaled up)", supplyRateMantissa);
+        uint256 exchangeRateMantissa = cToken.exchangeRateCurrent();
+        emit MyLog("Exchange Rate (scaled up): ", exchangeRateMantissa);
 
         // Approve transfer on the ERC20 contract
         underlying.approve(cDAI, _numTokensToSupply);
 
          // Mint cTokens
-        uint mintResult = cToken.mint(_numTokensToSupply);
-        //return mintResult;
+        uint256 mintResult = cToken.mint(_numTokensToSupply); // does not return number of cTokens
+        //uint256 cTokens = _numTokensToSupply.mul(exchangeRateMantissa);
+        //cTokens = cTokens.div(10**18);
+
+        uint256 _numTokensAfter = cToken.balanceOf(address(this));
+
+        uint256 cTokens = _numTokensAfter.sub(_numTokensBefore);
+        emit MyLog("cTokens: (subtraction)", cTokens);
+        return cTokens;
     }
 
     function claimComp() external onlyOwner{
@@ -184,11 +193,12 @@ contract Dog is ERC721, Ownable {
         troll.claimComp(address(this));
     }
 
-    function _super() internal {
+    function _super(uint256 cTokens) internal {
         // Create a reference to the underlying asset contract, like DAI.
         CErc20 underlying = CErc20(cDAI);
 
-        uint256 _numTokensToSupply = underlying.balanceOf(address(this));
+        //uint256 _numTokensToSupply = underlying.balanceOf(address(this));
+        uint256 _numTokensToSupply = cTokens;
 
         uint256 amount = _numTokensToSupply * (10 ** (18 - underlying.decimals()));
 
@@ -200,9 +210,18 @@ contract Dog is ERC721, Ownable {
     }
 
     function doAllTheDefi() external onlyOwner {
-        _swap();
-        _comp();
-        _super();
+        uint256 amount = address(this).balance;
+        uint256 tokens = _swap(amount);
+        uint256 cTokens = _comp(tokens);
+        _super(cTokens);
+        latestExchangeRate = cTokens.div(amount);
+    }
+
+    function _defi(uint256 amount) internal {
+        uint256 tokens = _swap(amount);
+        uint256 cTokens = _comp(tokens); 
+        _super(cTokens.div(10)); // CHANGE THIS hardcoded percentage
+        latestExchangeRate = amount.div(cTokens);
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -227,6 +246,7 @@ contract Dog is ERC721, Ownable {
     
     event NFTIssued(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
     event FlowCreated(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
+    event MyLog(string, uint256);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
     function issueNFT(uint256 tokenId, address newOwner) external onlyOwner {
@@ -386,6 +406,6 @@ contract Dog is ERC721, Ownable {
     }
 
     receive() external payable {
-        // custom function code
+        _defi(msg.value);
     }
 }

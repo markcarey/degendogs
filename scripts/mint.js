@@ -7,7 +7,7 @@ const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(API_URL);
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0xB5d19d5694449546ffD03a0908443137bE940ddF";
+const contractAddress = "0xFaBE58F1753FC7fad32C6eC14961ea49284BB906";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mintNFT(flowRate) {
@@ -41,6 +41,12 @@ async function mintNFT(flowRate) {
 async function getPrice() {
     const price = await nftContract.methods.getLatestPrice().call();
     console.log("The Price is: " + price);
+}
+
+//latestExchangeRate
+async function latestExchangeRate() {
+    const fx = await nftContract.methods.latestExchangeRate().call();
+    console.log("The latest ETH to cDAIx FX is: " + fx);
 }
 
 async function swap() {
@@ -155,6 +161,34 @@ async function swap() {
     });
   }
 
+  async function withdrawETH() {
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
+  
+    //the transaction
+    const tx = {
+      'from': PUBLIC_KEY,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gas': 300000,
+      'maxPriorityFeePerGas': 1999999987,
+      'data': nftContract.methods.withdrawETH().encodeABI()
+    };
+  
+    const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+    signPromise.then((signedTx) => {
+  
+      web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(err, hash) {
+        if (!err) {
+          console.log("The hash of your transaction is: ", hash, "\nCheck Alchemy's Mempool to view the status of your transaction!"); 
+        } else {
+          console.log("Something went wrong when submitting your transaction:", err)
+        }
+      });
+    }).catch((err) => {
+      console.log("Promise failed:", err);
+    });
+  }
+
 //doAllTheDefi
 async function defi() {
     const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
@@ -251,8 +285,10 @@ async function issueNFT(tokenId, newOwner) {
 //comp();
 //withdrawTokens("0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"); // DAI
 //withdrawTokens("0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD"); // cDAI
-withdrawTokens("0x3ED99f859D586e043304ba80d8fAe201D4876D57"); // cDAIx
+//withdrawTokens("0x3ED99f859D586e043304ba80d8fAe201D4876D57"); // cDAIx
 //withdrawTokens("0xc00e94Cb662C3520282E6f5717214004A7f26888"); // COMP
+//withdrawETH();
 //upgrade();
 //defi();
 //claimComp();
+latestExchangeRate();

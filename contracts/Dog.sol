@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
@@ -43,9 +44,12 @@ interface CErc20 {
     function decimals() external returns (uint8);
 }
 
-// Simple contract which allows users to create NFTs with attached streams
+interface ICompoundComptroller {
+    function claimComp(address holder) external;
+}
 
 contract Dog is ERC721, Ownable {
+    using SafeMath for uint256;
 
     AggregatorV3Interface internal priceFeed;
     IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
@@ -53,12 +57,19 @@ contract Dog is ERC721, Ownable {
     address private constant DAI = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
     address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
     address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
+    address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
 
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
     ISuperToken private _acceptedToken; // accepted token
 
     mapping(uint256 => int96) public flowRates;
+    struct Flow {
+        uint256 tokenId;
+        uint256 timestamp;
+        int96 flowRate;
+    }
+    mapping(uint256 => Flow[]) private flowsForToken;
     
     uint256 public lastId; // this is so we can increment the number
     constructor(
@@ -97,7 +108,7 @@ contract Dog is ERC721, Ownable {
     /**
      * Returns the latest price
      */
-    function getLatestPrice() public view returns (int) {
+    function _chainlink_price() internal returns (int) {
         (
             uint80 roundID, 
             int price,
@@ -108,8 +119,12 @@ contract Dog is ERC721, Ownable {
         return price;
     }
 
-    function convertExactEthToDai() external onlyOwner {
+    function _swap() internal {
         //require(msg.value > 0, "Must pass non 0 ETH amount");
+        uint256 min = uint256( _chainlink_price() );
+        min = min.mul(97);
+        min = min.div(100);
+
 
         uint256 deadline = block.timestamp + 15; // using 'now' for convenience, for mainnet pass deadline from frontend!
         address tokenIn = WETH9;
@@ -117,7 +132,7 @@ contract Dog is ERC721, Ownable {
         uint24 fee = 3000;
         address recipient = address(this);
         uint256 amountIn = address(this).balance; // msg.value; 
-        uint256 amountOutMinimum = 0; // CHANGE THIS
+        uint256 amountOutMinimum = min;
         uint160 sqrtPriceLimitX96 = 0;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams(
@@ -139,7 +154,7 @@ contract Dog is ERC721, Ownable {
         //require(success, "refund failed");
     }
 
-    function supplyDAIToCompound() external onlyOwner {
+    function _comp() internal {
         // Create a reference to the underlying asset contract, like DAI.
         Erc20 underlying = Erc20(DAI);
 
@@ -164,7 +179,12 @@ contract Dog is ERC721, Ownable {
         //return mintResult;
     }
 
-    function super() external onlyOwner {
+    function claimComp() external onlyOwner{
+        ICompoundComptroller troll = ICompoundComptroller(comptroller);
+        troll.claimComp(address(this));
+    }
+
+    function _super() internal {
         // Create a reference to the underlying asset contract, like DAI.
         CErc20 underlying = CErc20(cDAI);
 
@@ -177,6 +197,12 @@ contract Dog is ERC721, Ownable {
 
         // Mint super tokens
         _acceptedToken.upgrade(amount);
+    }
+
+    function doAllTheDefi() external onlyOwner {
+        _swap();
+        _comp();
+        _super();
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -200,6 +226,7 @@ contract Dog is ERC721, Ownable {
     }
     
     event NFTIssued(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
+    event FlowCreated(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
     function issueNFT(uint256 tokenId, address newOwner) external onlyOwner {
@@ -256,26 +283,61 @@ contract Dog is ERC721, Ownable {
             //blocks transfers to superApps
             require(!_host.isApp(ISuperApp(newReceiver)) || newReceiver == address(this), "New receiver can not be a superApp");
 
-            // @dev delete flow to old receiver
-            //CHECK: unclear what happens if oldReceiver is address(this)
-            (, int96 outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), oldReceiver); 
-            if (outFlowRate == flowRates[tokenId]) {
-                _deleteFlow(address(this), oldReceiver);
-            } else if (outFlowRate > flowRates[tokenId]){
-                // reduce the outflow by flowRates[tokenId;
-                _updateFlow(oldReceiver, outFlowRate - flowRates[tokenId]);
-            }        
-                         
-            // @dev create flow to new receiver
-            // @dev if this is a new NFT, it will create a flow based on the stored flowrate
-            (, outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), newReceiver); //CHECK: unclear what happens if flow doesn't exist.
-            if (outFlowRate == 0) {
-                if(newReceiver != address(this)) _createFlow(newReceiver, flowRates[tokenId]);
+            if ( oldReceiver == address(this) ) {
+                // initial owner
+                flowsForToken[tokenId].push(Flow(tokenId, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                // shared
+                for (uint256 i = 0; i < lastId; i++) {
+                    flowsForToken[tokenId].push(Flow(i, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                }
+                // to 10 before token
+                if (tokenId > 10) {
+                    flowsForToken[tokenId].push(Flow(tokenId - 10, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                }
+
+                for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
+                    address receiver = ownerOf(flowsForToken[tokenId][i].tokenId);
+                    if ( flowsForToken[tokenId][i].tokenId == tokenId) {
+                        receiver = newReceiver;
+                    }
+                    _createOrRedirectFlows(oldReceiver, receiver, flowsForToken[tokenId][i].flowRate);
+                    //emit FlowCreated(flowsForToken[tokenId][i].tokenId, receiver, flowsForToken[tokenId][i].flowRate);
+                }
+                //_createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // working
+
             } else {
-                // increase the outflow by flowRates[tokenId]
-                _updateFlow(newReceiver, outFlowRate + flowRates[tokenId]);
+                // being transferred to new owner - redirect the flow
+                _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
             }
       }
+
+    function _createOrRedirectFlows(
+        address oldReceiver,
+        address newReceiver,
+        int96 flowRate
+    ) internal {
+        // @dev delete flow to old receiver
+        //CHECK: unclear what happens if oldReceiver is address(this)
+        (, int96 outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), oldReceiver); 
+        if (outFlowRate == flowRate) {
+            _deleteFlow(address(this), oldReceiver);
+        } else if (outFlowRate > flowRate){
+            // reduce the outflow by flowRate
+            _updateFlow(oldReceiver, outFlowRate - flowRate);
+        }        
+                    
+        // @dev create flow to new receiver
+        // @dev if this is a new NFT, it will create a flow based on the stored flowrate
+        (, outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), newReceiver); //CHECK: unclear what happens if flow doesn't exist.
+        if (outFlowRate == 0) {
+            if (newReceiver != address(this)) {
+                _createFlow(newReceiver, flowRate);
+            }
+        } else {
+            // increase the outflow by flowRate
+            _updateFlow(newReceiver, outFlowRate + flowRate);
+        }
+    }
     
     
     /**************************************************************************

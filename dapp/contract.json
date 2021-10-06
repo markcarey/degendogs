@@ -1,0 +1,8 @@
+{
+    "name": "Degen Dogs",
+    "description": "Degen Dogs mix DeFi with NFTs",
+    "image": "https://degendogs.club/images/0.png",
+    "external_link": "https://degendogs.club",
+    "seller_fee_basis_points": 1000,
+    "fee_recipient": "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"
+}

@@ -1,0 +1,31 @@
+{
+    "background_color": "#fff",
+    "display": "standalone",
+    "homepage_url": "https://degendogs.club",
+    "providedBy": {
+        "name": "Degen Dogs Club",
+        "url": "https://degendogs.club"
+    },
+    "icons": [
+        {
+            "src": "./images/192x192_App_Icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "./images/512x512_App_Icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "orientation": "portrait",
+    "name": "Degen Dogs",
+    "description": "NFTs that do DeFi",
+    "iconPath": "./images/256x256_App_Icon_Pink.svg",
+    "short_name": "Degen Dogs",
+    "start_url": ".",
+    "theme_color": "#ff007a",
+    "skylink": "vAFnwyT6Mc5CEm23BmEKbQiZ0G_siuTUGqHhKIohkfUmww"
+}

@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
+import { IProxyRegistry } from './external/opensea/IProxyRegistry.sol';
 
 import {
     ISuperfluid,
@@ -80,6 +81,12 @@ contract Dog is ERC721, Ownable {
     
     uint256 public lastId; // this is so we can increment the number
 
+    // IPFS content hash of contract-level metadata
+    string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
+
+    // OpenSea's Proxy Registry
+    IProxyRegistry public immutable proxyRegistry;
+
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
         _;
@@ -122,6 +129,9 @@ contract Dog is ERC721, Ownable {
 
     }
 
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "https://degendogs.club/meta/";
+    }
 
     /**
      * Returns the latest price
@@ -253,7 +263,7 @@ contract Dog is ERC721, Ownable {
     }
     
     // @dev creates the NFT, but it remains in the contract
-    function mint() public onlyMinterOrOwner returns (uint256) {
+    function mint() external onlyMinterOrOwner returns (uint256) {
         //flowRates[lastId] = flowRate;
         _mint(address(this), lastId);
         uint256 dogId = lastId;
@@ -266,9 +276,12 @@ contract Dog is ERC721, Ownable {
     event MyLog(string, uint256);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
-    function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
+    function issue(address newOwner, uint256 tokenId, uint256 amount) external payable onlyMinterOrOwner {
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
+        if (msg.value > 0) {
+            _defi(msg.value);
+        }
         winningBid[tokenId] = amount;
         emit NFTIssued(tokenId, newOwner);
         this.safeTransferFrom(address(this), newOwner, tokenId);
@@ -319,31 +332,38 @@ contract Dog is ERC721, Ownable {
             // @dev because our app is registered as final, we can't take downstream apps
             
             //blocks transfers to superApps
-            require(!_host.isApp(ISuperApp(newReceiver)) || newReceiver == address(this), "New receiver can not be a superApp");
+            //require(!_host.isApp(ISuperApp(newReceiver)) || newReceiver == address(this), "New receiver can not be a superApp");
 
             if ( oldReceiver == address(this) ) {
-                //int96 fr = flowRates[tokenId];
-                //uint256 amt = winningBid[tokenId];
-                //uint256 _super = _amount.div(latestExchangeRate); // est amount in cDAIx
-                // initial owner gets 10% over 365 days
-                //int256 _flowRate = int256(_super.div(10).div(31536000));
-                //int96 _fr = int96(_flowRate);
-                //_flowRate = _flowRate.div(31536000); // number of seconds in 365 days
+                uint256 _amount = winningBid[tokenId];
+                uint256 _super = _amount.div(latestExchangeRate); // est amount in cDAIx
                 flowsForToken[tokenId].push(Flow(
                     {
                         tokenId: tokenId,
                         timestamp: block.timestamp + 365*24*60*60,
-                        flowRate: int96(uint96(winningBid[tokenId].div(latestExchangeRate).div(10).div(31536000)))
+                        flowRate: int96(uint96(_super.div(10).div(31536000)))
                     }
                 ));
                 //flowsForToken[tokenId].push(Flow(tokenId, block.timestamp + 365*24*60*60, flowRates[tokenId]));
                 // shared
                 for (uint256 i = 0; i < lastId; i++) {
-                    flowsForToken[tokenId].push(Flow(i, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                    flowsForToken[tokenId].push(Flow(
+                        {
+                            tokenId: i,
+                            timestamp: block.timestamp + 365*24*60*60,
+                            flowRate: int96(uint96(_super.div(10).mul(4).div(lastId).div(31536000)))
+                        }
+                    ));
                 }
                 // to 10 before token
                 if (tokenId > 10) {
-                    flowsForToken[tokenId].push(Flow(tokenId - 10, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                    flowsForToken[tokenId].push(Flow(
+                        {
+                            tokenId: tokenId - 10,
+                            timestamp: block.timestamp + 365*24*60*60,
+                            flowRate: int96(uint96(_super.div(5).div(31536000)))
+                        }
+                    ));
                 }
 
                 for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
@@ -357,8 +377,10 @@ contract Dog is ERC721, Ownable {
                 //_createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // working
 
             } else {
-                // being transferred to new owner - redirect the flow
-                _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+                if (newReceiver != address(this)) {
+                    // being transferred to new owner - redirect the flow
+                    _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+                }
             }
       }
 
@@ -439,6 +461,33 @@ contract Dog is ERC721, Ownable {
     function setMinter(address _minter) external onlyOwner {
         minter = _minter;
     }
+
+    /**
+     * @notice The IPFS URI of contract-level metadata.
+     */
+    function contractURI() public view returns (string memory) {
+        return string(abi.encodePacked('ipfs://', _contractURIHash));
+    }
+
+    /**
+     * @notice Set the _contractURIHash.
+     * @dev Only callable by the owner.
+     */
+    function setContractURIHash(string memory newContractURIHash) external onlyOwner {
+        _contractURIHash = newContractURIHash;
+    }
+
+    /**
+     * @notice Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
+     */
+    function isApprovedForAll(address owner, address operator) public view override(IERC721, ERC721) returns (bool) {
+        // Whitelist OpenSea proxy contract for easy trading.
+        if (proxyRegistry.proxies(owner) == operator) {
+            return true;
+        }
+        return super.isApprovedForAll(owner, operator);
+    }
+
 
     receive() external payable {
         _defi(msg.value);

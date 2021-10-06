@@ -28,6 +28,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.3.2",
     "@superfluid-finance/ethereum-contracts": "^1.0.0-rc.7",
     "@uniswap/v3-periphery": "^1.2.1",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "skynet-js": "^3.0.2"
   }
 }

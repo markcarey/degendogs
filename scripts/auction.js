@@ -8,7 +8,7 @@ const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
-const contractAddress = "0xa09998381C665bD4b2a938b4DCACB592452430fC";
+const contractAddress = "0xFAe0d03Dba0782B18D68F9849482A9c545a5A68b";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function initialize() {
@@ -21,7 +21,7 @@ async function initialize() {
     'nonce': nonce,
     'gas': 1000000,
     'maxPriorityFeePerGas': 1999999987,
-    'data': nftContract.methods.initialize("0x6763EB746FD932a0beF8D6a991386356c1D557EA", "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*15).encodeABI()
+    'data': nftContract.methods.initialize("0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0", "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*15).encodeABI()
   };
 
   const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
@@ -131,7 +131,7 @@ async function getAuction() {
 
 //initialize();
 //unpause();
-//createBid(4);
-//getAuction();
-settleCurrentAndCreateNewAuction();
+//createBid(1);
+getAuction();
+//settleCurrentAndCreateNewAuction();
 

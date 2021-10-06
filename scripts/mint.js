@@ -8,7 +8,7 @@ const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x6763EB746FD932a0beF8D6a991386356c1D557EA";
+const contractAddress = "0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -320,11 +320,12 @@ async function issue(newOwner, tokenId, amount) {
 //withdrawTokens("0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"); // DAI
 //withdrawTokens("0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD"); // cDAI
 //withdrawTokens("0x3ED99f859D586e043304ba80d8fAe201D4876D57"); // cDAIx
-//withdrawTokens("0xc00e94Cb662C3520282E6f5717214004A7f26888"); // COMP
+//withdrawTokens("0x61460874a7196d6a22D1eE4922473664b3E95270"); // COMP
+//withdrawTokens("0xd0A1E359811322d97991E03f863a0C30C2cF029C"); // WETH
 //withdrawETH();
 //upgrade();
 //defi();
 //claimComp();
 //latestExchangeRate();
-//setMinter("0xa09998381C665bD4b2a938b4DCACB592452430fC");
-tokenURI(0);
+//setMinter("0xFAe0d03Dba0782B18D68F9849482A9c545a5A68b");
+tokenURI(1);

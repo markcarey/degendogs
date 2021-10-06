@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
-import { IProxyRegistry } from './external/opensea/IProxyRegistry.sol';
 
 import {
     ISuperfluid,
@@ -83,9 +82,6 @@ contract Dog is ERC721, Ownable {
 
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
-
-    // OpenSea's Proxy Registry
-    IProxyRegistry public immutable proxyRegistry;
 
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
@@ -476,18 +472,6 @@ contract Dog is ERC721, Ownable {
     function setContractURIHash(string memory newContractURIHash) external onlyOwner {
         _contractURIHash = newContractURIHash;
     }
-
-    /**
-     * @notice Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
-     */
-    function isApprovedForAll(address owner, address operator) public view override(IERC721, ERC721) returns (bool) {
-        // Whitelist OpenSea proxy contract for easy trading.
-        if (proxyRegistry.proxies(owner) == operator) {
-            return true;
-        }
-        return super.isApprovedForAll(owner, operator);
-    }
-
 
     receive() external payable {
         _defi(msg.value);

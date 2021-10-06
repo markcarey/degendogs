@@ -227,7 +227,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
             dogs.burn(_auction.dogId);
         } else {
             //dogs.transferFrom(address(this), _auction.bidder, _auction.dogId);
-            dogs.issue.value(_auction.amount)(_auction.bidder, _auction.dogId, _auction.amount);
+            dogs.issue{value: _auction.amount}(_auction.bidder, _auction.dogId, _auction.amount);
         }
 
         emit AuctionSettled(_auction.dogId, _auction.bidder, _auction.amount);

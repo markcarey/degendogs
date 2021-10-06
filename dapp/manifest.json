@@ -8,13 +8,13 @@
     },
     "icons": [
         {
-            "src": "./images/192x192_App_Icon.png",
+            "src": "./images/192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "./images/512x512_App_Icon.png",
+            "src": "./images/512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
@@ -27,5 +27,5 @@
     "short_name": "Degen Dogs",
     "start_url": ".",
     "theme_color": "#ff007a",
-    "skylink": "vAFnwyT6Mc5CEm23BmEKbQiZ0G_siuTUGqHhKIohkfUmww"
+    "skylink": "AQDi7kfrOGrFnN1x2oTMv65js0IGTXErqIi8Enq8DPQoZA"
 }

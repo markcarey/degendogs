@@ -65,6 +65,11 @@ contract Dog is ERC721, Ownable {
     
     uint256 public latestExchangeRate; // multiply ETH by this to get amount of super tokens
 
+    // An address who has permissions to mint Dogs
+    address public minter;
+
+    mapping(uint256 => uint256) public winningBid;
+
     mapping(uint256 => int96) public flowRates;
     struct Flow {
         uint256 tokenId;
@@ -74,6 +79,17 @@ contract Dog is ERC721, Ownable {
     mapping(uint256 => Flow[]) private flowsForToken;
     
     uint256 public lastId; // this is so we can increment the number
+
+    modifier onlyMinter() {
+        require(msg.sender == minter, 'Sender is not the minter');
+        _;
+    }
+    modifier onlyMinterOrOwner() {
+        require( (msg.sender == minter) || (msg.sender == owner()), 'Sender is not the minter nor owner');
+        _;
+    }
+
+
     constructor(
         // string memory _name,
         // string memory _symbol,
@@ -237,25 +253,27 @@ contract Dog is ERC721, Ownable {
     }
     
     // @dev creates the NFT, but it remains in the contract
-    function createNFT(int96 flowRate) external onlyOwner{
-        // creates an NFT based on a set flowRate and duration
-        flowRates[lastId] = flowRate;
+    function mint() public onlyMinterOrOwner returns (uint256) {
+        //flowRates[lastId] = flowRate;
         _mint(address(this), lastId);
+        uint256 dogId = lastId;
         lastId += 1;
+        return dogId;
     }
     
-    event NFTIssued(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
+    event NFTIssued(uint256 indexed tokenId, address indexed owner);
     event FlowCreated(uint256 indexed tokenId, address indexed owner, int96 indexed flowRate);
     event MyLog(string, uint256);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
-    function issueNFT(uint256 tokenId, address newOwner) external onlyOwner {
+    function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
-        emit NFTIssued(tokenId, newOwner, flowRates[tokenId]);
+        winningBid[tokenId] = amount;
+        emit NFTIssued(tokenId, newOwner);
         this.safeTransferFrom(address(this), newOwner, tokenId);
     }
-    
+
     function createAndIssue(address receiver, int96 flowRate) external onlyOwner{
         require(receiver != address(this), "Issue to a new address");
         //emit NFTIssued(tokenId, newOwner, flowRates[tokenId]);
@@ -304,8 +322,21 @@ contract Dog is ERC721, Ownable {
             require(!_host.isApp(ISuperApp(newReceiver)) || newReceiver == address(this), "New receiver can not be a superApp");
 
             if ( oldReceiver == address(this) ) {
-                // initial owner
-                flowsForToken[tokenId].push(Flow(tokenId, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
+                //int96 fr = flowRates[tokenId];
+                //uint256 amt = winningBid[tokenId];
+                //uint256 _super = _amount.div(latestExchangeRate); // est amount in cDAIx
+                // initial owner gets 10% over 365 days
+                //int256 _flowRate = int256(_super.div(10).div(31536000));
+                //int96 _fr = int96(_flowRate);
+                //_flowRate = _flowRate.div(31536000); // number of seconds in 365 days
+                flowsForToken[tokenId].push(Flow(
+                    {
+                        tokenId: tokenId,
+                        timestamp: block.timestamp + 365*24*60*60,
+                        flowRate: int96(uint96(winningBid[tokenId].div(latestExchangeRate).div(10).div(31536000)))
+                    }
+                ));
+                //flowsForToken[tokenId].push(Flow(tokenId, block.timestamp + 365*24*60*60, flowRates[tokenId]));
                 // shared
                 for (uint256 i = 0; i < lastId; i++) {
                     flowsForToken[tokenId].push(Flow(i, block.timestamp + 365*24*60*60, flowRates[tokenId])); // change hard-coded flowrate
@@ -403,6 +434,10 @@ contract Dog is ERC721, Ownable {
             ),
             "0x"
         );
+    }
+
+    function setMinter(address _minter) external onlyOwner {
+        minter = _minter;
     }
 
     receive() external payable {

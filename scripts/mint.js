@@ -274,21 +274,21 @@ async function issueNFT(tokenId, newOwner) {
     });
   }
 
-//mintNFT("19290123456790"); // 50 per month
-//issueNFT(0, "0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661");
-//issueNFT(1, "0x1d858A7cAF1d13128DD829A9A03971D1c9f17e35"); // Account 2
-//issueNFT(2, "0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661"); 
-//issueNFT(3, "0x1d858A7cAF1d13128DD829A9A03971D1c9f17e35"); // Account 2
-//issueNFT(4, "0x5dbCaC6c76bd32497B652D1afFf959B3f83B53e1"); // Jerry
+//mint(); "19290123456790"); // 50 per month
+//issue("0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661", 0);
+//issue("0x1d858A7cAF1d13128DD829A9A03971D1c9f17e35", 1); // Account 2
+//issue("0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661", 2); 
+//issue("0x1d858A7cAF1d13128DD829A9A03971D1c9f17e35", 3); // Account 2
+//issue("0x5dbCaC6c76bd32497B652D1afFf959B3f83B53e1", 4); // Jerry
 //getPrice();
 //swap();
 //comp();
 //withdrawTokens("0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"); // DAI
-//withdrawTokens("0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD"); // cDAI
+withdrawTokens("0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD"); // cDAI
 //withdrawTokens("0x3ED99f859D586e043304ba80d8fAe201D4876D57"); // cDAIx
 //withdrawTokens("0xc00e94Cb662C3520282E6f5717214004A7f26888"); // COMP
 //withdrawETH();
 //upgrade();
 //defi();
 //claimComp();
-latestExchangeRate();
+//latestExchangeRate();

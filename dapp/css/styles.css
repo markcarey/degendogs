@@ -1,2 +1,1070 @@
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}code{font-family:source-code-pro,Menlo,Monaco,Consolas,"Courier New",monospace}:root{--brand-bg-green:#edf2f0;--brand-dark-red:#d63c5e;--brand-light-green:#6da886;--brand-black:#212529}.App_wrapper__2Rh_f{display:flex;flex-direction:column;min-height:100vh}.App_greyBg__2L290{background-color:#d5d7e1}.App_beigeBg__1oxYj{background-color:#e1d7d5}.Modal_backdrop__3FAPo{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;background:rgba(0,0,0,.75)}.Modal_modal__P3_V5{position:fixed;top:25vh;left:10%;width:80%;z-index:100;background-color:#fff;padding:2rem;text-align:center;border-radius:15px;left:calc(50% - 15rem);width:30rem}.Modal_modal__P3_V5 h3{font-size:xx-large;font-weight:700}.Modal_content__1VIbZ{padding:1rem;max-height:50vh;overflow-y:auto}.Modal_modal__P3_V5 .Modal_closeButton__840KP{position:absolute;top:1rem;right:2rem;border:0;background-color:transparent}.Modal_modal__P3_V5 button img{width:1rem;height:auto}@media (max-width:992px){.Modal_modal__P3_V5{top:auto;left:0;bottom:0;width:100%;max-height:100%;border-bottom-left-radius:0;border-bottom-right-radius:0}}.NavBar_navBarBrand__1hw3w{position:relative;z-index:2}.NavBar_connectBtn__1uOYH{cursor:pointer}.NavBar_connectBtn__1uOYH:active,.NavBar_connectBtn__1uOYH:focus,.NavBar_connectBtn__1uOYH:hover{cursor:pointer!important}.NavBar_disconnectBtn__1B1Vs{cursor:pointer}.NavBar_disconnectBtn__1B1Vs:active,.NavBar_disconnectBtn__1B1Vs:focus,.NavBar_disconnectBtn__1B1Vs:hover{cursor:pointer!important}.NavBar_greenStatusCircle__1zBA7{display:inline-block;width:10px;height:10px;background-color:#7fc59c;border-radius:50%;margin-right:5px}.NavBar_nounsNavLink__1_qpP,.NavBar_nounsNavLink__1_qpP:active,.NavBar_nounsNavLink__1_qpP:visited{font-size:.9rem;padding:.5rem .8rem!important;color:var(--brand-black)!important}.NavBar_nounsNavLink__1_qpP:hover{color:var(--brand-dark-red)!important}.NavBar_testnetImg__322vL{width:auto;height:45px}.WalletButton_walletButton__Q_aK0{margin:5px;padding:5px 20px;border-radius:5px;background-color:hsla(0,0%,82.7%,.664);color:var(--brand-black);border:none}.WalletButton_walletButton__Q_aK0 img{margin-right:10px;border-radius:5px}.WalletButton_walletButton__Q_aK0:active,.WalletButton_walletButton__Q_aK0:disabled,.WalletButton_walletButton__Q_aK0:focus,.WalletButton_walletButton__Q_aK0:hover{outline:none!important;box-shadow:none!important;background-color:#d3d3d3!important;color:var(--brand-dark-green);color:#fff}.WalletConnectModal_clickable__2UYOs{cursor:pointer}.Footer_footerSignature__3KHrj{margin:0 auto;font-family:"Londrina Solid";font-size:1rem}.Footer_footerSignature__3KHrj a{text-decoration:none;color:#000;margin:0 5px}.Footer_footerSignature__3KHrj a:hover{text-decoration:underline;-webkit-animation-name:Footer_slidein__1VljP;animation-name:Footer_slidein__1VljP}.Footer_footerSignature__3KHrj img{width:32px;height:32px;margin:0 8px}.Footer_alignBottom__2H4YQ{margin-top:auto}@-webkit-keyframes Footer_slidein__1VljP{0%{margin-left:100%;width:300%}to{margin-left:0;width:100%}}@keyframes Footer_slidein__1VljP{0%{margin-left:100%;width:300%}to{margin-left:0;width:100%}}.Section_container__1zQTr{padding:2rem 0}.Link_link__3euZY,.Link_link__3euZY:active,.Link_link__3euZY:hover{color:var(--brand-dark-red)}.Link_link__3euZY:hover{text-decoration:underline}.Banner_wrapper__1YbFc h1{font-family:"Londrina Solid";font-size:5rem}.Banner_bannerSection__15FiP{border-top:4px solid #d3d3d3}@media (max-width:992px){.Banner_wrapper__1YbFc{padding:2rem}}@media (min-width:992px){.Banner_wrapper__1YbFc h1{font-size:7rem}}.Noun_img__1GJxo{-ms-interpolation-mode:nearest-neighbor;image-rendering:pixelated;image-rendering:-moz-crisp-edges;width:100%}.AuctionActivity_wrapper__3UpQR{padding:1rem 2rem;color:var(--brand-black);align-self:flex-start!important}.AuctionActivity_informationRow__2BOSj{margin-bottom:2rem}.AuctionActivity_activityRow__1xuKY{margin-bottom:1rem}h1{font-size:3rem}h2{font-size:2.5rem}h4{font-size:1rem;font-weight:400}.AuctionActivity_modalHeader__2pkxA{border-bottom:none;justify-content:flex-start;align-items:center}.AuctionActivity_modalTitleWrapper__2w2pt{color:var(--brand-black)}.AuctionActivity_modalTitleWrapper__2w2pt h1{font-size:xx-large;margin-left:2rem}.AuctionActivity_modalHeader__2pkxA button{align-self:flex-start}.AuctionActivity_modalHeaderNounImgWrapper__3boIZ{width:150px;height:150px}.AuctionActivity_currentBidCol__3vgXb{border-right:1px solid var(--brand-black)}.AuctionActivity_auctionTimerCol__2oKfX{padding-left:3rem}@media (max-width:992px){.AuctionActivity_wrapper__3UpQR{padding:1rem}.AuctionActivity_auctionTimerCol__2oKfX{padding-left:15px}}@-moz-document url-prefix(){.AuctionActivity_colAlignCenter__3SaC2{display:flex;align-items:center}}.BidHistory_altWrapper__a-MQ4{text-align:center}.BidHistory_bidCollection__2FxcB{display:grid;text-align:start;list-style-type:none;grid-row-gap:.5rem;row-gap:.5rem;padding:0}.BidHistory_bidRow__bc1Zf{background-color:hsla(0,0%,100%,.3);padding:.5rem 1rem;border-radius:5px;border-bottom:1px solid hsla(0,0%,82.7%,.322);font-size:.9rem;font-weight:600}.BidHistory_bidItem__13g5O{display:flex;align-items:center;justify-content:space-between}.BidHistory_leftSectionWrapper__2T29z{display:flex;flex-direction:column}.BidHistory_bidder__1hPgQ{color:var(--brand-black)}.BidHistory_bidDate__32l9k{display:none;color:grey}.BidHistory_rightSectionWrapper__3oem5{display:flex;flex-direction:row;justify-content:center;align-items:center}.BidHistory_bidAmount__7W-Hz{color:var(--brand-black);margin-right:1rem}.BidHistory_linkSymbol__29ypX,.BidHistory_linkSymbol__29ypX a{color:var(--brand-black)}.BidHistory_linkSymbol__29ypX a:hover{color:grey}@media (max-width:992px){.BidHistory_bidRow__bc1Zf{border-radius:0}}.Bid_bidWrapper__1NsAz{margin:1rem 0}.Bid_bidBtn__2MzFj{margin-left:1rem;width:40%;height:3rem;color:#fff;border:transparent;background-color:var(--brand-black);font-weight:700}.Bid_bidBtn__2MzFj:active,.Bid_bidBtn__2MzFj:disabled,.Bid_bidBtn__2MzFj:focus,.Bid_bidBtn__2MzFj:hover{background-color:grey!important;outline:none!important;box-shadow:none!important}.Bid_minBidCopy__1WI1j{padding-top:0;font-size:small;margin-left:.25rem;margin-bottom:.3rem}.Bid_bidInput__39un5{width:60%;height:3rem;color:#000;border:1px solid #aaa!important;border-radius:.25rem!important;background-color:#fff;font-weight:700;outline:none!important;box-shadow:none!important}.Bid_bidInput__39un5:focus{border:1px solid #aaa!important}.Bid_customPlaceholder__3KOvn{position:absolute;top:25%;left:46%;font-weight:700;color:#aaa;z-index:3}.Bid_bidBtnAuctionEnded__1zL5T{width:100%;height:3rem;color:#fff;border:transparent;background-color:var(--brand-black);font-weight:700}.Bid_bidBtnAuctionEnded__1zL5T:active,.Bid_bidBtnAuctionEnded__1zL5T:disabled,.Bid_bidBtnAuctionEnded__1zL5T:focus,.Bid_bidBtnAuctionEnded__1zL5T:hover{background-color:grey!important;color:#d1cfcf;outline:none!important;box-shadow:none}.Bid_bidInputAuctionEnded__3sHIA{display:none}.Bid_bidInput__39un5:focus{outline:none}.Bid_bidInput__39un5::-webkit-inner-spin-button,.Bid_bidInput__39un5::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.Bid_bidInput__39un5[type=number]{-moz-appearance:textfield}@media (max-width:992px){.Bid_bidInput__39un5{border-color:#c3c3c3}.Bid_customPlaceholder__3KOvn{left:44%}}.AuctionTimer_title__1TwqG{margin-bottom:.5rem}.AuctionTimer_timerWrapper__3c10Z{display:flex}.AuctionTimer_timerSection__2RlJK{margin-right:.5rem}.AuctionTimer_small__3FXgu{padding-left:.1rem;font-size:.65em}.AuctionTimer_timeSubtitle__3S8JT{font-size:medium}.CurrentBid_section__2oRi6 span{font-size:3rem;font-weight:700;font-family:"Londrina Solid"}.BidHistory_altWrapper__3mEDs{text-align:center}.BidHistory_bidCollection__1DoXy{display:grid;text-align:start;list-style-type:none;grid-row-gap:.5rem;row-gap:.5rem;padding:0}.BidHistory_bidRow__31Sl2{padding:1rem;border-bottom:1px solid hsla(0,0%,82.7%,.322)}.BidHistory_bidItem__2EgHh{display:flex;align-items:center;justify-content:space-between}.BidHistory_leftSectionWrapper__3gsSj{display:flex;flex-direction:column}.BidHistory_bidder__1R14A{font-weight:700;color:var(--brand-black)}.BidHistory_bidDate__3dDvg{color:grey}.BidHistory_rightSectionWrapper__3N0DM{display:flex;flex-direction:row;justify-content:center;align-items:center}.BidHistory_bidAmount__3yfv7{color:var(--brand-black);margin-right:1rem;font-size:1.5rem}.BidHistory_linkSymbol__2qaZG,.BidHistory_linkSymbol__2qaZG a{color:var(--brand-black)}.BidHistory_linkSymbol__2qaZG a:hover{color:grey}.AuctionNavigation_leftArrow__1NOSB{background-color:#6db3f2}.AuctionNavigation_leftArrow__1NOSB,.AuctionNavigation_rightArrow__33rdI{margin-left:1rem;display:inline-block;width:2rem;height:2rem;border:none;background-size:contain;background-repeat:no-repeat;background-color:transparent;font-size:xx-large}.AuctionNavigation_leftArrow__1NOSB:hover,.AuctionNavigation_rightArrow__33rdI:hover{opacity:.9}.AuctionNavigation_leftArrow__1NOSB:disabled,.AuctionNavigation_rightArrow__33rdI:disabled{opacity:.5}@media (max-width:992px){.AuctionNavigation_leftArrow__1NOSB{margin-left:1rem}}.AuctionActivityNounTitle_nounTitle__3_LLC{display:inline-block}.BidHistoryBtn_bidHistoryWrapper__3Zsy9{display:flex}.BidHistoryBtn_bidHistory__2lmSd{margin-left:.5rem;color:var(--brand-black);font-weight:400;font-size:1rem;cursor:pointer}.BidHistoryBtn_bidHistory__2lmSd:hover{color:var(--brand-dark-red);text-decoration:none}.Auction_nounWrapper__3JSNc{align-self:flex-end;width:100%}.Auction_nounContentCol__1o5ER{display:flex}.Auction_auctionActivityCol__3U2jw{padding-top:2rem;align-self:start!important}@media (max-width:992px){.Auction_auctionActivityCol__3U2jw{background-color:#fff;border-bottom:1px solid #d3d3d3;padding-bottom:2rem}}.NounderNounContent_link__3MuKL,.NounderNounContent_link__3MuKL:active,.NounderNounContent_link__3MuKL:visited{color:var(--brand-dark-green);text-decoration:underline}.NounderNounContent_link__3MuKL:hover{color:var(--brand-dark-red)}.NounderNounContent_bidRow__2CVAB{font-weight:400!important}.NounderNounContent_currentBidCol__3VQRX{border-right:0!important}.Documentation_headerWrapper__xln_n h1{font-family:"Londrina Solid";font-size:4rem}.Documentation_headerWrapper__xln_n p{margin:3rem 0}@media (max-width:992px){.Documentation_headerWrapper__xln_n{padding:1rem}}.Documentation_card__1TWtt{border:none;margin-bottom:2.5rem;max-width:-webkit-fit-content;max-width:-moz-fit-content;max-width:fit-content}.Documentation_cardHeader__xv_vO:hover{color:var(--brand-dark-red)}.Documentation_card__1TWtt,.Documentation_headerWrapper__xln_n{font-size:1.3rem}.Documentation_cardHeader__xv_vO{border:none;background-color:transparent;font-family:"Londrina Solid";font-size:2.5rem;cursor:pointer;line-height:normal;padding-top:0;padding-bottom:0}.HistoryCollection_historyCollection__2Shui{display:grid;grid-auto-flow:column dense;grid-column-gap:8px;-webkit-column-gap:8px;column-gap:8px;width:100%;max-height:175px;padding:8px;overflow-y:hidden;overflow-x:hidden;overflow:hidden;max-width:1700px}.HistoryCollection_rtl__7jPW3{direction:ltr}.HistoryCollection_historyCollection__2Shui div{width:146px;margin:2px}@media (max-width:992px){.HistoryCollection_historyCollection__2Shui{grid-template-columns:repeat(10,150px);overflow-x:auto}}.Proposals_proposals__2mg9W{display:flex;flex-direction:column}.Proposals_proposals__2mg9W>div{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}.Proposals_heading__26OQ5{display:inline-block;font-size:2rem;margin:0!important}.Proposals_createProposalLink__1VCk5{padding:.9rem 1.5rem;border-radius:5px;border:0;font-size:large;font-weight:400;cursor:default}.Proposals_createProposalLink__1VCk5:hover{background-color:#686868}.Proposals_proposalLink__3idLu{padding:1rem;margin-top:.4rem;display:flex;align-items:center;justify-content:space-between}.Governance_heading__MOhD3{display:inline-block;font-weight:700;font-size:3rem}.Governance_subheading__222R0{color:var(--brand-dark-green);font-size:1.2rem}p{padding-top:1rem}.CreateProposal_createProposalPage__3qx3H a{color:var(--brand-dark-red)}.CreateProposal_createProposalForm__1UHgT{border-radius:5px;padding:1rem 2.5rem;margin-top:1em;background-color:#fff}.CreateProposal_heading__e7kWw{margin:1rem 0}.CreateProposal_section__2A56Y{border-top:1px solid #e9ecef;word-wrap:break-word;padding-top:2rem;margin-top:2rem}.CreateProposal_addTransactionButton__3U7s3,.CreateProposal_createProposalButton__UHWVW{margin-top:1rem}.ProposalEditor_proposalEditor__19xXK{margin-top:1rem;padding:.5rem 1rem 1rem;border:1px solid #aaa!important;border-radius:.25rem!important;outline:none!important;box-shadow:none!important}.ProposalEditor_bodyInput__20KWn,.ProposalEditor_titleInput__2oS3A{padding:0;border:none;width:100%!important;outline:none!important;box-shadow:none!important}.ProposalEditor_titleInput__2oS3A{font-size:1.25rem}.ProposalEditor_bodyInput__20KWn{min-height:340px}.ProposalEditor_divider__38QOx{width:100%;margin:0 0 .5rem}.ProposalTransactions_popover__3fRG9{max-width:600px}.ProposalTransactions_transactionDetails__2EchO{margin-top:1rem;padding:.5rem 1rem;border:1px solid #aaa!important;border-radius:.25rem!important}.ProposalTransactions_removeTransactionButton__2dBl_{border:none;background:none;outline:none!important;box-shadow:none!important}.ProposalTransactions_removeTransactionButton__2dBl_ img{width:1rem}.ProposalTransactionFormModal_transactionFormModal__2GUdX{max-width:600px}.ProposalTransactionFormModal_stepProgressBar__4Na9W{padding:0 0 2rem!important}.ProposalTransactionFormModal_inputGroupText__3ruwH{border-radius:.25rem 0 0 .25rem;border-right:none}.ProposalTransactionFormModal_functionName__2XKIf{white-space:nowrap}.Vote_votePage__G1H10 a{color:var(--brand-dark-red)}.Vote_proposal__1pjGZ{border-radius:5px;padding:1rem 2.5rem;margin-top:1em;background-color:#fff}.Vote_backArrow__3z9lF{height:1rem}.Vote_voteCountCard__11har,.Vote_votingButton__3PrIp{margin-top:1rem}.Vote_proposalId__1ti1o{margin:1rem 0}.Vote_voteCountCard__11har p{display:flex;justify-content:space-between}.Vote_section__3S8l3{border-top:1px solid #e9ecef;word-wrap:break-word;padding-top:2rem;margin-top:2rem}.Vote_markdown__2g5aA h1{font-size:1.7rem;margin-top:1rem;font-weight:700}.Vote_markdown__2g5aA h2{font-size:1.5rem;margin-top:1rem;font-weight:700}.Vote_markdown__2g5aA h3{font-size:1.3rem}.Vote_markdown__2g5aA img{max-width:100%;height:auto}.Vote_voterIneligibleAlert__2jDfQ{margin:1rem 0 0}.VoteModal_voteModal__19gv1{max-width:380px}.VoteModal_voteModalText__3_pyA{font-size:1.3rem;font-weight:700;padding:0}.NoundersPage_noundersPage__2BU9Y h1,.NoundersPage_noundersPage__2BU9Y h2,.NoundersPage_noundersPage__2BU9Y h3{font-family:"Londrina Solid"}.NoundersPage_noundersPage__2BU9Y h2{margin-bottom:2rem}.NoundersPage_noundersPage__2BU9Y a{color:var(--brand-black)}.NoundersPage_noundersPage__2BU9Y a:hover{color:var(--brand-dark-red)}.NoundersPage_bioGroup__26YGW{padding-right:5px;padding-left:5px}.NoundersPage_bioGroup__26YGW a{font-size:1rem}.NoundersPage_noundersPage__2BU9Y img{border-radius:50%;width:50%}.NoundersPage_marginBottom__dDAL1{margin-bottom:0}.NoundersPage_bioGroup__26YGW{margin-bottom:2rem;text-align:center}.NoundersPage_bioGroup__26YGW a:hover svg{fill:var(--brand-dark-red)}.NoundersPage_bioGroup__26YGW img{margin-bottom:1rem}.NoundersPage_twitterIcon__3L0yj{width:20px;color:#aaa;margin-right:5px}.NoundersPage_card__1wIOD{border:none}.NoundersPage_card__1wIOD,.NoundersPage_headerWrapper__1PZ9J{font-size:1.3rem}.NoundersPage_cardHeader__1GQQt{border:none;background-color:transparent;font-family:"Londrina Solid";font-size:2.5rem;cursor:pointer}.NotFound_heading__3xG74{display:inline-block;font-weight:700;font-size:3rem}
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
+}
+
+:root {
+    --brand-bg-green: #edf2f0;
+    --brand-dark-red: #d63c5e;
+    --brand-light-green: #6da886;
+    --brand-black: #212529
+}
+
+.App_wrapper__2Rh_f {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh
+}
+
+.App_greyBg__2L290 {
+    background-color: #d5d7e1
+}
+
+.App_beigeBg__1oxYj {
+    background-color: #e1d7d5
+}
+
+.Modal_backdrop__3FAPo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba(0, 0, 0, .75)
+}
+
+.Modal_modal__P3_V5 {
+    position: fixed;
+    top: 25vh;
+    left: 10%;
+    width: 80%;
+    z-index: 100;
+    background-color: #fff;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 15px;
+    left: calc(50% - 15rem);
+    width: 30rem
+}
+
+.Modal_modal__P3_V5 h3 {
+    font-size: xx-large;
+    font-weight: 700
+}
+
+.Modal_content__1VIbZ {
+    padding: 1rem;
+    max-height: 50vh;
+    overflow-y: auto
+}
+
+.Modal_modal__P3_V5 .Modal_closeButton__840KP {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    border: 0;
+    background-color: transparent
+}
+
+.Modal_modal__P3_V5 button img {
+    width: 1rem;
+    height: auto
+}
+
+@media (max-width:992px) {
+    .Modal_modal__P3_V5 {
+        top: auto;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        max-height: 100%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0
+    }
+}
+
+.NavBar_navBarBrand__1hw3w {
+    position: relative;
+    z-index: 2
+}
+
+.NavBar_connectBtn__1uOYH {
+    cursor: pointer
+}
+
+.NavBar_connectBtn__1uOYH:active,
+.NavBar_connectBtn__1uOYH:focus,
+.NavBar_connectBtn__1uOYH:hover {
+    cursor: pointer !important
+}
+
+.NavBar_disconnectBtn__1B1Vs {
+    cursor: pointer
+}
+
+.NavBar_disconnectBtn__1B1Vs:active,
+.NavBar_disconnectBtn__1B1Vs:focus,
+.NavBar_disconnectBtn__1B1Vs:hover {
+    cursor: pointer !important
+}
+
+.NavBar_greenStatusCircle__1zBA7 {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #7fc59c;
+    border-radius: 50%;
+    margin-right: 5px
+}
+
+.NavBar_nounsNavLink__1_qpP,
+.NavBar_nounsNavLink__1_qpP:active,
+.NavBar_nounsNavLink__1_qpP:visited {
+    font-size: .9rem;
+    padding: .5rem .8rem !important;
+    color: var(--brand-black) !important
+}
+
+.NavBar_nounsNavLink__1_qpP:hover {
+    color: var(--brand-dark-red) !important
+}
+
+.NavBar_testnetImg__322vL {
+    width: auto;
+    height: 45px
+}
+
+.WalletButton_walletButton__Q_aK0 {
+    margin: 5px;
+    padding: 5px 20px;
+    border-radius: 5px;
+    background-color: hsla(0, 0%, 82.7%, .664);
+    color: var(--brand-black);
+    border: none
+}
+
+.WalletButton_walletButton__Q_aK0 img {
+    margin-right: 10px;
+    border-radius: 5px
+}
+
+.WalletButton_walletButton__Q_aK0:active,
+.WalletButton_walletButton__Q_aK0:disabled,
+.WalletButton_walletButton__Q_aK0:focus,
+.WalletButton_walletButton__Q_aK0:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #d3d3d3 !important;
+    color: var(--brand-dark-green);
+    color: #fff
+}
+
+.WalletConnectModal_clickable__2UYOs {
+    cursor: pointer
+}
+
+.Footer_footerSignature__3KHrj {
+    margin: 0 auto;
+    font-family: "Bulky Pixels";
+    font-size: 1rem
+}
+
+.Footer_footerSignature__3KHrj a {
+    text-decoration: none;
+    color: #000;
+    margin: 0 5px
+}
+
+.Footer_footerSignature__3KHrj a:hover {
+    text-decoration: underline;
+    -webkit-animation-name: Footer_slidein__1VljP;
+    animation-name: Footer_slidein__1VljP
+}
+
+.Footer_footerSignature__3KHrj img {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px
+}
+
+.Footer_alignBottom__2H4YQ {
+    margin-top: auto
+}
+
+@-webkit-keyframes Footer_slidein__1VljP {
+    0% {
+        margin-left: 100%;
+        width: 300%
+    }
+
+    to {
+        margin-left: 0;
+        width: 100%
+    }
+}
+
+@keyframes Footer_slidein__1VljP {
+    0% {
+        margin-left: 100%;
+        width: 300%
+    }
+
+    to {
+        margin-left: 0;
+        width: 100%
+    }
+}
+
+.Section_container__1zQTr {
+    padding: 2rem 0
+}
+
+.Link_link__3euZY,
+.Link_link__3euZY:active,
+.Link_link__3euZY:hover {
+    color: var(--brand-dark-red)
+}
+
+.Link_link__3euZY:hover {
+    text-decoration: underline
+}
+
+.Banner_wrapper__1YbFc h1 {
+    font-family: "Bulky Pixels";
+    font-size: 5rem
+}
+
+.Banner_bannerSection__15FiP {
+    border-top: 4px solid #d3d3d3
+}
+
+@media (max-width:992px) {
+    .Banner_wrapper__1YbFc {
+        padding: 2rem
+    }
+}
+
+@media (min-width:992px) {
+    .Banner_wrapper__1YbFc h1 {
+        font-size: 7rem
+    }
+}
+
+.Noun_img__1GJxo {
+    -ms-interpolation-mode: nearest-neighbor;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    width: 100%
+}
+
+.AuctionActivity_wrapper__3UpQR {
+    padding: 1rem 2rem;
+    color: var(--brand-black);
+    align-self: flex-start !important
+}
+
+.AuctionActivity_informationRow__2BOSj {
+    margin-bottom: 2rem
+}
+
+.AuctionActivity_activityRow__1xuKY {
+    margin-bottom: 1rem
+}
+
+h1 {
+    font-size: 3rem
+}
+
+h2 {
+    font-size: 2.5rem
+}
+
+h4 {
+    font-size: 1rem;
+    font-weight: 400
+}
+
+.AuctionActivity_modalHeader__2pkxA {
+    border-bottom: none;
+    justify-content: flex-start;
+    align-items: center
+}
+
+.AuctionActivity_modalTitleWrapper__2w2pt {
+    color: var(--brand-black)
+}
+
+.AuctionActivity_modalTitleWrapper__2w2pt h1 {
+    font-size: xx-large;
+    margin-left: 2rem
+}
+
+.AuctionActivity_modalHeader__2pkxA button {
+    align-self: flex-start
+}
+
+.AuctionActivity_modalHeaderNounImgWrapper__3boIZ {
+    width: 150px;
+    height: 150px
+}
+
+.AuctionActivity_currentBidCol__3vgXb {
+    border-right: 1px solid var(--brand-black)
+}
+
+.AuctionActivity_auctionTimerCol__2oKfX {
+    padding-left: 3rem
+}
+
+@media (max-width:992px) {
+    .AuctionActivity_wrapper__3UpQR {
+        padding: 1rem
+    }
+
+    .AuctionActivity_auctionTimerCol__2oKfX {
+        padding-left: 15px
+    }
+}
+
+@-moz-document url-prefix() {
+    .AuctionActivity_colAlignCenter__3SaC2 {
+        display: flex;
+        align-items: center
+    }
+}
+
+.BidHistory_altWrapper__a-MQ4 {
+    text-align: center
+}
+
+.BidHistory_bidCollection__2FxcB {
+    display: grid;
+    text-align: start;
+    list-style-type: none;
+    grid-row-gap: .5rem;
+    row-gap: .5rem;
+    padding: 0
+}
+
+.BidHistory_bidRow__bc1Zf {
+    background-color: hsla(0, 0%, 100%, .3);
+    padding: .5rem 1rem;
+    border-radius: 5px;
+    border-bottom: 1px solid hsla(0, 0%, 82.7%, .322);
+    font-size: .9rem;
+    font-weight: 600
+}
+
+.BidHistory_bidItem__13g5O {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.BidHistory_leftSectionWrapper__2T29z {
+    display: flex;
+    flex-direction: column
+}
+
+.BidHistory_bidder__1hPgQ {
+    color: var(--brand-black)
+}
+
+.BidHistory_bidDate__32l9k {
+    display: none;
+    color: grey
+}
+
+.BidHistory_rightSectionWrapper__3oem5 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center
+}
+
+.BidHistory_bidAmount__7W-Hz {
+    color: var(--brand-black);
+    margin-right: 1rem
+}
+
+.BidHistory_linkSymbol__29ypX,
+.BidHistory_linkSymbol__29ypX a {
+    color: var(--brand-black)
+}
+
+.BidHistory_linkSymbol__29ypX a:hover {
+    color: grey
+}
+
+@media (max-width:992px) {
+    .BidHistory_bidRow__bc1Zf {
+        border-radius: 0
+    }
+}
+
+.Bid_bidWrapper__1NsAz {
+    margin: 1rem 0
+}
+
+.Bid_bidBtn__2MzFj {
+    margin-left: 1rem;
+    width: 40%;
+    height: 3rem;
+    color: #fff;
+    border: transparent;
+    background-color: var(--brand-black);
+    font-weight: 700
+}
+
+.Bid_bidBtn__2MzFj:active,
+.Bid_bidBtn__2MzFj:disabled,
+.Bid_bidBtn__2MzFj:focus,
+.Bid_bidBtn__2MzFj:hover {
+    background-color: grey !important;
+    outline: none !important;
+    box-shadow: none !important
+}
+
+.Bid_minBidCopy__1WI1j {
+    padding-top: 0;
+    font-size: small;
+    margin-left: .25rem;
+    margin-bottom: .3rem
+}
+
+.Bid_bidInput__39un5 {
+    width: 60%;
+    height: 3rem;
+    color: #000;
+    border: 1px solid #aaa !important;
+    border-radius: .25rem !important;
+    background-color: #fff;
+    font-weight: 700;
+    outline: none !important;
+    box-shadow: none !important
+}
+
+.Bid_bidInput__39un5:focus {
+    border: 1px solid #aaa !important
+}
+
+.Bid_customPlaceholder__3KOvn {
+    position: absolute;
+    top: 25%;
+    left: 46%;
+    font-weight: 700;
+    color: #aaa;
+    z-index: 3
+}
+
+.Bid_bidBtnAuctionEnded__1zL5T {
+    width: 100%;
+    height: 3rem;
+    color: #fff;
+    border: transparent;
+    background-color: var(--brand-black);
+    font-weight: 700
+}
+
+.Bid_bidBtnAuctionEnded__1zL5T:active,
+.Bid_bidBtnAuctionEnded__1zL5T:disabled,
+.Bid_bidBtnAuctionEnded__1zL5T:focus,
+.Bid_bidBtnAuctionEnded__1zL5T:hover {
+    background-color: grey !important;
+    color: #d1cfcf;
+    outline: none !important;
+    box-shadow: none
+}
+
+.Bid_bidInputAuctionEnded__3sHIA {
+    display: none
+}
+
+.Bid_bidInput__39un5:focus {
+    outline: none
+}
+
+.Bid_bidInput__39un5::-webkit-inner-spin-button,
+.Bid_bidInput__39un5::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0
+}
+
+.Bid_bidInput__39un5[type=number] {
+    -moz-appearance: textfield
+}
+
+@media (max-width:992px) {
+    .Bid_bidInput__39un5 {
+        border-color: #c3c3c3
+    }
+
+    .Bid_customPlaceholder__3KOvn {
+        left: 44%
+    }
+}
+
+.AuctionTimer_title__1TwqG {
+    margin-bottom: .5rem
+}
+
+.AuctionTimer_timerWrapper__3c10Z {
+    display: flex
+}
+
+.AuctionTimer_timerSection__2RlJK {
+    margin-right: .5rem
+}
+
+.AuctionTimer_small__3FXgu {
+    padding-left: .1rem;
+    font-size: .65em
+}
+
+.AuctionTimer_timeSubtitle__3S8JT {
+    font-size: medium
+}
+
+.CurrentBid_section__2oRi6 span {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: "Bulky Pixels"
+}
+
+.BidHistory_altWrapper__3mEDs {
+    text-align: center
+}
+
+.BidHistory_bidCollection__1DoXy {
+    display: grid;
+    text-align: start;
+    list-style-type: none;
+    grid-row-gap: .5rem;
+    row-gap: .5rem;
+    padding: 0
+}
+
+.BidHistory_bidRow__31Sl2 {
+    padding: 1rem;
+    border-bottom: 1px solid hsla(0, 0%, 82.7%, .322)
+}
+
+.BidHistory_bidItem__2EgHh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.BidHistory_leftSectionWrapper__3gsSj {
+    display: flex;
+    flex-direction: column
+}
+
+.BidHistory_bidder__1R14A {
+    font-weight: 700;
+    color: var(--brand-black)
+}
+
+.BidHistory_bidDate__3dDvg {
+    color: grey
+}
+
+.BidHistory_rightSectionWrapper__3N0DM {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center
+}
+
+.BidHistory_bidAmount__3yfv7 {
+    color: var(--brand-black);
+    margin-right: 1rem;
+    font-size: 1.5rem
+}
+
+.BidHistory_linkSymbol__2qaZG,
+.BidHistory_linkSymbol__2qaZG a {
+    color: var(--brand-black)
+}
+
+.BidHistory_linkSymbol__2qaZG a:hover {
+    color: grey
+}
+
+.AuctionNavigation_leftArrow__1NOSB {
+    background-color: #6db3f2
+}
+
+.AuctionNavigation_leftArrow__1NOSB,
+.AuctionNavigation_rightArrow__33rdI {
+    margin-left: 1rem;
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    font-size: xx-large
+}
+
+.AuctionNavigation_leftArrow__1NOSB:hover,
+.AuctionNavigation_rightArrow__33rdI:hover {
+    opacity: .9
+}
+
+.AuctionNavigation_leftArrow__1NOSB:disabled,
+.AuctionNavigation_rightArrow__33rdI:disabled {
+    opacity: .5
+}
+
+@media (max-width:992px) {
+    .AuctionNavigation_leftArrow__1NOSB {
+        margin-left: 1rem
+    }
+}
+
+.AuctionActivityNounTitle_nounTitle__3_LLC {
+    display: inline-block
+}
+
+.BidHistoryBtn_bidHistoryWrapper__3Zsy9 {
+    display: flex
+}
+
+.BidHistoryBtn_bidHistory__2lmSd {
+    margin-left: .5rem;
+    color: var(--brand-black);
+    font-weight: 400;
+    font-size: 1rem;
+    cursor: pointer
+}
+
+.BidHistoryBtn_bidHistory__2lmSd:hover {
+    color: var(--brand-dark-red);
+    text-decoration: none
+}
+
+.Auction_nounWrapper__3JSNc {
+    align-self: flex-end;
+    width: 100%
+}
+
+.Auction_nounContentCol__1o5ER {
+    display: flex
+}
+
+.Auction_auctionActivityCol__3U2jw {
+    padding-top: 2rem;
+    align-self: start !important
+}
+
+@media (max-width:992px) {
+    .Auction_auctionActivityCol__3U2jw {
+        background-color: #fff;
+        border-bottom: 1px solid #d3d3d3;
+        padding-bottom: 2rem
+    }
+}
+
+.NounderNounContent_link__3MuKL,
+.NounderNounContent_link__3MuKL:active,
+.NounderNounContent_link__3MuKL:visited {
+    color: var(--brand-dark-green);
+    text-decoration: underline
+}
+
+.NounderNounContent_link__3MuKL:hover {
+    color: var(--brand-dark-red)
+}
+
+.NounderNounContent_bidRow__2CVAB {
+    font-weight: 400 !important
+}
+
+.NounderNounContent_currentBidCol__3VQRX {
+    border-right: 0 !important
+}
+
+.Documentation_headerWrapper__xln_n h1 {
+    font-family: "Bulky Pixels";
+    font-size: 4rem
+}
+
+.Documentation_headerWrapper__xln_n p {
+    margin: 3rem 0
+}
+
+@media (max-width:992px) {
+    .Documentation_headerWrapper__xln_n {
+        padding: 1rem
+    }
+}
+
+.Documentation_card__1TWtt {
+    border: none;
+    margin-bottom: 2.5rem;
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: fit-content
+}
+
+.Documentation_cardHeader__xv_vO:hover {
+    color: var(--brand-dark-red)
+}
+
+.Documentation_card__1TWtt,
+.Documentation_headerWrapper__xln_n {
+    font-size: 1.3rem
+}
+
+.Documentation_cardHeader__xv_vO {
+    border: none;
+    background-color: transparent;
+    font-family: "Bulky Pixels";
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: normal;
+    padding-top: 0;
+    padding-bottom: 0
+}
+
+.HistoryCollection_historyCollection__2Shui {
+    display: grid;
+    grid-auto-flow: column dense;
+    grid-column-gap: 8px;
+    -webkit-column-gap: 8px;
+    column-gap: 8px;
+    width: 100%;
+    max-height: 175px;
+    padding: 8px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    overflow: hidden;
+    max-width: 1700px
+}
+
+.HistoryCollection_rtl__7jPW3 {
+    direction: ltr
+}
+
+.HistoryCollection_historyCollection__2Shui div {
+    width: 146px;
+    margin: 2px
+}
+
+@media (max-width:992px) {
+    .HistoryCollection_historyCollection__2Shui {
+        grid-template-columns: repeat(10, 150px);
+        overflow-x: auto
+    }
+}
+
+.Proposals_proposals__2mg9W {
+    display: flex;
+    flex-direction: column
+}
+
+.Proposals_proposals__2mg9W>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem
+}
+
+.Proposals_heading__26OQ5 {
+    display: inline-block;
+    font-size: 2rem;
+    margin: 0 !important
+}
+
+.Proposals_createProposalLink__1VCk5 {
+    padding: .9rem 1.5rem;
+    border-radius: 5px;
+    border: 0;
+    font-size: large;
+    font-weight: 400;
+    cursor: default
+}
+
+.Proposals_createProposalLink__1VCk5:hover {
+    background-color: #686868
+}
+
+.Proposals_proposalLink__3idLu {
+    padding: 1rem;
+    margin-top: .4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.Governance_heading__MOhD3 {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 3rem
+}
+
+.Governance_subheading__222R0 {
+    color: var(--brand-dark-green);
+    font-size: 1.2rem
+}
+
+p {
+    padding-top: 1rem
+}
+
+.CreateProposal_createProposalPage__3qx3H a {
+    color: var(--brand-dark-red)
+}
+
+.CreateProposal_createProposalForm__1UHgT {
+    border-radius: 5px;
+    padding: 1rem 2.5rem;
+    margin-top: 1em;
+    background-color: #fff
+}
+
+.CreateProposal_heading__e7kWw {
+    margin: 1rem 0
+}
+
+.CreateProposal_section__2A56Y {
+    border-top: 1px solid #e9ecef;
+    word-wrap: break-word;
+    padding-top: 2rem;
+    margin-top: 2rem
+}
+
+.CreateProposal_addTransactionButton__3U7s3,
+.CreateProposal_createProposalButton__UHWVW {
+    margin-top: 1rem
+}
+
+.ProposalEditor_proposalEditor__19xXK {
+    margin-top: 1rem;
+    padding: .5rem 1rem 1rem;
+    border: 1px solid #aaa !important;
+    border-radius: .25rem !important;
+    outline: none !important;
+    box-shadow: none !important
+}
+
+.ProposalEditor_bodyInput__20KWn,
+.ProposalEditor_titleInput__2oS3A {
+    padding: 0;
+    border: none;
+    width: 100% !important;
+    outline: none !important;
+    box-shadow: none !important
+}
+
+.ProposalEditor_titleInput__2oS3A {
+    font-size: 1.25rem
+}
+
+.ProposalEditor_bodyInput__20KWn {
+    min-height: 340px
+}
+
+.ProposalEditor_divider__38QOx {
+    width: 100%;
+    margin: 0 0 .5rem
+}
+
+.ProposalTransactions_popover__3fRG9 {
+    max-width: 600px
+}
+
+.ProposalTransactions_transactionDetails__2EchO {
+    margin-top: 1rem;
+    padding: .5rem 1rem;
+    border: 1px solid #aaa !important;
+    border-radius: .25rem !important
+}
+
+.ProposalTransactions_removeTransactionButton__2dBl_ {
+    border: none;
+    background: none;
+    outline: none !important;
+    box-shadow: none !important
+}
+
+.ProposalTransactions_removeTransactionButton__2dBl_ img {
+    width: 1rem
+}
+
+.ProposalTransactionFormModal_transactionFormModal__2GUdX {
+    max-width: 600px
+}
+
+.ProposalTransactionFormModal_stepProgressBar__4Na9W {
+    padding: 0 0 2rem !important
+}
+
+.ProposalTransactionFormModal_inputGroupText__3ruwH {
+    border-radius: .25rem 0 0 .25rem;
+    border-right: none
+}
+
+.ProposalTransactionFormModal_functionName__2XKIf {
+    white-space: nowrap
+}
+
+.Vote_votePage__G1H10 a {
+    color: var(--brand-dark-red)
+}
+
+.Vote_proposal__1pjGZ {
+    border-radius: 5px;
+    padding: 1rem 2.5rem;
+    margin-top: 1em;
+    background-color: #fff
+}
+
+.Vote_backArrow__3z9lF {
+    height: 1rem
+}
+
+.Vote_voteCountCard__11har,
+.Vote_votingButton__3PrIp {
+    margin-top: 1rem
+}
+
+.Vote_proposalId__1ti1o {
+    margin: 1rem 0
+}
+
+.Vote_voteCountCard__11har p {
+    display: flex;
+    justify-content: space-between
+}
+
+.Vote_section__3S8l3 {
+    border-top: 1px solid #e9ecef;
+    word-wrap: break-word;
+    padding-top: 2rem;
+    margin-top: 2rem
+}
+
+.Vote_markdown__2g5aA h1 {
+    font-size: 1.7rem;
+    margin-top: 1rem;
+    font-weight: 700
+}
+
+.Vote_markdown__2g5aA h2 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    font-weight: 700
+}
+
+.Vote_markdown__2g5aA h3 {
+    font-size: 1.3rem
+}
+
+.Vote_markdown__2g5aA img {
+    max-width: 100%;
+    height: auto
+}
+
+.Vote_voterIneligibleAlert__2jDfQ {
+    margin: 1rem 0 0
+}
+
+.VoteModal_voteModal__19gv1 {
+    max-width: 380px
+}
+
+.VoteModal_voteModalText__3_pyA {
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 0
+}
+
+.DogfathersPage_DogfathersPage__2BU9Y h1,
+.DogfathersPage_DogfathersPage__2BU9Y h2,
+.DogfathersPage_DogfathersPage__2BU9Y h3 {
+    font-family: "Bulky Pixels"
+}
+
+.DogfathersPage_DogfathersPage__2BU9Y h2 {
+    margin-bottom: 2rem
+}
+
+.DogfathersPage_DogfathersPage__2BU9Y a {
+    color: var(--brand-black)
+}
+
+.DogfathersPage_DogfathersPage__2BU9Y a:hover {
+    color: var(--brand-dark-red)
+}
+
+.DogfathersPage_bioGroup__26YGW {
+    padding-right: 5px;
+    padding-left: 5px
+}
+
+.DogfathersPage_bioGroup__26YGW a {
+    font-size: 1rem
+}
+
+.DogfathersPage_DogfathersPage__2BU9Y img {
+    border-radius: 50%;
+    width: 50%
+}
+
+.DogfathersPage_marginBottom__dDAL1 {
+    margin-bottom: 0
+}
+
+.DogfathersPage_bioGroup__26YGW {
+    margin-bottom: 2rem;
+    text-align: center
+}
+
+.DogfathersPage_bioGroup__26YGW a:hover svg {
+    fill: var(--brand-dark-red)
+}
+
+.DogfathersPage_bioGroup__26YGW img {
+    margin-bottom: 1rem
+}
+
+.DogfathersPage_twitterIcon__3L0yj {
+    width: 20px;
+    color: #aaa;
+    margin-right: 5px
+}
+
+.DogfathersPage_card__1wIOD {
+    border: none
+}
+
+.DogfathersPage_card__1wIOD,
+.DogfathersPage_headerWrapper__1PZ9J {
+    font-size: 1.3rem
+}
+
+.DogfathersPage_cardHeader__1GQQt {
+    border: none;
+    background-color: transparent;
+    font-family: "Bulky Pixels";
+    font-size: 2.5rem;
+    cursor: pointer
+}
+
+.NotFound_heading__3xG74 {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 3rem
+}
+
 /*# sourceMappingURL=main.2d852e53.chunk.css.map */

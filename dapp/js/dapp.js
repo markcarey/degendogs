@@ -85,17 +85,29 @@ function countdown(a){
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     const interval = 1000;
 
-    setInterval(() => {
+    var timer = setInterval(() => {
         duration = moment.duration(duration - interval, 'milliseconds');
-        $("#timer").html(`
-            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.hours()}<span
-            class="AuctionTimer_small__3FXgu">h</span></span></div>
-            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.minutes()}<span
-                class="AuctionTimer_small__3FXgu">m</span></span></div>
-            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.seconds()}<span
-                class="AuctionTimer_small__3FXgu">s</span></span></div>
+        if (duration.asSeconds() < 0) {
+            // time's up
+            clearInterval(timer);
+            var a = await auction.methods.auction().call();
+            var winner = abbrAddress(a.bidder);
+            $("#timer").html(`
+                <h2>${winner}</h2>
             `
-        );
+            ).previous("h2").text("Winner");
+            $("#current-bid h4").text("Winning Bid");
+        } else {
+            $("#timer").html(`
+                <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.hours()}<span
+                class="AuctionTimer_small__3FXgu">h</span></span></div>
+                <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.minutes()}<span
+                    class="AuctionTimer_small__3FXgu">m</span></span></div>
+                <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.seconds()}<span
+                    class="AuctionTimer_small__3FXgu">s</span></span></div>
+                `
+            );
+        }
     }, interval);
 }
 
@@ -313,7 +325,7 @@ function getDogHTML(a) {
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">
                     <div class="AuctionActivity_currentBidCol__3vgXb col-lg-5">
-                    <div class="CurrentBid_section__2oRi6">
+                    <div id="current-bid" class="CurrentBid_section__2oRi6">
                         <h4>Current bid</h4>
                         <h2 class="dog-current-bid">Ξ ${a.currentBid}</h2>
                     </div>

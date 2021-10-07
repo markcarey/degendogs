@@ -98,6 +98,7 @@ function countdown(a){
             `
             ).prev("h4").text("Winner");
             $("#current-bid h4").text("Winning Bid");
+            currentAuction();
         } else {
             $("#timer").html(`
                 <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.hours()}<span

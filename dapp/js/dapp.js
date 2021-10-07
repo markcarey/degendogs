@@ -6,7 +6,7 @@ function abbrAddress(address){
         address = ethereum.selectedAddress;
     }
     //return "0x..." + address.slice(address.length - 6);
-    return address.slice(0,3) + "..." + address.slice(address.length - 4);
+    return address.slice(0,4) + "..." + address.slice(address.length - 4);
 }
 
 const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";
@@ -198,7 +198,13 @@ async function currentAuction() {
             if (blockTxHashes.includes(pendingTxHash)) {
                 web3.eth.clearSubscriptions();
                 console.log("Bid received!");
-                currentAuction();
+                var bid = {
+                    "bid": newBid,
+                    "bidder": ethereum.selectedAddress,
+                    "date": Date.now()
+                };
+                var bidHTML = getBidRowHTML(bid);
+                $("#bid-history").prepend(bidHTML);
             }
         });
     });
@@ -362,7 +368,7 @@ function getDogHTML(a) {
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">
                 <div class="col-lg-12">
-                    <ul class="BidHistory_bidCollection__2FxcB">
+                    <ul id="bid-history" class="BidHistory_bidCollection__2FxcB">
                         ${a.bidsHTML}
                     </ul>
                     <div class="BidHistoryBtn_bidHistoryWrapper__3Zsy9">

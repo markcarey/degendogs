@@ -91,7 +91,7 @@ async function auctionEvents(dogId) {
         console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
         console.log(event);
-        var amt = web3.utils.fromWei( event[1] );
+        var amt = parseFloat(web3.utils.fromWei( event[1] ));
         var bid = {
             "bidder": event[0],
             "bid": amt.toFixed(2),

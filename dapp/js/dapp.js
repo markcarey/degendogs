@@ -77,15 +77,19 @@ async function connectWallet() {
     } 
 } // connectWallet()
 
+function fromWei(amount) {
+    return web3.utils.fromWei(new BN(amount));
+}
+
 async function getFlows() {
     var dogBalance = await cDAIx.methods.balanceOf(dogAddress).call();
-    console.log(web3.utils.fromWei(dogBalance));
+    console.log(fromWei(dogBalance));
     var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
-    console.log(web3.utils.fromWei(userBalance));
+    console.log(fromWei(userBalance));
     var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
-    console.log(web3.utils.fromWei(dogFlow));
+    console.log(fromWei(dogFlow));
     var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
-    console.log(web3.utils.fromWei(userFlow));
+    console.log(fromWei(userFlow));
 }
 
 var timer;

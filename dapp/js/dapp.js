@@ -123,7 +123,7 @@ async function currentAuction() {
     console.log(bidsHTML);
     a.bidsHTML = bidsHTML;
     var dogHTML = getDogHTML(a);
-    $("#dog").htm(dogHTML);
+    $("#dog").html(dogHTML);
 }
 currentAuction();
 

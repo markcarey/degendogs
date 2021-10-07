@@ -85,7 +85,7 @@ function countdown(a){
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     const interval = 1000;
 
-    var timer = setInterval(() => {
+    var timer = setInterval(async () => {
         duration = moment.duration(duration - interval, 'milliseconds');
         if (duration.asSeconds() < 0) {
             // time's up

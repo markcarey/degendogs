@@ -156,6 +156,11 @@ async function currentAuction() {
     //    fromBlock: 27539184
     //});
     logs = covEvents.data.items;
+    const endTime = a.endTime;
+    const currentTime = Date.now() / 1000;
+    const diffTime = endTime - currentTime;
+    let duration = moment.duration(diffTime * 1000, 'milliseconds');
+    a.duration = duration;
     var bidsHTML = "";
     $.each(logs, function(index, log) {
         console.log(log);
@@ -174,7 +179,9 @@ async function currentAuction() {
     a.bidsHTML = bidsHTML;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
-    countdown(a);
+    if (a.duration.asSeconds() > 0) {
+        countdown(a);
+    }
     if (accounts.length > 0) {
         $("#bid-button").prop("disabled", false);
     }
@@ -335,11 +342,27 @@ function bidFormHTML(a) {
     return html;
 }
 
+function getTimerHTML(a) {
+    var html = `
+    <div class="AuctionTimer_timerSection__2RlJK"><span>0<span
+                            class="AuctionTimer_small__3FXgu">h</span></span></div>
+                        <div class="AuctionTimer_timerSection__2RlJK"><span>0<span
+                            class="AuctionTimer_small__3FXgu">m</span></span></div>
+                        <div class="AuctionTimer_timerSection__2RlJK"><span>0<span
+                            class="AuctionTimer_small__3FXgu">s</span></span></div>
+    `;
+    if (a.duration.asSeconds() < 0) {
+        html = abbrAddress(a.bidder);
+    }
+    return html;
+}
+
 function getDogHTML(a) {
     a.date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     a.currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
     a.minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
     a.formHTML = bidFormHTML(a);
+    a.timerHTML = getTimerHTML(a);
     var html = `
         <div class="row">
             <div class="Auction_nounContentCol__1o5ER col-lg-6">
@@ -370,12 +393,7 @@ function getDogHTML(a) {
                     <div class="AuctionActivity_auctionTimerCol__2oKfX col-lg-5">
                     <h4 class="AuctionTimer_title__1TwqG">Ends in</h4>
                     <h2 id="timer" class="AuctionTimer_timerWrapper__3c10Z">
-                        <div class="AuctionTimer_timerSection__2RlJK"><span>17<span
-                            class="AuctionTimer_small__3FXgu">h</span></span></div>
-                        <div class="AuctionTimer_timerSection__2RlJK"><span>39<span
-                            class="AuctionTimer_small__3FXgu">m</span></span></div>
-                        <div class="AuctionTimer_timerSection__2RlJK"><span>32<span
-                            class="AuctionTimer_small__3FXgu">s</span></span></div>
+                        ${a.timerHTML}
                     </h2>
                     </div>
                 </div>

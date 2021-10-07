@@ -149,7 +149,10 @@ async function currentAuction() {
     if (accounts.length > 0) {
         $("#bid-button").prop("disabled", false);
     }
-    $("#bid-button").click(function(){
+    if (ethereum.selectedAddress) {
+        $("#bid-button").prop("disabled", false);
+    }
+    $("#bid-button").click(async function(){
         var newBid = $("#new-bid").val();
         const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
 

@@ -15,6 +15,8 @@ const dogAddress = "0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
 const auctionAddress = "0x0284541c2C6461213b092808CAAA700344CaE7e0";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
+const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
+const cDAIx = new web3.eth.Contract(auctionABI, cDAIxAddress);
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
 var dappChain;
@@ -76,12 +78,17 @@ async function connectWallet() {
 } // connectWallet()
 
 async function getFlows() {
+    var dogBalance = await cDAIx.methods.balanceOf(dogAddress).call();
+    console.log(dogBalance);
+    var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
+    console.log(userBalance);
     var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
     console.log(dogFlow);
     var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
     console.log(userFlow);
 }
 
+var timer;
 function countdown(a){
     const endTime = a.endTime;
     const currentTime = Date.now() / 1000;
@@ -89,7 +96,7 @@ function countdown(a){
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     const interval = 1000;
 
-    var timer = setInterval(async () => {
+    timer = setInterval(async () => {
         duration = moment.duration(duration - interval, 'milliseconds');
         if (duration.asSeconds() < 0) {
             // time's up
@@ -117,6 +124,7 @@ function countdown(a){
 }
 
 async function currentAuction() {
+    clearInterval(timer);
     var a = await auction.methods.auction().call();
     console.log(a);
     $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");

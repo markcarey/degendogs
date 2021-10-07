@@ -63,6 +63,7 @@ async function connectWallet() {
                 console.log(result);
                 accounts = result;
                 $(".connect").text(abbrAddress());
+                $("#bid-button").prop("disabled", false);
             })
             .catch(reason => {
                 // Handle error. Likely the user rejected the login.

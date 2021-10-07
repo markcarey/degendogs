@@ -73,3 +73,11 @@ async function connectWallet() {
         console.log("window.ethereum false");
     } 
 } // connectWallet()
+
+async function getAuction() {
+    var currentAuction = await auction.methods.auction().call();
+    console.log(currentAuction);
+    return currentAuction;
+}
+
+var a = getAuction();

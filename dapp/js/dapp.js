@@ -229,10 +229,31 @@ function getBidRowHTML(bid) {
     return html;
 }
 
+function bidFormHTML(a) {
+    var html = "";
+    var ended = true;
+    if ( ended ) {
+        html = `
+        <div class="input-group"><button disabled="" type="button"
+        class="Bid_bidBtnAuctionEnded__1zL5T btn btn-primary">Settle Auction</button></div>
+        `;
+    } else {
+        html = `
+        <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${a.minBid}</span> ETH</p>
+        <div class="input-group"><input id="new-bid" aria-label=""
+            aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
+            value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
+            class="Bid_bidBtn__2MzFj btn btn-primary">Bid</button></div>
+        `;
+    }
+    return html;
+}
+
 function getDogHTML(a) {
-    var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
-    var currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
-    var minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
+    a.date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
+    a.currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
+    a.minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
+    a.formHTML = bidFormHTML(a);
     var html = `
         <div class="row">
             <div class="Auction_nounContentCol__1o5ER col-lg-6">
@@ -245,7 +266,7 @@ function getDogHTML(a) {
                 <div class="AuctionActivity_informationRow__2BOSj">
                 <div class="AuctionActivity_activityRow__1xuKY row">
                     <div class="col-lg-12">
-                    <h4 id="dog-date">${date}</h4>
+                    <h4 id="dog-date">${a.date}</h4>
                     </div>
                     <div class="AuctionActivity_colAlignCenter__3SaC2 col-lg-12">
                     <h1 class="AuctionActivityNounTitle_nounTitle__3_LLC" id="dog-title">Dog ${a.dogId}</h1><button
@@ -257,7 +278,7 @@ function getDogHTML(a) {
                     <div class="AuctionActivity_currentBidCol__3vgXb col-lg-5">
                     <div class="CurrentBid_section__2oRi6">
                         <h4>Current bid</h4>
-                        <h2 class="dog-current-bid">Ξ ${currentBid}</h2>
+                        <h2 class="dog-current-bid">Ξ ${a.currentBid}</h2>
                     </div>
                     </div>
                     <div class="AuctionActivity_auctionTimerCol__2oKfX col-lg-5">
@@ -275,11 +296,7 @@ function getDogHTML(a) {
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">
                 <div class="col-lg-12">
-                    <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${minBid}</span> ETH</p>
-                    <div class="input-group"><input id="new-bid" aria-label=""
-                        aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
-                        value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
-                        class="Bid_bidBtn__2MzFj btn btn-primary">Bid</button></div>
+                    ${a.formHTML}
                 </div>
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">

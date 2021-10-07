@@ -74,12 +74,15 @@ async function connectWallet() {
     } 
 } // connectWallet()
 
-async function getAuction() {
-    var currentAuction = await auction.methods.auction().call();
-    console.log(currentAuction);
-    return currentAuction;
+async function currentAuction() {
+    var a = await auction.methods.auction().call();
+    console.log(a);
+    $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + dogId + " is a member of the Degen Dogs Club");
+    $("#dog-title").text("Dog " + a.dogId);
+    var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
+    $("#dog-date").text(date);
+    var minBid = web3.utils.fromWei(a.amount) * 1.1
+    $("#dog-min-bid").text(minBid.toFixed(2));
 }
+currentAuction();
 
-var a = getAuction();
-$("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + dogId + " is a member of the Degen Dogs Club");
-$("#dog-title").text("Dog " + a.dogId);

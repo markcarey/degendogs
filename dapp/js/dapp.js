@@ -82,12 +82,15 @@ async function auctionEvents(dogId) {
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(dogId), 64);
     console.log(dogIdTopic);
     //console.log(web3.utils.toHex(dogId));
-    web3.eth.getPastLogs({
+    var logs = await web3.eth.getPastLogs({
         address: auctionAddress,
         topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic],
         fromBlock: 27539184
-    })
-    .then(console.log);
+    });
+    $.each(logs, function(index, log) {
+        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
+        console.log(event);
+    });
 }
 
 async function currentAuction() {

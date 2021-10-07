@@ -75,7 +75,7 @@ async function connectWallet() {
 } // connectWallet()
 
 async function auctionEvents(dogId) {
-    const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&key=ckey_ac7c55f53e19476b85f0a1099af";
+    const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22:%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
     const response = await fetch(covEventsUrl);
     var covEvents = await response.json();
     console.log(covEvents);
@@ -90,7 +90,7 @@ async function auctionEvents(dogId) {
     logs = covEvents.data.items;
     var bidsHTML = "";
     $.each(logs, function(index, log) {
-        if (log.raw_logs_topics[1] == dogIdTopic) {
+        //if (log.raw_log_topics[1] == dogIdTopic) {
             console.log(log);
             var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
             console.log(event);
@@ -103,7 +103,7 @@ async function auctionEvents(dogId) {
             };
             console.log(bid);
             bidsHTML += getBidRowHTML(bid)
-        }
+        //}
     });
     console.log(bidsHTML);
 }

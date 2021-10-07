@@ -12,7 +12,7 @@ const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
 const dogAddress = "0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xFAe0d03Dba0782B18D68F9849482A9c545a5A68b";
+const auctionAddress = "0x0284541c2C6461213b092808CAAA700344CaE7e0";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;

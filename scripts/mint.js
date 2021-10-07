@@ -327,5 +327,5 @@ async function issue(newOwner, tokenId, amount) {
 //defi();
 //claimComp();
 //latestExchangeRate();
-//setMinter("0xFAe0d03Dba0782B18D68F9849482A9c545a5A68b");
-tokenURI(1);
+setMinter("0x0284541c2C6461213b092808CAAA700344CaE7e0");
+//tokenURI(1);

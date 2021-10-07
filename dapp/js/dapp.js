@@ -78,6 +78,27 @@ async function auctionEvents(dogId) {
     
 }
 
+function countdown(a){
+    const endTime = a.endTime;
+    const currentTime = Date.now() / 1000;
+    const diffTime = endTime - currentTime;
+    let duration = moment.duration(diffTime * 1000, 'milliseconds');
+    const interval = 1000;
+
+    setInterval(() => {
+        duration = moment.duration(duration - interval, 'milliseconds');
+        $("#timer").html(`
+            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.hours()}<span
+            class="AuctionTimer_small__3FXgu">h</span></span></div>
+            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.minutes()}<span
+                class="AuctionTimer_small__3FXgu">m</span></span></div>
+            <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.seconds()}<span
+                class="AuctionTimer_small__3FXgu">s</span></span></div>
+            `
+        );
+    }, interval);
+}
+
 async function currentAuction() {
     var a = await auction.methods.auction().call();
     console.log(a);
@@ -124,6 +145,7 @@ async function currentAuction() {
     a.bidsHTML = bidsHTML;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
+    countdown(a);
 }
 currentAuction();
 

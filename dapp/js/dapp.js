@@ -75,9 +75,14 @@ async function connectWallet() {
 } // connectWallet()
 
 async function auctionEvents() {
+    const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&key=ckey_ac7c55f53e19476b85f0a1099af";
+    const response = await fetch(covTokensURI);
+    var covEvents = await response.json();
+    console.log(covEvents);
     web3.eth.getPastLogs({
         address: auctionAddress,
-        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3"]
+        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3"],
+        fromBlock: 27539184
     })
     .then(console.log);
 }

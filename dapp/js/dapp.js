@@ -166,7 +166,6 @@ async function currentAuction() {
         console.log(bid);
         bidsHTML += getBidRowHTML(bid)
     });
-    console.log(bidsHTML);
     a.bidsHTML = bidsHTML;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);

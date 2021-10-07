@@ -363,6 +363,12 @@ function getDogHTML(a) {
     a.minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
     a.formHTML = bidFormHTML(a);
     a.timerHTML = getTimerHTML(a);
+    var timerHeading = "Ends in";
+    var timerHeading = "Current Bid";
+    if (a.duration.asSeconds() < 0) {
+        timerHeading = "Winner";
+        bidHeading = "Winning Bid";
+    }
     var html = `
         <div class="row">
             <div class="Auction_nounContentCol__1o5ER col-lg-6">
@@ -386,12 +392,12 @@ function getDogHTML(a) {
                 <div class="AuctionActivity_activityRow__1xuKY row">
                     <div class="AuctionActivity_currentBidCol__3vgXb col-lg-5">
                     <div id="current-bid" class="CurrentBid_section__2oRi6">
-                        <h4>Current bid</h4>
+                        <h4>${bidHeading}</h4>
                         <h2 class="dog-current-bid">Ξ ${a.currentBid}</h2>
                     </div>
                     </div>
                     <div class="AuctionActivity_auctionTimerCol__2oKfX col-lg-5">
-                    <h4 class="AuctionTimer_title__1TwqG">Ends in</h4>
+                    <h4 class="AuctionTimer_title__1TwqG">${timerHeading}</h4>
                     <h2 id="timer" class="AuctionTimer_timerWrapper__3c10Z">
                         ${a.timerHTML}
                     </h2>

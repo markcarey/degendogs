@@ -200,12 +200,13 @@ async function currentAuction() {
                 console.log("Bid received!");
                 currentAuction();
                 var bid = {
-                    "bid": newBid,
+                    "bid": newBid.toFixed(2),
                     "bidder": ethereum.selectedAddress,
                     "date": Date.now()
                 };
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
+                $("#dog-current-bid").text("Ξ " + newBid.toFixed(2)); 
             }
         });
     });

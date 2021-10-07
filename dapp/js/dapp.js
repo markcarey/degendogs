@@ -95,7 +95,7 @@ function countdown(a){
             $("#timer").html(`
                 <h2>${winner}</h2>
             `
-            ).previous("h2").text("Winner");
+            ).prev("h4").text("Winner");
             $("#current-bid h4").text("Winning Bid");
         } else {
             $("#timer").html(`

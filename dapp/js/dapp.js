@@ -146,6 +146,44 @@ async function currentAuction() {
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     countdown(a);
+    if (accounts.length > 0) {
+        $("#bid-button").prop("disabled", false);
+    }
+    $("#bid-button").click(function(){
+        var newBid = $("#new-bid").val();
+        const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
+
+        //the transaction
+        const tx = {
+            'from': ethereum.selectedAddress,
+            'to': auctionAddress,
+            'gasPrice': gas,
+            'value': web3.utils.toHex(web3.utils.toWei(newBid)),
+            'nonce': "" + nonce,
+            'data': auction.methods.createBid(a.dogId).encodeABI()
+        };
+        console.log(tx);
+
+        $("#status").text("Waiting for follow transaction...");
+
+        const txHash = await ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [tx],
+        });
+        console.log(txHash);
+        var pendingTxHash = txHash;
+        web3.eth.subscribe('newBlockHeaders', async (error, event) => {
+            if (error) {
+                console.log("error", error);
+            }
+            const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
+
+            if (blockTxHashes.includes(pendingTxHash)) {
+                web3.eth.clearSubscriptions();
+                console.log("Bid received!");
+            }
+        });
+    });
 }
 currentAuction();
 
@@ -235,7 +273,7 @@ function getDogHTML(a) {
                 <div class="AuctionActivity_activityRow__1xuKY row">
                 <div class="col-lg-12">
                     <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${minBid}</span> ETH</p>
-                    <div class="input-group"><input aria-label="Example text with button addon"
+                    <div class="input-group"><input id="new-bid" aria-label=""
                         aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
                         value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
                         class="Bid_bidBtn__2MzFj btn btn-primary">Bid</button></div>

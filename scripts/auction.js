@@ -132,6 +132,6 @@ async function getAuction() {
 //initialize();
 //unpause();
 //createBid(1);
-getAuction();
-//settleCurrentAndCreateNewAuction();
+//getAuction();
+settleCurrentAndCreateNewAuction();
 

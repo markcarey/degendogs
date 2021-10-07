@@ -5,7 +5,8 @@ function abbrAddress(address){
     if (!address) {
         address = ethereum.selectedAddress;
     }
-    return "0x..." + address.slice(address.length - 6);
+    //return "0x..." + address.slice(address.length - 6);
+    return address.slice(0,3) + "..." + address.slice(address.length - 4);
 }
 
 const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";

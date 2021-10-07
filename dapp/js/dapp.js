@@ -90,18 +90,20 @@ async function auctionEvents(dogId) {
     logs = covEvents.data.items;
     var bidsHTML = "";
     $.each(logs, function(index, log) {
-        console.log(log);
-        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        console.log(event);
-        var amt = parseFloat(web3.utils.fromWei( event[1] ));
-        var bid = {
-            "bidder": event[0],
-            "bid": amt.toFixed(2),
-            "txn": log.tx_hash,
-            "date": log.block_signed_at
-        };
-        console.log(bid);
-        bidsHTML += getBidRowHTML(bid)
+        if (log.raw_logs_topics[1] == dogIdTopic) {
+            console.log(log);
+            var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
+            console.log(event);
+            var amt = parseFloat(web3.utils.fromWei( event[1] ));
+            var bid = {
+                "bidder": event[0],
+                "bid": amt.toFixed(2),
+                "txn": log.tx_hash,
+                "date": log.block_signed_at
+            };
+            console.log(bid);
+            bidsHTML += getBidRowHTML(bid)
+        }
     });
     console.log(bidsHTML);
 }
@@ -131,7 +133,7 @@ currentAuction();
 // HTML templates
 function getBidRowHTML(bid) {
     var address = abbrAddress(bid.bidder);
-    var date = moment(bid.date).format("MMMM DD at HH:mm");
+    var date = moment(bid.date).format("MMMM DD [at] HH:mm");
     var html = `
         <li class="BidHistory_bidRow__bc1Zf">
             <div class="BidHistory_bidItem__13g5O">

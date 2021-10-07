@@ -16,7 +16,7 @@ const dog = new web3.eth.Contract(dogABI, dogAddress);
 const auctionAddress = "0x0284541c2C6461213b092808CAAA700344CaE7e0";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
-const cDAIx = new web3.eth.Contract(auctionABI, cDAIxAddress);
+const cDAIx = new web3.eth.Contract(tokenABI, cDAIxAddress);
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
 var dappChain;

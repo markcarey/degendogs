@@ -88,8 +88,15 @@ async function auctionEvents(dogId) {
         fromBlock: 27539184
     });
     $.each(logs, function(index, log) {
+        console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
         console.log(event);
+        var bid = {
+            "bidder": event[0],
+            "bid": event[1],
+            "txn": log.transactionHash
+        };
+        console.log(bid);
     });
 }
 

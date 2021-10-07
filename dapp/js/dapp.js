@@ -187,6 +187,42 @@ async function currentAuction() {
             }
         });
     });
+
+    $("#settle-button").click(async function(){
+        const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
+
+        //the transaction
+        const tx = {
+            'from': ethereum.selectedAddress,
+            'to': auctionAddress,
+            'gasPrice': gas,
+            'nonce': "" + nonce,
+            'data': auction.methods.settleCurrentAndCreateNewAuction().encodeABI()
+        };
+        console.log(tx);
+
+        $("#status").text("Waiting for settle transaction...");
+
+        const txHash = await ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [tx],
+        });
+        console.log(txHash);
+        var pendingTxHash = txHash;
+        web3.eth.subscribe('newBlockHeaders', async (error, event) => {
+            if (error) {
+                console.log("error", error);
+            }
+            const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
+
+            if (blockTxHashes.includes(pendingTxHash)) {
+                web3.eth.clearSubscriptions();
+                console.log("Settled!");
+                currentAuction();
+            }
+        });
+    });
+
 }
 currentAuction();
 
@@ -234,7 +270,7 @@ function bidFormHTML(a) {
     var ended = true;
     if ( ended ) {
         html = `
-        <div class="input-group"><button disabled="" type="button"
+        <div class="input-group"><button id="settle-button" disabled="" type="button"
         class="Bid_bidBtnAuctionEnded__1zL5T btn btn-primary">Settle Auction</button></div>
         `;
     } else {

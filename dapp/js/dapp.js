@@ -75,38 +75,7 @@ async function connectWallet() {
 } // connectWallet()
 
 async function auctionEvents(dogId) {
-    var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(dogId), 64);
-    console.log(dogIdTopic);
-    const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
-    console.log(covEventsUrl);
-    const response = await fetch(covEventsUrl);
-    var covEvents = await response.json();
-    console.log(covEvents);
-    //console.log(web3.utils.toHex(dogId));
-    var logs = await web3.eth.getPastLogs({
-        address: auctionAddress,
-        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic],
-        fromBlock: 27539184
-    });
-    logs = covEvents.data.items;
-    var bidsHTML = "";
-    $.each(logs, function(index, log) {
-        //if (log.raw_log_topics[1] == dogIdTopic) {
-            console.log(log);
-            var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-            console.log(event);
-            var amt = parseFloat(web3.utils.fromWei( event[1] ));
-            var bid = {
-                "bidder": event[0],
-                "bid": amt.toFixed(2),
-                "txn": log.tx_hash,
-                "date": log.block_signed_at
-            };
-            console.log(bid);
-            bidsHTML += getBidRowHTML(bid)
-        //}
-    });
-    console.log(bidsHTML);
+    
 }
 
 async function currentAuction() {
@@ -120,7 +89,41 @@ async function currentAuction() {
     $(".dog-current-bid").text("Ξ " + currentBid.toFixed(2));
     var minBid = web3.utils.fromWei(a.amount) * 1.1
     $("#dog-min-bid").text(minBid.toFixed(2));
-    auctionEvents(a.dogId);
+
+    //auctionEvents(a.dogId);
+    var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
+    console.log(dogIdTopic);
+    const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+    console.log(covEventsUrl);
+    const response = await fetch(covEventsUrl);
+    var covEvents = await response.json();
+    console.log(covEvents);
+    //console.log(web3.utils.toHex(dogId));
+    //var logs = await web3.eth.getPastLogs({
+    //    address: auctionAddress,
+    //    topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic],
+    //    fromBlock: 27539184
+    //});
+    logs = covEvents.data.items;
+    var bidsHTML = "";
+    $.each(logs, function(index, log) {
+        console.log(log);
+        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
+        console.log(event);
+        var amt = parseFloat(web3.utils.fromWei( event[1] ));
+        var bid = {
+            "bidder": event[0],
+            "bid": amt.toFixed(2),
+            "txn": log.tx_hash,
+            "date": log.block_signed_at
+        };
+        console.log(bid);
+        bidsHTML += getBidRowHTML(bid)
+    });
+    console.log(bidsHTML);
+    a.bidsHTML = bidsHTML;
+    var dogHTML = getDogHTML(a);
+    $("#dog").htm(dogHTML);
 }
 currentAuction();
 
@@ -163,4 +166,73 @@ function getBidRowHTML(bid) {
     return html;
 }
 
+function getDogHTML(a) {
+    var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
+    var currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
+    var minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
+    var html = `
+        <div class="row">
+            <div class="Auction_nounContentCol__1o5ER col-lg-6">
+            <div class="Auction_nounWrapper__3JSNc"><img id="dog-image"
+                src="/images/${a.dogId}.png"
+                alt="Dog ${a.dogId} is a member of the Degen Dogs Club" class="Noun_img__1GJxo img-fluid"></div>
+            </div>
+            <div class="Auction_auctionActivityCol__3U2jw col-lg-6">
+            <div>
+                <div class="AuctionActivity_informationRow__2BOSj">
+                <div class="AuctionActivity_activityRow__1xuKY row">
+                    <div class="col-lg-12">
+                    <h4 id="dog-date">${date}</h4>
+                    </div>
+                    <div class="AuctionActivity_colAlignCenter__3SaC2 col-lg-12">
+                    <h1 class="AuctionActivityNounTitle_nounTitle__3_LLC" id="dog-title">Dog ${a.dogId}</h1><button
+                        class="AuctionNavigation_leftArrow__1NOSB">←</button><button
+                        class="AuctionNavigation_rightArrow__33rdI" disabled="">→</button>
+                    </div>
+                </div>
+                <div class="AuctionActivity_activityRow__1xuKY row">
+                    <div class="AuctionActivity_currentBidCol__3vgXb col-lg-5">
+                    <div class="CurrentBid_section__2oRi6">
+                        <h4>Current bid</h4>
+                        <h2 class="dog-current-bid">Ξ ${currentBid}</h2>
+                    </div>
+                    </div>
+                    <div class="AuctionActivity_auctionTimerCol__2oKfX col-lg-5">
+                    <h4 class="AuctionTimer_title__1TwqG">Ends in</h4>
+                    <h2 id="timer" class="AuctionTimer_timerWrapper__3c10Z">
+                        <div class="AuctionTimer_timerSection__2RlJK"><span>17<span
+                            class="AuctionTimer_small__3FXgu">h</span></span></div>
+                        <div class="AuctionTimer_timerSection__2RlJK"><span>39<span
+                            class="AuctionTimer_small__3FXgu">m</span></span></div>
+                        <div class="AuctionTimer_timerSection__2RlJK"><span>32<span
+                            class="AuctionTimer_small__3FXgu">s</span></span></div>
+                    </h2>
+                    </div>
+                </div>
+                </div>
+                <div class="AuctionActivity_activityRow__1xuKY row">
+                <div class="col-lg-12">
+                    <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${minBid}</span> ETH</p>
+                    <div class="input-group"><input aria-label="Example text with button addon"
+                        aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
+                        value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
+                        class="Bid_bidBtn__2MzFj btn btn-primary">Bid</button></div>
+                </div>
+                </div>
+                <div class="AuctionActivity_activityRow__1xuKY row">
+                <div class="col-lg-12">
+                    <ul class="BidHistory_bidCollection__2FxcB">
+                        ${a.bidsHTML}
+                    </ul>
+                    <div class="BidHistoryBtn_bidHistoryWrapper__3Zsy9">
+                    <div class="BidHistoryBtn_bidHistory__2lmSd">Bid History →</div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    `;
+    return html;
+}
 

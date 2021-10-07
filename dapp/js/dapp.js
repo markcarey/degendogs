@@ -280,12 +280,22 @@ function getBidRowHTML(bid) {
 
 function bidFormHTML(a) {
     var html = "";
-    var ended = true;
+    const endTime = a.endTime;
+    const currentTime = Date.now() / 1000;
+    const diffTime = endTime - currentTime;
+    var ended = false;
+    if ( diffTime < 0 ) {
+        ended = true;
+    }
     if ( ended ) {
-        html = `
-        <div class="input-group"><button id="settle-button" disabled="" type="button"
-        class="Bid_bidBtnAuctionEnded__1zL5T btn btn-primary">Settle Auction</button></div>
-        `;
+        if (a.settled) {
+            html = "";
+        } else {
+            html = `
+                <div class="input-group"><button id="settle-button" disabled="" type="button"
+                class="Bid_bidBtnAuctionEnded__1zL5T btn btn-primary">Settle Auction</button></div>
+            `;
+        }
     } else {
         html = `
         <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${a.minBid}</span> ETH</p>

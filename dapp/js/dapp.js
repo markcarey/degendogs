@@ -74,6 +74,14 @@ async function connectWallet() {
     } 
 } // connectWallet()
 
+async function auctionEvents() {
+    web3.eth.getPastLogs({
+        address: auctionAddress,
+        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3"]
+    })
+    .then(console.log);
+}
+
 async function currentAuction() {
     var a = await auction.methods.auction().call();
     console.log(a);
@@ -87,4 +95,5 @@ async function currentAuction() {
     $("#dog-min-bid").text(minBid.toFixed(2));
 }
 currentAuction();
+auctionEvents();
 

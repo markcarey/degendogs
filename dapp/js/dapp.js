@@ -77,7 +77,7 @@ async function connectWallet() {
 async function currentAuction() {
     var a = await auction.methods.auction().call();
     console.log(a);
-    $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + dogId + " is a member of the Degen Dogs Club");
+    $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
     $("#dog-title").text("Dog " + a.dogId);
     var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     $("#dog-date").text(date);

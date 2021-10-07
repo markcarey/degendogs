@@ -81,3 +81,5 @@ async function getAuction() {
 }
 
 var a = getAuction();
+$("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + dogId + " is a member of the Degen Dogs Club");
+$("#dog-title").text("Dog " + a.dogId);

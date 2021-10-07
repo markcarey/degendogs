@@ -79,7 +79,7 @@ async function auctionEvents(dogId) {
     //const response = await fetch(covEventsUrl);
     //var covEvents = await response.json();
     //console.log(covEvents);
-    var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(dogId), 62);
+    var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(dogId), 64);
     console.log(dogIdTopic);
     //console.log(web3.utils.toHex(dogId));
     web3.eth.getPastLogs({

@@ -151,6 +151,7 @@ async function currentAuction() {
     }
     if (ethereum.selectedAddress) {
         $("#bid-button").prop("disabled", false);
+        $("#settle-button").prop("disabled", false);
     }
     $("#bid-button").click(async function(){
         var newBid = $("#new-bid").val();

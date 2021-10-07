@@ -75,8 +75,11 @@ async function connectWallet() {
     } 
 } // connectWallet()
 
-async function auctionEvents(dogId) {
-    
+async function getFlows() {
+    var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
+    console.log(dogFlow);
+    var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
+    console.log(userFlow);
 }
 
 function countdown(a){
@@ -249,6 +252,7 @@ async function currentAuction() {
 
 }
 currentAuction();
+getFlows();
 
 
 

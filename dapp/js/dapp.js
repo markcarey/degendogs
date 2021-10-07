@@ -79,6 +79,7 @@ async function auctionEvents(dogId) {
     //const response = await fetch(covEventsUrl);
     //var covEvents = await response.json();
     //console.log(covEvents);
+    console.log(dogId);
     console.log(web3.utils.toHex(dogId));
     web3.eth.getPastLogs({
         address: auctionAddress,

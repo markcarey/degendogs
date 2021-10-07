@@ -81,8 +81,8 @@ async function currentAuction() {
     $("#dog-title").text("Dog " + a.dogId);
     var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     $("#dog-date").text(date);
-    var currentBid = web3.utils.fromWei(a.amount).toFixed(2);
-    $("#dog-min-bid").text(currentBid);
+    var currentBid = web3.utils.fromWei(a.amount);
+    $(".dog-current-bid").text(currentBid.toFixed(2));
     var minBid = web3.utils.fromWei(a.amount) * 1.1
     $("#dog-min-bid").text(minBid.toFixed(2));
 }

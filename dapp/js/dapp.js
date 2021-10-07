@@ -79,11 +79,12 @@ async function auctionEvents(dogId) {
     //const response = await fetch(covEventsUrl);
     //var covEvents = await response.json();
     //console.log(covEvents);
-    console.log(web3.utils.padLeft(dogId, 62));
+    var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(dogId), 62);
+    console.log(dogIdTopic);
     //console.log(web3.utils.toHex(dogId));
     web3.eth.getPastLogs({
         address: auctionAddress,
-        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", web3.utils.padLeft(dogId, 62)],
+        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic],
         fromBlock: 27539184
     })
     .then(console.log);

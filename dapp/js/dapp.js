@@ -323,7 +323,11 @@ getFlows();
 
 
 
-
+$( document ).ready(function() {
+    $(".card-header").click(function(){
+        $(this).next().toggleClass("show");
+    });
+});
 
 
 

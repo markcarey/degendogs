@@ -30,7 +30,7 @@ async function main() {
     //console.log("The chainId is " + dappChain);
 
     accounts = await web3.eth.getAccounts();
-    connectWallet();
+    //connectWallet();
 
     userChain = await ethereum.request({ method: 'eth_chainId' });
     //console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));

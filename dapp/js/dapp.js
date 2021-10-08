@@ -348,6 +348,13 @@ $( document ).ready(function() {
         $("#dao").click();
         return true;
     });
+
+    if ( !correctChain() ) {
+        $("body").append(wrongNetworkModal());
+        $(".close, .modal-backdrop").click(function(){
+            $(".fade.show").remove();
+        });
+    }
 });
 
 
@@ -547,6 +554,32 @@ function getBidHistoryModal(a) {
             </ul>
             </div>
         </div>
+        </div>
+    </div>
+    `;
+    return html;
+}
+
+function wrongNetworkModal(){
+    var html = "";
+    html = `
+    <div class="fade modal-backdrop show"></div>
+    <div role="dialog" aria-modal="true" class="fade modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title h4">Wrong Network Detected</div>
+                </div>
+                <div class="modal-body">
+                    <p>Degen Dogs Clubs is currently on the Kovan Test Network. Mainnet launch coming soon.</p>
+                    <p><b>To get started, please switch your network by following the instructions below:</b></p>
+                    <ol>
+                        <li>Open Metamask</li>
+                        <li>Click the network select dropdown</li>
+                        <li>Click on "Kovan Test Network"</li>
+                    </ol>
+                </div>
+            </div>
         </div>
     </div>
     `;

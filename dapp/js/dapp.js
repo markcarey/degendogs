@@ -250,6 +250,31 @@ async function currentAuction() {
                 $("#bid-history").prepend(bidHTML);
                 $("#dog-current-bid").text("Ξ " + newBid.toFixed(2)); 
                 setTimeout(currentAuction, 5000);
+                var subscription = web3.eth.subscribe('logs', {
+                    address: auctionAddress,
+                    topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic]
+                }, function(error, result){
+                    if (!error)
+                        console.log(result);
+                })
+                .on("connected", function(subscriptionId){
+                    console.log(subscriptionId);
+                })
+                .on("data", function(log){
+                    console.log(log);
+                    var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
+                    console.log(event);
+                    var amt = parseFloat(web3.utils.fromWei( event[1] ));
+                    var bid = {
+                        "bidder": event[0],
+                        "bid": amt.toFixed(2),
+                        "txn": log.transactionHash,
+                        "date": Date.now()
+                    };
+                    console.log(bid);
+                    bidsHTML += getBidRowHTML(bid);
+                    $("#bid-history").prepend(bidHTML);
+                })
             }
         });
     });

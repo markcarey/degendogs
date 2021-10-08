@@ -268,7 +268,7 @@ async function currentAuction(thisDog) {
                 web3.eth.clearSubscriptions();
                 //console.log("Bid received!");
                 $("#bid-button").text("Bid Received!");
-                currentAuction();
+                //currentAuction();
                 var bid = {
                     "bid": parseFloat(newBid).toFixed(2),
                     "bidder": ethereum.selectedAddress,
@@ -277,7 +277,7 @@ async function currentAuction(thisDog) {
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
                 $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
-                setTimeout(currentAuction, 5000);
+                //setTimeout(currentAuction, 5000);
                 var subscription = web3.eth.subscribe('logs', {
                     address: auctionAddress,
                     topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic]

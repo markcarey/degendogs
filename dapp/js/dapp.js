@@ -248,7 +248,7 @@ async function currentAuction() {
                 };
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
-                $("#dog-current-bid").text("Ξ " + newBid.toFixed(2)); 
+                $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
                 setTimeout(currentAuction, 5000);
                 var subscription = web3.eth.subscribe('logs', {
                     address: auctionAddress,

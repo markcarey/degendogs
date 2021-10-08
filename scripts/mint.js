@@ -8,7 +8,7 @@ const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0";
+const contractAddress = "0x3Ac4AE19c3B9aDC767085F17746e3C3EA6221601";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -327,5 +327,5 @@ async function issue(newOwner, tokenId, amount) {
 //defi();
 //claimComp();
 //latestExchangeRate();
-setMinter("0x0284541c2C6461213b092808CAAA700344CaE7e0");
+setMinter("0x059c5b0760701cf1555E7c09a75AF373423a6431");
 //tokenURI(1);

@@ -8,7 +8,7 @@ const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
-const contractAddress = "0x0284541c2C6461213b092808CAAA700344CaE7e0";
+const contractAddress = "0x059c5b0760701cf1555E7c09a75AF373423a6431";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function initialize() {
@@ -21,7 +21,7 @@ async function initialize() {
     'nonce': nonce,
     'gas': 1000000,
     'maxPriorityFeePerGas': 1999999987,
-    'data': nftContract.methods.initialize("0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0", "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*30).encodeABI()
+    'data': nftContract.methods.initialize("0x3Ac4AE19c3B9aDC767085F17746e3C3EA6221601", "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*30).encodeABI()
   };
 
   const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);

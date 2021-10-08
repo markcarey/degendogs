@@ -236,14 +236,18 @@ contract Dog is ERC721, Ownable {
         uint256 tokens = _swap(amount);
         uint256 cTokens = _comp(tokens);
         _super(cTokens);
-        latestExchangeRate = cTokens.div(amount);
+        //latestExchangeRate = amount.div(cTokens); 
+        cTokens = cTokens * 1e10;
+        latestExchangeRate = cTokens.div(amount);  
     }
 
     function _defi(uint256 amount) internal {
-        uint256 tokens = _swap(amount);
-        uint256 cTokens = _comp(tokens); 
-        _super(cTokens.div(10)); // CHANGE THIS hardcoded percentage
-        latestExchangeRate = amount.div(cTokens);
+        uint256 tokens = _swap(amount); // ETH for DAI
+        uint256 cTokens = _comp(tokens);  // DAI for cDAI
+        _super(cTokens.div(10)); // 10% of cDAI upgraded to cDAIx
+        //latestExchangeRate = amount.div(cTokens); 
+        cTokens = cTokens * 1e10;
+        latestExchangeRate = cTokens.div(amount);
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -332,7 +336,7 @@ contract Dog is ERC721, Ownable {
 
             if ( oldReceiver == address(this) ) {
                 uint256 _amount = winningBid[tokenId];
-                uint256 _super = _amount.div(latestExchangeRate); // est amount in cDAIx
+                uint256 _super = _amount.mul(latestExchangeRate).div(1e10); // est amount in cDAIx
                 flowsForToken[tokenId].push(Flow(
                     {
                         tokenId: tokenId,

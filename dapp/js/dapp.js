@@ -36,6 +36,13 @@ async function main() {
     userChain = await ethereum.request({ method: 'eth_chainId' });
     console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));
 
+    if ( !correctChain() ) {
+        $("body").append(wrongNetworkModal());
+        $(".close, .modal-backdrop").click(function(){
+            $(".fade.show").remove();
+        });
+    }
+
     window.ethereum.on('accountsChanged', function () {
         web3.eth.getAccounts(function (error, accts) {
             console.log(accts[0], 'current account after account change');
@@ -349,12 +356,6 @@ $( document ).ready(function() {
         return true;
     });
 
-    if ( !correctChain() ) {
-        $("body").append(wrongNetworkModal());
-        $(".close, .modal-backdrop").click(function(){
-            $(".fade.show").remove();
-        });
-    }
 });
 
 

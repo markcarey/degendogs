@@ -375,6 +375,10 @@ getFlows();
 
 
 $( document ).ready(function() {
+    $(".connect").click(function(){
+        connectWallet();
+        return false;
+    });
     $(".card-header").click(function(){
         $(this).next().toggleClass("show");
         if ( $(this).next().hasClass("show") ) {

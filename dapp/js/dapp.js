@@ -11,9 +11,9 @@ function abbrAddress(address){
 
 const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x601D6E8453814E75ECb013Ae5920c9a8c9a08ab5";
+const dogAddress = "0x1dae97a860bDf66dFBb5312D771f5a3b379D35D9";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xFf7Cc6bdAc4F86eDC8B923d60dB85B5b03d069bA";
+const auctionAddress = "0xe0287B706b5f9aF5997dEC04a477ACB9D3D0A387";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
 const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);

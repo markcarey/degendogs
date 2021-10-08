@@ -245,7 +245,7 @@ contract Dog is ERC721, Ownable {
     function _defi(uint256 amount, uint256 tokenId) internal {
         uint256 tokens = _swap(amount); // ETH for DAI
         uint256 cTokens = _comp(tokens);  // DAI for cDAI
-        cTokensForDog[tokenId] = cTokens;
+        cTokensForDog[tokenId] = cTokens.mul(1e10);
         _super(cTokens.div(10)); // 10% of cDAI upgraded to cDAIx
     }
 

@@ -326,7 +326,7 @@ async function currentAuction() {
     $(".bid-history").click(function(){
         var html = getBidHistoryModal(a);
         $("body").append(html);
-        $("close-modal").click(function(){
+        $(".close").click(function(){
             $(".fade.show").remove();
         });
     });
@@ -534,7 +534,7 @@ function getBidHistoryModal(a) {
                 alt="Dog ${a.dogId} is a member of the Degen Dogs Club" class="Noun_img__1GJxo img-fluid"></div>
             <div class="AuctionActivity_modalTitleWrapper__2w2pt modal-title h4">
                 <h1>Dog ${a.dogId}<br> Bid History</h1>
-            </div><button type="button" class="close"><span aria-hidden="true">×</span><span id="close-modal"
+            </div><button type="button" class="close"><span aria-hidden="true">×</span><span
                 class="sr-only">Close</span></button>
             </div>
             <div class="modal-body">

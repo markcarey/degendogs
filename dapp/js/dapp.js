@@ -88,15 +88,24 @@ async function getFlows() {
     console.log(fromWei(dogBalanceCDAI));
     var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
     console.log(fromWei(dogBalanceCDAIx));
-    var dogBalance = fromWei(dogBalanceCDAI) + fromWei(dogBalanceCDAIx);
+    var dogBalance = parseFloat(fromWei(dogBalanceCDAI)) + parseFloat(fromWei(dogBalanceCDAIx));
     console.log(dogBalance);
     var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
     console.log(fromWei(userBalance));
+    userBalance = parseFloat(fromWei(userBalance));
     var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
     console.log(fromWei(dogFlow));
+    dogFlow = parseFloat(fromWei(dogFlow));
     var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
     console.log(userFlow);
     console.log(fromWei(userFlow.flowRate));
+    userFlow = parseFloat(fromWei(userFlow.flowRate));
+
+    $("#treasury").text(dogBalance.toFixed(4));
+    var flowTimer = setInterval(async () => {
+        var newBalance = dogBalance + dogFlow;
+        $("#treasury").text(newBalance.toFixed(4));
+    }, 1000);
 }
 
 var timer;

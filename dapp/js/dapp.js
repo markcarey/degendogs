@@ -103,11 +103,11 @@ async function getFlows() {
 
     $("#treasury").text(dogBalance.toFixed(8));
     $("#account").text(userBalance.toFixed(8));
-    var flowTimer = setInterval(async () => {
-        var newBalance = dogBalance + dogFlow;
-        $("#treasury").text(newBalance.toFixed(8));
-        newBalance = userBalance + userFlow;
-        $("#account").text(newBalance.toFixed(8));
+    var flowTimer = setInterval(() => {
+        dogBalance += dogFlow;
+        $("#treasury").text(dogBalance.toFixed(8));
+        userBalance += userFlow;
+        $("#account").text(userBalance.toFixed(8));
     }, 1000);
 }
 

@@ -763,9 +763,579 @@
   <script src="https://cdn.jsdelivr.net/npm/@alch/alchemy-web3@latest/dist/alchemyWeb3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="/js/abis.js?v=2"></script>
-  <script src="/js/dapp.js?v=83"></script>
+  <script src="/js/dapp.js?v=84"></script>
+
+  <div class="fade modal-backdrop show"></div>
+  <div role="dialog" aria-modal="true" class="fade modal show" tabindex="-1" style="display: block; padding-left: 0px;">
+    <div class="modal-dialog modal-90w">
+      <div class="modal-content">
+        <div class="AuctionActivity_modalHeader__2pkxA modal-header">
+          <div class="AuctionActivity_modalHeaderNounImgWrapper__3boIZ"><img
+              src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgdmlld0JveD0iMCAwIDMyMCAzMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZDVkN2UxIiAvPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyMTAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjE0MCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjIyMCIgZmlsbD0iIzVhNjVmYSIgLz48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjMwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyNDAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjUwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMjUwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjI2MCIgZmlsbD0iIzVhNjVmYSIgLz48cmVjdCB3aWR0aD0iMTEwIiBoZWlnaHQ9IjEwIiB4PSIxMjAiIHk9IjI2MCIgZmlsbD0iIzVhNjVmYSIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyNzAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIxMCIgeD0iMTIwIiB5PSIyNzAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjgwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMjgwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjI5MCIgZmlsbD0iIzVhNjVmYSIgLz48cmVjdCB3aWR0aD0iMTEwIiBoZWlnaHQ9IjEwIiB4PSIxMjAiIHk9IjI5MCIgZmlsbD0iIzVhNjVmYSIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIzMDAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIxMCIgeD0iMTIwIiB5PSIzMDAiIGZpbGw9IiM1YTY1ZmEiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMzEwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMzEwIiBmaWxsPSIjNWE2NWZhIiAvPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyMTAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjE0MCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjIyMCIgZmlsbD0iI2ZmZmRmMiIgLz48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjMwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyNDAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjUwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMjUwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjI2MCIgZmlsbD0iI2ZmZmRmMiIgLz48cmVjdCB3aWR0aD0iMTEwIiBoZWlnaHQ9IjEwIiB4PSIxMjAiIHk9IjI2MCIgZmlsbD0iI2ZmZmRmMiIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIyNzAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIxMCIgeD0iMTIwIiB5PSIyNzAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjgwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMjgwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjI5MCIgZmlsbD0iI2ZmZmRmMiIgLz48cmVjdCB3aWR0aD0iMTEwIiBoZWlnaHQ9IjEwIiB4PSIxMjAiIHk9IjI5MCIgZmlsbD0iI2ZmZmRmMiIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIzMDAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIxMCIgeD0iMTIwIiB5PSIzMDAiIGZpbGw9IiNmZmZkZjIiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMzEwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSIxMTAiIGhlaWdodD0iMTAiIHg9IjEyMCIgeT0iMzEwIiBmaWxsPSIjZmZmZGYyIiAvPjxyZWN0IHdpZHRoPSI2MCIgaGVpZ2h0PSIxMCIgeD0iMTMwIiB5PSIzMCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMzAiIGhlaWdodD0iMTAiIHg9IjExMCIgeT0iNDAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjEwIiB4PSIxNDAiIHk9IjQwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSIxMCIgeD0iMTcwIiB5PSI0MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSI1MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMzAiIGhlaWdodD0iMTAiIHg9IjEzMCIgeT0iNTAiIGZpbGw9IiNjZmM5YjgiIC8+PHJlY3Qgd2lkdGg9IjcwIiBoZWlnaHQ9IjEwIiB4PSIxNjAiIHk9IjUwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSIxMCIgeD0iODAiIHk9IjYwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTIwIiB5PSI2MCIgZmlsbD0iI2NmYzliOCIgLz48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iMTAiIHg9IjE0MCIgeT0iNjAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIyMDAiIHk9IjYwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSIxMCIgeD0iMjEwIiB5PSI2MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjEwIiB4PSI4MCIgeT0iNzAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIyMjAiIHk9IjcwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMjMwIiB5PSI3MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEwIiB4PSI3MCIgeT0iODAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjEwIiB4PSI3MCIgeT0iOTAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxMjAiIHk9IjkwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSI4MCIgaGVpZ2h0PSIxMCIgeD0iMTMwIiB5PSI5MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjIxMCIgeT0iOTAiIGZpbGw9IiNjZmM5YjgiIC8+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjEwIiB4PSIyMjAiIHk9IjkwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iNjAiIHk9IjEwMCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjgwIiB5PSIxMDAiIGZpbGw9IiNjZmM5YjgiIC8+PHJlY3Qgd2lkdGg9IjE3MCIgaGVpZ2h0PSIxMCIgeD0iOTAiIHk9IjEwMCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjYwIiB5PSIxMTAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSI3MCIgeT0iMTEwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIxNzAiIGhlaWdodD0iMTAiIHg9IjkwIiB5PSIxMTAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSI2MCIgeT0iMTIwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iNzAiIHk9IjEyMCIgZmlsbD0iI2NmYzliOCIgLz48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEwIiB4PSI4MCIgeT0iMTIwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTAiIHg9IjYwIiB5PSIxMzAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxMCIgeD0iNjAiIHk9IjE0MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwIiB4PSI2MCIgeT0iMTUwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTAiIHg9IjcwIiB5PSIxNjAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxMCIgeD0iNzAiIHk9IjE3MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjIyMCIgeT0iMTcwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMjMwIiB5PSIxNzAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjEwIiB4PSI4MCIgeT0iMTgwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTMwIiB5PSIxODAiIGZpbGw9IiMwMDAwMDAiIC8+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjEwIiB4PSIxNTAiIHk9IjE4MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjIxMCIgeT0iMTgwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMjMwIiB5PSIxODAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIxMCIgeD0iODAiIHk9IjE5MCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMzAiIGhlaWdodD0iMTAiIHg9IjE5MCIgeT0iMTkwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMjIwIiB5PSIxOTAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjEwIiB4PSI5MCIgeT0iMjAwIiBmaWxsPSIjZjlmNGU2IiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMTUwIiB5PSIyMDAiIGZpbGw9IiNjZmM5YjgiIC8+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjEwIiB4PSIxNjAiIHk9IjIwMCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjE5MCIgeT0iMjAwIiBmaWxsPSIjY2ZjOWI4IiAvPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSIxMCIgeD0iMjAwIiB5PSIyMDAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMCIgeD0iMTEwIiB5PSIyMTAiIGZpbGw9IiNmOWY0ZTYiIC8+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjEwIiB4PSIxMzAiIHk9IjIyMCIgZmlsbD0iI2Y5ZjRlNiIgLz48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iMTAiIHg9IjEwMCIgeT0iMTEwIiBmaWxsPSIjZmZjMTEwIiAvPjxyZWN0IHdpZHRoPSI2MCIgaGVpZ2h0PSIxMCIgeD0iMTcwIiB5PSIxMTAiIGZpbGw9IiNmOThmMzAiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxMDAiIHk9IjEyMCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjExMCIgeT0iMTIwIiBmaWxsPSIjZmZmZmZmIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTMwIiB5PSIxMjAiIGZpbGw9IiMwMDAwMDAiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxNTAiIHk9IjEyMCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjE3MCIgeT0iMTIwIiBmaWxsPSIjZjk4ZjMwIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTgwIiB5PSIxMjAiIGZpbGw9IiNmZmZmZmYiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSIyMDAiIHk9IjEyMCIgZmlsbD0iIzAwMDAwMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjIyMCIgeT0iMTIwIiBmaWxsPSIjZjk4ZjMwIiAvPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSIxMCIgeD0iNzAiIHk9IjEzMCIgZmlsbD0iI2Y3OGExOCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjEwMCIgeT0iMTMwIiBmaWxsPSIjZmZjMTEwIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTEwIiB5PSIxMzAiIGZpbGw9IiNmZmZmZmYiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSIxMzAiIHk9IjEzMCIgZmlsbD0iIzAwMDAwMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjE1MCIgeT0iMTMwIiBmaWxsPSIjZmZjMTEwIiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMTYwIiB5PSIxMzAiIGZpbGw9IiNmNzhhMTgiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxNzAiIHk9IjEzMCIgZmlsbD0iI2Y5OGYzMCIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjE4MCIgeT0iMTMwIiBmaWxsPSIjZmZmZmZmIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMjAwIiB5PSIxMzAiIGZpbGw9IiMwMDAwMDAiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIyMjAiIHk9IjEzMCIgZmlsbD0iI2Y5OGYzMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjcwIiB5PSIxNDAiIGZpbGw9IiNmZmMxMTAiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxMDAiIHk9IjE0MCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjExMCIgeT0iMTQwIiBmaWxsPSIjZmZmZmZmIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTMwIiB5PSIxNDAiIGZpbGw9IiMwMDAwMDAiIC8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiB4PSIxNTAiIHk9IjE0MCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjE3MCIgeT0iMTQwIiBmaWxsPSIjZjk4ZjMwIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTgwIiB5PSIxNDAiIGZpbGw9IiNmZmZmZmYiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSIyMDAiIHk9IjE0MCIgZmlsbD0iIzAwMDAwMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjIyMCIgeT0iMTQwIiBmaWxsPSIjZjk4ZjMwIiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iNzAiIHk9IjE1MCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjEwMCIgeT0iMTUwIiBmaWxsPSIjZmZjMTEwIiAvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgeD0iMTEwIiB5PSIxNTAiIGZpbGw9IiNmZmZmZmYiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSIxMzAiIHk9IjE1MCIgZmlsbD0iIzAwMDAwMCIgLz48cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHg9IjE1MCIgeT0iMTUwIiBmaWxsPSIjZmZjMTEwIiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMTcwIiB5PSIxNTAiIGZpbGw9IiNmOThmMzAiIC8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiB4PSIxODAiIHk9IjE1MCIgZmlsbD0iI2ZmZmZmZiIgLz48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHg9IjIwMCIgeT0iMTUwIiBmaWxsPSIjMDAwMDAwIiAvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgeD0iMjIwIiB5PSIxNTAiIGZpbGw9IiNmOThmMzAiIC8+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjEwIiB4PSIxMDAiIHk9IjE2MCIgZmlsbD0iI2ZmYzExMCIgLz48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iMTAiIHg9IjE3MCIgeT0iMTYwIiBmaWxsPSIjZjk4ZjMwIiAvPjwvc3ZnPg=="
+              alt="Noun 64 is a member of the Nouns DAO" class="Noun_img__1GJxo img-fluid"></div>
+          <div class="AuctionActivity_modalTitleWrapper__2w2pt modal-title h4">
+            <h1>Noun 64<br> Bid History</h1>
+          </div><button type="button" class="close"><span aria-hidden="true">×</span><span
+              class="sr-only">Close</span></button>
+        </div>
+        <div class="modal-body">
+          <ul class="BidHistory_bidCollection__1DoXy">
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:15 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 198.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xfb11809e2a27ae95b36103ac39bb5cd29836783419ed0265707595f3a1653e9f"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x93...5e2d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:14 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 192.69</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x8f8bb7b3b19804116aa75357bb2655ee1925716c5065f3d706fcad89875511f8"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:11 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 188.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x1ecf9b8bb9eef9cff2ec3ec2521195c8e0c6fe3cbcb3136c4d0557adf068d97a"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x93...5e2d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:09 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 180.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x0bf46665e391ff08f8fed75bbaa36a37c21e3a807b19c7100c3241e1adc54e39"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:07 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 175.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x7bdf42d023b36bec756b0f1e1da9bc2049aaf8696729d2f42e8396b63d2afd2d"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x93...5e2d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:07 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 169.42</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xfdeae8ac4a3d9cae6bad2a49474bf65d50b9d19d384b273803ff5ddf1ad7d574"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:04 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 150.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x73a1750cc2601905903ba7d2b92b6cbc6f841f4c3f184bea1734fda3590a2bf0"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x93...5e2d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:01 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 140.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x80cb851bb39b2c0606e8ee1f381c4f531398f2be2d8da881c72b71cffb3d4aaa"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 06:58 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 120.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xa8ae78a1e45e1b648cd7ccc98c26f8d9dd3f77eedef36278b2de030371aa5f4c"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0xb1...05a2</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 06:57 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 117.30</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x607351a4ab4eed4f48b67181ef468c029aafc76e439edb449dd3785b6aad1966"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x93...5e2d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 06:57 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 115.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xbc0d00a5e8e1b609d2052989daaed74f6055d8b1581c332d1ec2f64a2ced4937"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 06:50 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 111.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x662e9581eb3c97d14b9a1cd5f0d559ffebb6f2c1d108bc92d0a4130b46ccb789"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0xb1...05a2</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 06:43 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 107.20</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xe4d62953ba757851b18d442af002d74633d78a0df8a8af1bff10ab3efa9d8d32"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0xb7...099c</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 03:39 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 105.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x342c7b73eb18e13857f598842730f03b4d3d46c81eb318e2349c2a166b8ec2df"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x74...898a</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 06 at 01:30 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 102.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xd3aa1d0567a9132d9dff49226cec7cb0a9ee49cda12d4f220a53617b57a7e062"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>beautifulpunks.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 10:42 pm</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 100.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xeacf08f0785338024f39cda89bf9cc6471e62bc6b215584c6c5f3302ea0f6235"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>machibigbrother.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 01:23 pm</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 17.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xbbfcc923f60a9835167c2f60c97a567ff64389bf380e8b9bd5f91d8d60831728"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0xf7...bfd6</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 12:47 pm</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 2.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x8d89379238c4156b665c3c99e19bd8a3f4cd25030ccd1613035477f611e8c14a"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>denscrowley.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 12:35 pm</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 1.50</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x40ea3096974492adc13aaf20eba41687a448f0d853d8201fe28d4e3f70df5c2c"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x99...47ee</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 10:15 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 1.02</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x62a7c8ba04562b0db6ff45b8e9c76e30b359f281ad0283f5a9721fce1b5807bd"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x10...dc23</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 08:51 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 1.00</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x3a8ea8d76d3a4bacc0766dd2426ea6afe6b35189de634b139bf1093c0b277917"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>0x09...c52d</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 08:46 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 0.11</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0xb75aeeeab4ec6fb2cb509b7cb4e1552565061e6b758c65b6acb6c6f839c049be"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>abol.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 08:01 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 0.10</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x9995e729cbb97ba75ab97a46f5eb6b08fc158bb29d4d60e85afa0c5b657fd848"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>ething.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 07:38 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 0.04</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x0993961cc11c4bd6e85cbb70bee0e72c6fad3ec93aa8c66f6d83700c05731004"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+            <li class="BidHistory_bidRow__31Sl2">
+              <div class="BidHistory_bidItem__2EgHh">
+                <div class="BidHistory_leftSectionWrapper__3gsSj">
+                  <div class="BidHistory_bidder__1R14A">
+                    <div>richkids.eth</div>
+                  </div>
+                  <div class="BidHistory_bidDate__3dDvg">Oct 05 at 07:08 am</div>
+                </div>
+                <div class="BidHistory_rightSectionWrapper__3N0DM">
+                  <div class="BidHistory_bidAmount__3yfv7">Ξ 0.01</div>
+                  <div class="BidHistory_linkSymbol__2qaZG"><a
+                      href="https://etherscan.io/tx/0x195754486671db8123587b6f1b59e2bb0c65016f4cccac6658507a4fe15941ff"
+                      target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                          d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                        </path>
+                      </svg></a></div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
-<div></div>
 
 </html>

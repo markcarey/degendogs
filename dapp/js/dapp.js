@@ -203,10 +203,10 @@ async function currentAuction(thisDog) {
         if (index == 0) {
             a.amount = event[1];
             if (!a.endTime) {
-                a.endTime = log.block_signed_at;
+                a.endTime = moment(log.block_signed_at).format("X");
             }
             if (!a.startTime) {
-                a.endTime = log.block_signed_at - 60*60;
+                a.endTime = moment(log.block_signed_at).format("X") - 60*60;
             }
         }
         var bid = {

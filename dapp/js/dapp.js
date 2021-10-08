@@ -323,7 +323,7 @@ async function currentAuction() {
         });
     });
 
-    $(".bid-history").click(async function(){
+    $(".bid-history").click(function(){
         var html = getBidHistoryModal(a);
         $("body").append(html);
         $("close-modal").click(function(){

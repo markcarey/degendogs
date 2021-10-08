@@ -85,10 +85,10 @@ function fromWei(amount) {
 
 async function getFlows() {
     var dogBalanceCDAI = await cDAI.methods.balanceOf(dogAddress).call();
-    console.log(fromWei(dogBalanceCDAI));
+    console.log(dogBalanceCDAI / 1e8);
     var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
     console.log(fromWei(dogBalanceCDAIx));
-    var dogBalance = parseFloat(fromWei(dogBalanceCDAI)) + parseFloat(fromWei(dogBalanceCDAIx));
+    var dogBalance = parseFloat(dogBalanceCDAI / 1e8) + parseFloat(fromWei(dogBalanceCDAIx));
     console.log(dogBalance);
     var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
     console.log(fromWei(userBalance));

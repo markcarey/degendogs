@@ -239,7 +239,9 @@ async function currentAuction() {
             if (blockTxHashes.includes(pendingTxHash)) {
                 web3.eth.clearSubscriptions();
                 console.log("Bid received!");
-                currentAuction();
+                $("#bid-button").text("Bid Received!");
+                setTimeout(currentAuction, 3000);
+                //currentAuction();
                 var bid = {
                     "bid": newBid.toFixed(2),
                     "bidder": ethereum.selectedAddress,

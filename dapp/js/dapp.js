@@ -542,7 +542,7 @@ function getDogHTML(a) {
                     <div class="AuctionActivity_currentBidCol__3vgXb col-lg-5">
                     <div id="current-bid" class="CurrentBid_section__2oRi6">
                         <h4>${bidHeading}</h4>
-                        <h2 class="dog-current-bid">Ξ ${a.currentBid}</h2>
+                        <h2 id="dog-current-bid">Ξ ${a.currentBid}</h2>
                     </div>
                     </div>
                     <div class="AuctionActivity_auctionTimerCol__2oKfX col-lg-5">

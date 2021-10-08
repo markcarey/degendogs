@@ -165,7 +165,8 @@ async function currentAuction(thisDog) {
             "dogId": thisDog,
             "startTime": null,
             "endTime": null,
-            "amount": new BN('0000000000')
+            "amount": new BN('0000000000'),
+            "bidder": "0x0000000000000000000000000000000000000000"
         };
     } 
     console.log(a);
@@ -202,11 +203,12 @@ async function currentAuction(thisDog) {
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
             a.amount = event[1];
+            a.bidder = event[0];
             if (!a.endTime) {
                 a.endTime = moment(log.block_signed_at).format("X");
             }
             if (!a.startTime) {
-                a.endTime = moment(log.block_signed_at).format("X") - 60*60;
+                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
             }
         }
         var bid = {

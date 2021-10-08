@@ -177,6 +177,10 @@ async function currentAuction(thisDog) {
     var currentBid = parseFloat(web3.utils.fromWei(a.amount));
     $(".dog-current-bid").text("Ξ " + currentBid.toFixed(2));
     var minBid = web3.utils.fromWei(a.amount) * 1.1
+    if ( minBid == 0 ) {
+        // reserve price
+        minBid = 0.1;
+    }
     $("#dog-min-bid").text(minBid.toFixed(2));
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
@@ -236,6 +240,7 @@ async function currentAuction(thisDog) {
         $("#settle-button").prop("disabled", false);
     }
     $("#bid-button").click(async function(){
+        $("#bid-button").text("Bidding...");
         var newBid = $("#new-bid").val();
         const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
 
@@ -277,6 +282,7 @@ async function currentAuction(thisDog) {
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
                 $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
+                $("#bid-button").text("Bid");
                 //setTimeout(currentAuction, 5000);
                 var subscription = web3.eth.subscribe('logs', {
                     address: auctionAddress,

@@ -27,13 +27,13 @@ function abbrAddress(address){
 
 async function main() {
     dappChain = await web3.eth.getChainId();
-    console.log("The chainId is " + dappChain);
+    //console.log("The chainId is " + dappChain);
 
     accounts = await web3.eth.getAccounts();
     connectWallet();
 
     userChain = await ethereum.request({ method: 'eth_chainId' });
-    console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));
+    //console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));
 
     if ( !correctChain() ) {
         $("body").append(wrongNetworkModal());
@@ -67,12 +67,12 @@ function correctChain() {
 async function connectWallet() {
     $("#status").text("Connecting...");
     if (window.ethereum) {
-        console.log("window.ethereum true");
+        //console.log("window.ethereum true");
         window.ethereum
             .enable()
             .then(async result => {
                 // Metamask is ready to go!
-                console.log(result);
+                //console.log(result);
                 accounts = result;
                 $(".connect").text(abbrAddress());
                 $("#bid-button").prop("disabled", false);
@@ -94,20 +94,20 @@ var flowTimer;
 async function getFlows() {
     clearInterval(flowTimer);
     var dogBalanceCDAI = await cDAI.methods.balanceOf(dogAddress).call();
-    console.log(dogBalanceCDAI / 1e8);
+    //console.log(dogBalanceCDAI / 1e8);
     var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
-    console.log(fromWei(dogBalanceCDAIx));
+    //console.log(fromWei(dogBalanceCDAIx));
     var dogBalance = parseFloat(dogBalanceCDAI / 1e8) + parseFloat(fromWei(dogBalanceCDAIx));
-    console.log(dogBalance);
+    //console.log(dogBalance);
     var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
-    console.log(fromWei(userBalance));
+    //console.log(fromWei(userBalance));
     userBalance = parseFloat(fromWei(userBalance));
     var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
-    console.log(fromWei(dogFlow));
+    //console.log(fromWei(dogFlow));
     dogFlow = parseFloat(fromWei(dogFlow));
     var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
-    console.log(userFlow);
-    console.log(fromWei(userFlow.flowRate));
+    //console.log(userFlow);
+    //console.log(fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
 
     $("#treasury").text(dogBalance.toFixed(4));
@@ -286,12 +286,12 @@ async function currentAuction(thisDog) {
                         console.log(result);
                 })
                 .on("connected", function(subscriptionId){
-                    console.log(subscriptionId);
+                    //console.log(subscriptionId);
                 })
                 .on("data", function(log){
-                    console.log(log);
+                    //console.log(log);
                     var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
-                    console.log(event);
+                    //console.log(event);
                     var amt = parseFloat(web3.utils.fromWei( event[1] ));
                     var bid = {
                         "bidder": event[0],
@@ -299,7 +299,7 @@ async function currentAuction(thisDog) {
                         "txn": log.transactionHash,
                         "date": Date.now()
                     };
-                    console.log(bid);
+                    //console.log(bid);
                     bidsHTML += getBidRowHTML(bid);
                     $("#bid-history").prepend(bidHTML);
                 })

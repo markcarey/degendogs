@@ -201,7 +201,7 @@ async function currentAuction(thisDog) {
         console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
-            a.amount = amt;
+            a.amount = event[1];
             if (!a.endTime) {
                 a.endTime = log.block_signed_at;
             }

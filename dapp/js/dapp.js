@@ -242,7 +242,7 @@ async function currentAuction() {
                 $("#bid-button").text("Bid Received!");
                 currentAuction();
                 var bid = {
-                    "bid": newBid.toFixed(2),
+                    "bid": parseFloat(newBid).toFixed(2),
                     "bidder": ethereum.selectedAddress,
                     "date": Date.now()
                 };

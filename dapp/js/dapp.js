@@ -166,7 +166,8 @@ async function currentAuction(thisDog) {
             "startTime": null,
             "endTime": null,
             "amount": new BN('0000000000'),
-            "bidder": "0x0000000000000000000000000000000000000000"
+            "bidder": "0x0000000000000000000000000000000000000000",
+            "settled": true
         };
     } 
     console.log(a);

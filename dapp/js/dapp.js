@@ -326,6 +326,9 @@ getFlows();
 $( document ).ready(function() {
     $(".card-header").click(function(){
         $(this).next().toggleClass("show");
+        if ( $(this).next().hasClass("show") ) {
+            $(".card-header").not(this).next(".collapse.show").removeClass("show");
+        }
     });
 });
 

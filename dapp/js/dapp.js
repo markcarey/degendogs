@@ -83,7 +83,9 @@ function fromWei(amount) {
     return web3.utils.fromWei(new BN(amount));
 }
 
+var flowTimer;
 async function getFlows() {
+    clearInterval(flowTimer);
     var dogBalanceCDAI = await cDAI.methods.balanceOf(dogAddress).call();
     console.log(dogBalanceCDAI / 1e8);
     var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
@@ -101,13 +103,13 @@ async function getFlows() {
     console.log(fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
 
-    $("#treasury").text(dogBalance.toFixed(8));
-    $("#account").text(userBalance.toFixed(8));
-    var flowTimer = setInterval(() => {
+    $("#treasury").text(dogBalance.toFixed(4));
+    $("#account").text(userBalance.toFixed(4));
+    flowTimer = setInterval(() => {
         dogBalance += dogFlow;
-        $("#treasury").text(dogBalance.toFixed(8));
+        $("#treasury").text(dogBalance.toFixed(4));
         userBalance += userFlow;
-        $("#account").text(userBalance.toFixed(8));
+        $("#account").text(userBalance.toFixed(4));
     }, 1000);
 }
 
@@ -310,6 +312,7 @@ async function currentAuction() {
                 web3.eth.clearSubscriptions();
                 console.log("Settled!");
                 currentAuction();
+                getFlows();
             }
         });
     });

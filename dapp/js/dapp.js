@@ -382,7 +382,7 @@ function getDogHTML(a) {
     a.formHTML = bidFormHTML(a);
     a.timerHTML = getTimerHTML(a);
     var timerHeading = "Ends in";
-    var timerHeading = "Current Bid";
+    var bidHeading = "Current Bid";
     if (a.duration.asSeconds() < 0) {
         timerHeading = "Winner";
         bidHeading = "Winning Bid";

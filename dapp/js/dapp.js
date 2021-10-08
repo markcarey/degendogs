@@ -371,7 +371,7 @@ async function currentAuction(thisDog) {
     });
 
 }
-currentAuction(3);
+currentAuction();
 getFlows();
 
 
@@ -502,9 +502,13 @@ function getDogHTML(a) {
     a.minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
     a.formHTML = bidFormHTML(a);
     a.timerHTML = getTimerHTML(a);
-    var next = "";
+    var next = `disabled=""`;
+    var prev = ""
     if ( a.settled ) {
-        next = "false";
+        next = "";
+    }
+    if ( a.dogId == 0 ) {
+        prev = `disabled=""`;
     }
     var timerHeading = "Ends in";
     var bidHeading = "Current Bid";
@@ -527,9 +531,9 @@ function getDogHTML(a) {
                     <h4 id="dog-date">${a.date}</h4>
                     </div>
                     <div class="AuctionActivity_colAlignCenter__3SaC2 col-lg-12">
-                    <h1 class="AuctionActivityNounTitle_nounTitle__3_LLC" id="dog-title">Dog ${a.dogId}</h1><button id="prev-dog" 
+                    <h1 class="AuctionActivityNounTitle_nounTitle__3_LLC" id="dog-title">Dog ${a.dogId}</h1><button ${prev} id="prev-dog" 
                         class="AuctionNavigation_leftArrow__1NOSB">←</button><button
-                        class="AuctionNavigation_rightArrow__33rdI" disabled="${next}" id="next-dog">→</button>
+                        class="AuctionNavigation_rightArrow__33rdI" ${next} id="next-dog">→</button>
                     </div>
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">

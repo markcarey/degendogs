@@ -158,7 +158,7 @@ function countdown(a){
 
 async function currentAuction(thisDog) {
     clearInterval(timer);
-    if ( thisDog === null ) {
+    if ( typeof thisDog === 'undefined' ) {
         a = await auction.methods.auction().call();
     } else {
         a = {

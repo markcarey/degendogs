@@ -535,7 +535,7 @@ function getBidHistoryModal(a) {
                     </div>
                 </div>
                 </li>
-                ${a.bidsHTMLALL}
+                ${a.bidsHTMLAll}
             </ul>
             </div>
         </div>

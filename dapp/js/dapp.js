@@ -15,6 +15,8 @@ const dogAddress = "0x1cA5d36c24B0a31e023Ff0bD8d5b627696d87Cd0";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
 const auctionAddress = "0x0284541c2C6461213b092808CAAA700344CaE7e0";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
+const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
+const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);
 const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
 const cDAIx = new web3.eth.Contract(tokenABI, cDAIxAddress);
 
@@ -82,8 +84,12 @@ function fromWei(amount) {
 }
 
 async function getFlows() {
-    var dogBalance = await cDAIx.methods.balanceOf(dogAddress).call();
-    console.log(fromWei(dogBalance));
+    var dogBalanceCDAI = await cDAI.methods.balanceOf(dogAddress).call();
+    console.log(fromWei(dogBalanceCDAI));
+    var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
+    console.log(fromWei(dogBalanceCDAIx));
+    var dogBalance = fromWei(dogBalanceCDAI) + fromWei(dogBalanceCDAIx);
+    console.log(dogBalance);
     var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
     console.log(fromWei(userBalance));
     var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();

@@ -165,7 +165,7 @@ async function currentAuction(thisDog) {
             "dogId": thisDog,
             "startTime": null,
             "endTime": null,
-            "amount": "0"
+            "amount": new BN('0000000000')
         };
     } 
     console.log(a);

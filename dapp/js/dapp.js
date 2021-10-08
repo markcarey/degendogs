@@ -240,8 +240,7 @@ async function currentAuction() {
                 web3.eth.clearSubscriptions();
                 console.log("Bid received!");
                 $("#bid-button").text("Bid Received!");
-                setTimeout(currentAuction, 3000);
-                //currentAuction();
+                currentAuction();
                 var bid = {
                     "bid": newBid.toFixed(2),
                     "bidder": ethereum.selectedAddress,
@@ -250,6 +249,7 @@ async function currentAuction() {
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
                 $("#dog-current-bid").text("Ξ " + newBid.toFixed(2)); 
+                setTimeout(currentAuction, 5000);
             }
         });
     });

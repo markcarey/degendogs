@@ -69,6 +69,7 @@ contract Dog is ERC721, Ownable {
     address public minter;
 
     mapping(uint256 => uint256) public winningBid;
+    mapping(uint256 => uint256) public cTokensForDog;
 
     mapping(uint256 => int96) public flowRates;
     struct Flow {
@@ -241,13 +242,11 @@ contract Dog is ERC721, Ownable {
         latestExchangeRate = cTokens.div(amount);  
     }
 
-    function _defi(uint256 amount) internal {
+    function _defi(uint256 amount, uint256 tokenId) internal {
         uint256 tokens = _swap(amount); // ETH for DAI
         uint256 cTokens = _comp(tokens);  // DAI for cDAI
+        cTokensForDog[tokenId] = cTokens;
         _super(cTokens.div(10)); // 10% of cDAI upgraded to cDAIx
-        //latestExchangeRate = amount.div(cTokens); 
-        cTokens = cTokens * 1e10;
-        latestExchangeRate = cTokens.div(amount);
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -280,7 +279,7 @@ contract Dog is ERC721, Ownable {
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
         if (msg.value > 0) {
-            _defi(msg.value);
+            _defi(msg.value, tokenId);
         }
         winningBid[tokenId] = amount;
         emit NFTIssued(tokenId, newOwner);
@@ -336,7 +335,7 @@ contract Dog is ERC721, Ownable {
 
             if ( oldReceiver == address(this) ) {
                 uint256 _amount = winningBid[tokenId];
-                uint256 _super = _amount.mul(latestExchangeRate).div(1e10); // est amount in cDAIx
+                uint256 _super = cTokensForDog[tokenId];
                 flowsForToken[tokenId].push(Flow(
                     {
                         tokenId: tokenId,
@@ -344,7 +343,6 @@ contract Dog is ERC721, Ownable {
                         flowRate: int96(uint96(_super.div(10).div(31536000)))
                     }
                 ));
-                //flowsForToken[tokenId].push(Flow(tokenId, block.timestamp + 365*24*60*60, flowRates[tokenId]));
                 // shared
                 for (uint256 i = 0; i < lastId; i++) {
                     flowsForToken[tokenId].push(Flow(
@@ -478,6 +476,6 @@ contract Dog is ERC721, Ownable {
     }
 
     receive() external payable {
-        _defi(msg.value);
+        //_defi(msg.value);
     }
 }

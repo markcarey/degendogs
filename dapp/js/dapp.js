@@ -24,6 +24,7 @@ var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
 var dappChain;
 var userChain;
 var accounts;
+var a; // current auction or Dog
 
 async function main() {
     dappChain = await web3.eth.getChainId();
@@ -150,7 +151,7 @@ function countdown(a){
 
 async function currentAuction() {
     clearInterval(timer);
-    var a = await auction.methods.auction().call();
+    a = await auction.methods.auction().call();
     console.log(a);
     $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
     $("#dog-title").text("Dog " + a.dogId);
@@ -182,6 +183,7 @@ async function currentAuction() {
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     a.duration = duration;
     var bidsHTML = "";
+    var bidsHTMLAll = "";
     $.each(logs, function(index, log) {
         console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
@@ -194,9 +196,13 @@ async function currentAuction() {
             "date": log.block_signed_at
         };
         console.log(bid);
-        bidsHTML += getBidRowHTML(bid)
+        if (index < 3) {
+            bidsHTML += getBidRowHTML(bid);
+        }
+        bidsHTMLAll += getBidRowHTML(bid);
     });
     a.bidsHTML = bidsHTML;
+    a.bidsHTMLAll = bidsHTMLAll;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     if (a.duration.asSeconds() > 0) {
@@ -314,6 +320,14 @@ async function currentAuction() {
                 currentAuction();
                 getFlows();
             }
+        });
+    });
+
+    $("#bid-history").click(async function(){
+        var html = getBidHistoryModal(a);
+        $("body").append(html);
+        $("close-modal").click(function(){
+            $(".fade.show").remove();
         });
     });
 
@@ -470,13 +484,63 @@ function getDogHTML(a) {
                         ${a.bidsHTML}
                     </ul>
                     <div class="BidHistoryBtn_bidHistoryWrapper__3Zsy9">
-                    <div class="BidHistoryBtn_bidHistory__2lmSd">Bid History →</div>
+                    <div class="BidHistoryBtn_bidHistory__2lmSd" class="bid-history">Bid History →</div>
                     </div>
                 </div>
                 </div>
             </div>
             </div>
         </div>
+    `;
+    return html;
+}
+
+function getBidHistoryModal(a) {
+    var html = "";
+    html = `
+    <div class="fade modal-backdrop show"></div>
+    <div role="dialog" aria-modal="true" class="fade modal show" tabindex="-1" style="display: block; padding-left: 0px;">
+        <div class="modal-dialog modal-90w">
+        <div class="modal-content">
+            <div class="AuctionActivity_modalHeader__2pkxA modal-header">
+            <div class="AuctionActivity_modalHeaderNounImgWrapper__3boIZ"><img
+                src="/images/${a.dogId}.png"
+                alt="Dog ${a.dogId} is a member of the Degen Dogs Club" class="Noun_img__1GJxo img-fluid"></div>
+            <div class="AuctionActivity_modalTitleWrapper__2w2pt modal-title h4">
+                <h1>Dog ${a.dogId}<br> Bid History</h1>
+            </div><button type="button" class="close"><span aria-hidden="true">×</span><span id="close-modal"
+                class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+            <ul class="BidHistory_bidCollection__1DoXy">
+                <li class="BidHistory_bidRow__31Sl2">
+                <div class="BidHistory_bidItem__2EgHh">
+                    <div class="BidHistory_leftSectionWrapper__3gsSj">
+                    <div class="BidHistory_bidder__1R14A">
+                        <div>machibigbrother.eth</div>
+                    </div>
+                    <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:15 am</div>
+                    </div>
+                    <div class="BidHistory_rightSectionWrapper__3N0DM">
+                    <div class="BidHistory_bidAmount__3yfv7">Ξ 198.00</div>
+                    <div class="BidHistory_linkSymbol__2qaZG"><a
+                        href="https://etherscan.io/tx/0xfb11809e2a27ae95b36103ac39bb5cd29836783419ed0265707595f3a1653e9f"
+                        target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                            data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="currentColor"
+                            d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                            </path>
+                        </svg></a></div>
+                    </div>
+                </div>
+                </li>
+                ${a.bidsHTMLALL}
+            </ul>
+            </div>
+        </div>
+        </div>
+    </div>
     `;
     return html;
 }

@@ -165,7 +165,7 @@ async function currentAuction(thisDog) {
             "dogId": thisDog,
             "startTime": null,
             "endTime": null,
-            "amount": 0
+            "amount": "0"
         };
     } 
     console.log(a);

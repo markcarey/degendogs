@@ -359,12 +359,12 @@ async function currentAuction(thisDog) {
         });
     });
 
-    $(".next-dog").click(function(){
+    $("#next-dog").click(function(){
         var currentID = parseInt(a.dogId);
         currentAuction(currentID + 1);
         return false;
     });
-    $(".prev-dog").click(function(){
+    $("#prev-dog").click(function(){
         var currentID = parseInt(a.dogId);
         currentAuction(currentID - 1);
         return false;

@@ -344,6 +344,10 @@ $( document ).ready(function() {
             $(".card-header").not(this).next(".collapse.show").removeClass("show");
         }
     });
+    $("#dao-nav").click(function(){
+        $("#dao").click();
+        return true;
+    });
 });
 
 

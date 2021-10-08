@@ -101,10 +101,13 @@ async function getFlows() {
     console.log(fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
 
-    $("#treasury").text(dogBalance.toFixed(4));
+    $("#treasury").text(dogBalance.toFixed(8));
+    $("#account").text(userBalance.toFixed(8));
     var flowTimer = setInterval(async () => {
         var newBalance = dogBalance + dogFlow;
-        $("#treasury").text(newBalance.toFixed(4));
+        $("#treasury").text(newBalance.toFixed(8));
+        newBalance = userBalance + userFlow;
+        $("#account").text(newBalance.toFixed(8));
     }, 1000);
 }
 

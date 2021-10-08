@@ -181,7 +181,8 @@ async function currentAuction(thisDog) {
         // reserve price
         minBid = 0.1;
     }
-    $("#dog-min-bid").text(minBid.toFixed(2));
+    a.minBid = mindBid.toFixed(2);
+    $("#dog-min-bid").text(a.minBid);
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
     //console.log(dogIdTopic);
@@ -498,7 +499,6 @@ function getTimerHTML(a) {
 function getDogHTML(a) {
     a.date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     a.currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
-    a.minBid = parseFloat(web3.utils.fromWei(a.amount) * 1.1).toFixed(2);
     a.formHTML = bidFormHTML(a);
     a.timerHTML = getTimerHTML(a);
     var next = `disabled=""`;

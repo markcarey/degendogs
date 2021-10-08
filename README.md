@@ -15,7 +15,7 @@ Each time an auction is settled, the settlement transaction will also cause a ne
 
 While settlement is most heavily incentivized for the winning bidder, it can be triggered by anyone, allowing the system to trustlessly auction dogs as long as Ethereum is operational and there are interested bidders.
 
-# Dogs do DeFi?
+## Dogs do DeFi?
 
 Degen Dogs is an experiment that combines NFTs and DeFi. The proceeds of each auction are sent to the treasury. That's when the DeFi Dog magic starts:
 
@@ -23,33 +23,33 @@ Degen Dogs is an experiment that combines NFTs and DeFi. The proceeds of each au
 The resulting DAI is then deposited in Compound Finance, and begins to earn yield
 - A portion of the Compound tokens (cDAI) representing the deposits are then upgraded to "Super Tokens" in the Superfluid protocol.
 - Then ~dog urine~ Super Tokens then begin streaming -- every second -- back to Dog owners:
--- 10% of of the proceeds of the auction stream back to the Dog Owner over the next 365 days. If the Dog is sold or transfered, the stream switches to the new owner.
--- 40% of the proceeds of each auction are shared by all current Dog owners and streamed to them over the next 365 days.
--- 20% of the proceeds for each auction go to the owner of the 10th Dog before this one. For example, 20% of the proceeds of the auction for Dog 11 will get streamed to the owner of Dog 1, over the next 365 days.
+- 10% of of the proceeds of the auction stream back to the Dog Owner over the next 365 days. If the Dog is sold or transfered, the stream switches to the new owner.
+- 40% of the proceeds of each auction are shared by all current Dog owners and streamed to them over the next 365 days.
+- 20% of the proceeds for each auction go to the owner of the 10th Dog before this one. For example, 20% of the proceeds of the auction for Dog 11 will get streamed to the owner of Dog 1, over the next 365 days.
 - In future, the Club may decide to change the DeFi investments and distributions in interesting ways.
 
 Chew on that!
 
-# Dog DAO?
+## Dog DAO?
 
 Degen Dogs are currently on testnet. The plan for a mainnet launch would include a DAO to manage the Club and treasury. To start, this might be comprised of a small number of Dogfathers, with all Dog owners automatically joining the DAO. Bark if you want in.
 
-# Dog Traits
+## Dog Traits
 
 Degen Dogs are composed of multiple traits, including:
 
-bodies (tbd)
-accessories (tbd)
-headwear (tbd)
-glasses (tbd)
+- bodies (tbd)
+- accessories (tbd)
+- headwear (tbd)
+- glasses (tbd)
 
-# Degenerative Artwork
+## Degenerative Artwork
 
 Degen Dogs are dogs in the same spirit as the Cryptopunks. We call it _degenerative art_.
 
 Future dogs may be submitted and voted on by the club, with winning artists earning a cut. Stay tuned.
 
-# Roadmap
+## Roadmap
 
 These Dogs are just getting started. Possible next steps and additonal features include:
 

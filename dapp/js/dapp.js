@@ -283,7 +283,10 @@ async function currentAuction(thisDog) {
                 var bidHTML = getBidRowHTML(bid);
                 $("#bid-history").prepend(bidHTML);
                 $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
+                a.minBid = parseFloat(newBid) * 1.1;
+                $("#dog-min-bid").text(a.minBid.toFixed(2));
                 $("#bid-button").text("Bid");
+                $("#new-bid").val("");
                 //setTimeout(currentAuction, 5000);
                 var subscription = web3.eth.subscribe('logs', {
                     address: auctionAddress,

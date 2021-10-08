@@ -156,9 +156,18 @@ function countdown(a){
     }, interval);
 }
 
-async function currentAuction() {
+async function currentAuction(thisDog) {
     clearInterval(timer);
-    a = await auction.methods.auction().call();
+    if ( thisDog === null ) {
+        a = await auction.methods.auction().call();
+    } else {
+        a = {
+            "dogId": thisDog,
+            "startTime": Date.now(),
+            "endTime": Date.now(),
+            "amount": 0
+        };
+    } 
     console.log(a);
     $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
     $("#dog-title").text("Dog " + a.dogId);
@@ -196,6 +205,9 @@ async function currentAuction() {
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
         console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
+        if (index == 0) {
+            a.amount = amt;
+        }
         var bid = {
             "bidder": event[0],
             "bid": amt.toFixed(2),
@@ -339,7 +351,7 @@ async function currentAuction() {
     });
 
 }
-currentAuction();
+currentAuction(8);
 getFlows();
 
 
@@ -587,3 +599,18 @@ function wrongNetworkModal(){
     return html;
 }
 
+var os = [
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847046526097424385",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847047625609052161",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847048725120679937",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847049824632307713",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847050924143935489",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847052023655563265",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847053123167191041",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847054222678818817",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847055322190446593",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847056421702074369",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847057521213702145",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847058620725329921",
+    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847059720236957697"
+];

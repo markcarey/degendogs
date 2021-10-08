@@ -326,7 +326,7 @@ async function currentAuction() {
     $(".bid-history").click(function(){
         var html = getBidHistoryModal(a);
         $("body").append(html);
-        $(".close").click(function(){
+        $(".close, .modal-backdrop").click(function(){
             $(".fade.show").remove();
         });
     });

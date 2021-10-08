@@ -181,7 +181,7 @@ async function currentAuction(thisDog) {
         // reserve price
         minBid = 0.1;
     }
-    a.minBid = mindBid.toFixed(2);
+    a.minBid = minBid.toFixed(2);
     $("#dog-min-bid").text(a.minBid);
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);

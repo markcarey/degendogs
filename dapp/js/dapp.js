@@ -1,19 +1,11 @@
 var web3 = AlchemyWeb3.createAlchemyWeb3("wss://eth-kovan.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57");
 var BN = web3.utils.BN;
 
-function abbrAddress(address){
-    if (!address) {
-        address = ethereum.selectedAddress;
-    }
-    //return "0x..." + address.slice(address.length - 6);
-    return address.slice(0,4) + "..." + address.slice(address.length - 4);
-}
-
 const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x1dae97a860bDf66dFBb5312D771f5a3b379D35D9";
+const dogAddress = "0x8B231C8323E448152605B35BEb8c2498731C5D30";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xe0287B706b5f9aF5997dEC04a477ACB9D3D0A387";
+const auctionAddress = "0x93c08fe426882B0A69F9D88b9c5Df17Ef8F4F92E";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
 const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);
@@ -25,6 +17,13 @@ var dappChain;
 var userChain;
 var accounts;
 var a; // current auction or Dog
+
+function abbrAddress(address){
+    if (!address) {
+        address = ethereum.selectedAddress;
+    }
+    return address.slice(0,4) + "..." + address.slice(address.length - 4);
+}
 
 async function main() {
     dappChain = await web3.eth.getChainId();
@@ -170,7 +169,7 @@ async function currentAuction(thisDog) {
             "settled": true
         };
     } 
-    console.log(a);
+    //console.log(a);
     $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
     $("#dog-title").text("Dog " + a.dogId);
     var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
@@ -180,27 +179,20 @@ async function currentAuction(thisDog) {
     var minBid = web3.utils.fromWei(a.amount) * 1.1
     $("#dog-min-bid").text(minBid.toFixed(2));
 
-    //auctionEvents(a.dogId);
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
-    console.log(dogIdTopic);
+    //console.log(dogIdTopic);
     const covEventsUrl = "https://api.covalenthq.com/v1/42/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
-    console.log(covEventsUrl);
+    //console.log(covEventsUrl);
     const response = await fetch(covEventsUrl);
     var covEvents = await response.json();
-    console.log(covEvents);
-    //console.log(web3.utils.toHex(dogId));
-    //var logs = await web3.eth.getPastLogs({
-    //    address: auctionAddress,
-    //    topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic],
-    //    fromBlock: 27539184
-    //});
+    //console.log(covEvents);
     logs = covEvents.data.items;
     var bidsHTML = "";
     var bidsHTMLAll = "";
     $.each(logs, function(index, log) {
-        console.log(log);
+        //console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        console.log(event);
+        //console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
             a.amount = event[1];
@@ -218,7 +210,7 @@ async function currentAuction(thisDog) {
             "txn": log.tx_hash,
             "date": log.block_signed_at
         };
-        console.log(bid);
+        //console.log(bid);
         if (index < 3) {
             bidsHTML += getBidRowHTML(bid);
         }
@@ -256,7 +248,7 @@ async function currentAuction(thisDog) {
             'nonce': "" + nonce,
             'data': auction.methods.createBid(a.dogId).encodeABI()
         };
-        console.log(tx);
+        //console.log(tx);
 
         $("#status").text("Waiting for follow transaction...");
 
@@ -264,7 +256,7 @@ async function currentAuction(thisDog) {
             method: 'eth_sendTransaction',
             params: [tx],
         });
-        console.log(txHash);
+        //console.log(txHash);
         var pendingTxHash = txHash;
         web3.eth.subscribe('newBlockHeaders', async (error, event) => {
             if (error) {
@@ -274,7 +266,7 @@ async function currentAuction(thisDog) {
 
             if (blockTxHashes.includes(pendingTxHash)) {
                 web3.eth.clearSubscriptions();
-                console.log("Bid received!");
+                //console.log("Bid received!");
                 $("#bid-button").text("Bid Received!");
                 currentAuction();
                 var bid = {
@@ -326,7 +318,7 @@ async function currentAuction(thisDog) {
             'nonce': "" + nonce,
             'data': auction.methods.settleCurrentAndCreateNewAuction().encodeABI()
         };
-        console.log(tx);
+        //console.log(tx);
 
         $("#status").text("Waiting for settle transaction...");
 
@@ -334,7 +326,7 @@ async function currentAuction(thisDog) {
             method: 'eth_sendTransaction',
             params: [tx],
         });
-        console.log(txHash);
+        //console.log(txHash);
         var pendingTxHash = txHash;
         web3.eth.subscribe('newBlockHeaders', async (error, event) => {
             if (error) {
@@ -344,7 +336,7 @@ async function currentAuction(thisDog) {
 
             if (blockTxHashes.includes(pendingTxHash)) {
                 web3.eth.clearSubscriptions();
-                console.log("Settled!");
+                //console.log("Settled!");
                 currentAuction();
                 getFlows();
             }
@@ -389,9 +381,6 @@ $( document ).ready(function() {
     });
 
 });
-
-
-
 
 // HTML templates
 function getBidRowHTML(bid, modal) {

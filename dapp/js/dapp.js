@@ -484,7 +484,7 @@ function getDogHTML(a) {
                         ${a.bidsHTML}
                     </ul>
                     <div class="BidHistoryBtn_bidHistoryWrapper__3Zsy9">
-                    <div class="BidHistoryBtn_bidHistory__2lmSd" class="bid-history">Bid History →</div>
+                    <div class="BidHistoryBtn_bidHistory__2lmSd" class="bid-history">Bad History →</div>
                     </div>
                 </div>
                 </div>

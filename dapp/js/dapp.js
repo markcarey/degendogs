@@ -163,8 +163,8 @@ async function currentAuction(thisDog) {
     } else {
         a = {
             "dogId": thisDog,
-            "startTime": Date.now(),
-            "endTime": Date.now(),
+            "startTime": null,
+            "endTime": null,
             "amount": 0
         };
     } 
@@ -193,11 +193,6 @@ async function currentAuction(thisDog) {
     //    fromBlock: 27539184
     //});
     logs = covEvents.data.items;
-    const endTime = a.endTime;
-    const currentTime = Date.now() / 1000;
-    const diffTime = endTime - currentTime;
-    let duration = moment.duration(diffTime * 1000, 'milliseconds');
-    a.duration = duration;
     var bidsHTML = "";
     var bidsHTMLAll = "";
     $.each(logs, function(index, log) {
@@ -207,6 +202,12 @@ async function currentAuction(thisDog) {
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
             a.amount = amt;
+            if (!a.endTime) {
+                a.endTime = log.block_signed_at;
+            }
+            if (!a.startTime) {
+                a.endTime = log.block_signed_at - 60*60;
+            }
         }
         var bid = {
             "bidder": event[0],
@@ -222,6 +223,11 @@ async function currentAuction(thisDog) {
     });
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
+    const endTime = a.endTime;
+    const currentTime = Date.now() / 1000;
+    const diffTime = endTime - currentTime;
+    let duration = moment.duration(diffTime * 1000, 'milliseconds');
+    a.duration = duration;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     if (a.duration.asSeconds() > 0) {
@@ -351,7 +357,7 @@ async function currentAuction(thisDog) {
     });
 
 }
-currentAuction(8);
+currentAuction(3);
 getFlows();
 
 

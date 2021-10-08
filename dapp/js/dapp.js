@@ -199,7 +199,7 @@ async function currentAuction() {
         if (index < 3) {
             bidsHTML += getBidRowHTML(bid);
         }
-        bidsHTMLAll += getBidRowHTML(bid);
+        bidsHTMLAll += getBidRowHTML(bid, true);
     });
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
@@ -350,7 +350,7 @@ $( document ).ready(function() {
 
 
 // HTML templates
-function getBidRowHTML(bid) {
+function getBidRowHTML(bid, modal) {
     var address = abbrAddress(bid.bidder);
     var date = moment(bid.date).format("MMMM DD [at] HH:mm");
     var html = `
@@ -378,6 +378,32 @@ function getBidRowHTML(bid) {
             </div>
         </li>
     `;
+    if ( modal ) {
+        html = `
+        <li class="BidHistory_bidRow__31Sl2">
+                <div class="BidHistory_bidItem__2EgHh">
+                    <div class="BidHistory_leftSectionWrapper__3gsSj">
+                    <div class="BidHistory_bidder__1R14A">
+                        <div>${address}</div>
+                    </div>
+                    <div class="BidHistory_bidDate__3dDvg">${date}</div>
+                    </div>
+                    <div class="BidHistory_rightSectionWrapper__3N0DM">
+                    <div class="BidHistory_bidAmount__3yfv7">Ξ ${bid.bid}</div>
+                    <div class="BidHistory_linkSymbol__2qaZG"><a
+                        href="https://kovan.etherscan.io/tx/${bid.txn}"
+                        target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
+                            data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="currentColor"
+                            d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
+                            </path>
+                        </svg></a></div>
+                    </div>
+                </div>
+                </li>
+        `;
+    }
     return html;
 }
 
@@ -513,28 +539,6 @@ function getBidHistoryModal(a) {
             </div>
             <div class="modal-body">
             <ul class="BidHistory_bidCollection__1DoXy">
-                <li class="BidHistory_bidRow__31Sl2">
-                <div class="BidHistory_bidItem__2EgHh">
-                    <div class="BidHistory_leftSectionWrapper__3gsSj">
-                    <div class="BidHistory_bidder__1R14A">
-                        <div>machibigbrother.eth</div>
-                    </div>
-                    <div class="BidHistory_bidDate__3dDvg">Oct 06 at 07:15 am</div>
-                    </div>
-                    <div class="BidHistory_rightSectionWrapper__3N0DM">
-                    <div class="BidHistory_bidAmount__3yfv7">Ξ 198.00</div>
-                    <div class="BidHistory_linkSymbol__2qaZG"><a
-                        href="https://etherscan.io/tx/0xfb11809e2a27ae95b36103ac39bb5cd29836783419ed0265707595f3a1653e9f"
-                        target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
-                            data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                            <path fill="currentColor"
-                            d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z">
-                            </path>
-                        </svg></a></div>
-                    </div>
-                </div>
-                </li>
                 ${a.bidsHTMLAll}
             </ul>
             </div>

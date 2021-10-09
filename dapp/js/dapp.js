@@ -31,6 +31,10 @@ async function main() {
 
     accounts = await web3.eth.getAccounts();
     //connectWallet();
+    if (accounts.length > 0) {
+        $(".connect").text(abbrAddress());
+        $("#bid-button").prop("disabled", false);
+    }
 
     userChain = await ethereum.request({ method: 'eth_chainId' });
     //console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));

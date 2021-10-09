@@ -255,8 +255,8 @@ contract Dog is ERC721, Ownable {
         int96 closedFlowRate = _closeStreamsForToken(tokenId);
         flowRates[tokenId] -= closedFlowRate;
         IERC20 tokenContract = IERC20(cDAIx);
-        // reward equivalent of 30 days of closed flow
-        tokenContract.transfer( msg.sender, uint256(uint96(closedFlowRate)).mul(30) );
+        // reward equivalent of 30 days of closed flow: 60*60*24*30 = 2592000
+        tokenContract.transfer( msg.sender, uint256(uint96(closedFlowRate)).mul(2592000) );
     }
 
     function _closeStreamsForToken(uint256 tokenId) internal returns (int96 closedFlowRate) {

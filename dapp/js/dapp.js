@@ -78,7 +78,7 @@ async function connectWallet() {
                 // Metamask is ready to go!
                 //console.log(result);
                 accounts = result;
-                $(".connect").text(abbrAddress());
+                $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
                 $("#bid-button").prop("disabled", false);
             })
             .catch(reason => {

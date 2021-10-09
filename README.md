@@ -8,7 +8,7 @@
 
 Degen Dogs combine NFTs with DeFi. The degenerative art is inspired by Cryptopunks. The treasury aspect is inspired by Nouns. The DeFi and money streams aim to explore a new community that collides the worlds of NFTs and DeFi into a new type of crypto dog off-leash park. Grab your Dog and join the Club.
 
-Degen Dogs is a submission for the 2021 ETHOnline Hackathon, and is powered by Superfuid, Uniswap, Chainlink, Compound, DAI by Maker, and hosted on Skynet. The website (dapp) HTML and CSS are modified from Nounds DAO, as is the Auction House contract, which was itself modified from the Zora Auction House contract -- used under the GPL licence. Nouns is a very interesting project, check it out.
+Degen Dogs is a submission for the 2021 ETHOnline Hackathon, and is powered by Superfluid, Uniswap, Chainlink, Compound, DAI by Maker, and hosted on Skynet. The website (dapp) HTML and CSS are modified from Nounds DAO, as is the Auction House contract, which was itself modified from the Zora Auction House contract -- used under a GPL licence. Nouns is a very interesting project, check it out.
 
 ## Daily Auctions
 
@@ -61,8 +61,8 @@ These Dogs are just getting started. Possible next steps and additonal features 
 - Feature: every 52 days, a prize from the treasury earned by a random Dog owner.
 - Feature: a pre-auction tool where artists can submit Dogs and the community can vote on which Dogs are freed from the pound and minted to the collection (portion of proceeds to artists).
 - Explore other DeFi options (Aave, Balancer, Yearn, etc.)
-- Explore and simulate incentived tokenomics models
+- Explore and simulate incentivized tokenomics models
 - Smart contract refinements to support fully decentralized operation
-- DAO goverance implementation
+- DAO governance implementation
 - Support for resale auctions in the dapp
 - Mainnet launch!

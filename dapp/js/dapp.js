@@ -32,7 +32,7 @@ async function main() {
     accounts = await web3.eth.getAccounts();
     //connectWallet();
     if (accounts.length > 0) {
-        $(".connect").text(abbrAddress());
+        $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
         $("#bid-button").prop("disabled", false);
     }
 

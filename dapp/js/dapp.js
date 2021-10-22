@@ -7,6 +7,8 @@ const dogAddress = "0xe84850d8A38264F9c1605E1D4e4Afa76D4A3C86C";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
 const auctionAddress = "0x6c1bF94d79595cEeF53c43C8728b81F0D2328F2D";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
+const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9";
+const WETH = new web3.eth.Contract(tokenABI, wethAddress);
 
 
 const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
@@ -18,6 +20,7 @@ var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
 var dappChain;
 var userChain;
 var accounts;
+var approved = 0;
 var a; // current auction or Dog
 
 function abbrAddress(address){
@@ -247,80 +250,114 @@ async function currentAuction(thisDog) {
         $("#settle-button").prop("disabled", false);
     }
     $("#bid-button").click(async function(){
-        $("#bid-button").text("Bidding...");
         var newBid = $("#new-bid").val();
-        const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
+        if ( approve >= newBid ) {
+            $("#bid-button").text("Bidding...");
+            const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
 
-        //the transaction
-        const tx = {
-            'from': ethereum.selectedAddress,
-            'to': auctionAddress,
-            'gasPrice': gas,
-            'value': web3.utils.toHex(web3.utils.toWei(newBid)),
-            'nonce': "" + nonce,
-            'data': auction.methods.createBid(a.dogId).encodeABI()
-        };
-        //console.log(tx);
+            //the transaction
+            const tx = {
+                'from': ethereum.selectedAddress,
+                'to': auctionAddress,
+                'gasPrice': gas,
+                'value': web3.utils.toHex(web3.utils.toWei(newBid)),
+                'nonce': "" + nonce,
+                'data': auction.methods.createBid(a.dogId).encodeABI()
+            };
+            //console.log(tx);
 
-        $("#status").text("Waiting for follow transaction...");
+            const txHash = await ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [tx],
+            });
+            //console.log(txHash);
+            var pendingTxHash = txHash;
+            web3.eth.subscribe('newBlockHeaders', async (error, event) => {
+                if (error) {
+                    console.log("error", error);
+                }
+                const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
 
-        const txHash = await ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [tx],
-        });
-        //console.log(txHash);
-        var pendingTxHash = txHash;
-        web3.eth.subscribe('newBlockHeaders', async (error, event) => {
-            if (error) {
-                console.log("error", error);
-            }
-            const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
-
-            if (blockTxHashes.includes(pendingTxHash)) {
-                web3.eth.clearSubscriptions();
-                //console.log("Bid received!");
-                $("#bid-button").text("Bid Received!");
-                //currentAuction();
-                var bid = {
-                    "bid": parseFloat(newBid).toFixed(2),
-                    "bidder": ethereum.selectedAddress,
-                    "date": Date.now()
-                };
-                var bidHTML = getBidRowHTML(bid);
-                $("#bid-history").prepend(bidHTML);
-                $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
-                a.minBid = parseFloat(newBid) * 1.1;
-                $("#dog-min-bid").text(a.minBid.toFixed(2));
-                $("#bid-button").text("Bid");
-                $("#new-bid").val("");
-                //setTimeout(currentAuction, 5000);
-                var subscription = web3.eth.subscribe('logs', {
-                    address: auctionAddress,
-                    topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic]
-                }, function(error, result){
-                    if (!error)
-                        console.log(result);
-                })
-                .on("connected", function(subscriptionId){
-                    //console.log(subscriptionId);
-                })
-                .on("data", function(log){
-                    //console.log(log);
-                    var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
-                    //console.log(event);
-                    var amt = parseFloat(web3.utils.fromWei( event[1] ));
+                if (blockTxHashes.includes(pendingTxHash)) {
+                    web3.eth.clearSubscriptions();
+                    //console.log("Bid received!");
+                    $("#bid-button").text("Bid Received!");
+                    //currentAuction();
                     var bid = {
-                        "bidder": event[0],
-                        "bid": amt.toFixed(2),
-                        "txn": log.transactionHash,
+                        "bid": parseFloat(newBid).toFixed(2),
+                        "bidder": ethereum.selectedAddress,
                         "date": Date.now()
                     };
-                    //console.log(bid);
-                    bidsHTML += getBidRowHTML(bid);
+                    var bidHTML = getBidRowHTML(bid);
                     $("#bid-history").prepend(bidHTML);
-                })
-            }
-        });
+                    $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
+                    a.minBid = parseFloat(newBid) * 1.1;
+                    $("#dog-min-bid").text(a.minBid.toFixed(2));
+                    $("#bid-button").text("Bid");
+                    $("#new-bid").val("");
+                    //setTimeout(currentAuction, 5000);
+                    var subscription = web3.eth.subscribe('logs', {
+                        address: auctionAddress,
+                        topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic]
+                    }, function(error, result){
+                        if (!error)
+                            console.log(result);
+                    })
+                    .on("connected", function(subscriptionId){
+                        //console.log(subscriptionId);
+                    })
+                    .on("data", function(log){
+                        //console.log(log);
+                        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
+                        //console.log(event);
+                        var amt = parseFloat(web3.utils.fromWei( event[1] ));
+                        var bid = {
+                            "bidder": event[0],
+                            "bid": amt.toFixed(2),
+                            "txn": log.transactionHash,
+                            "date": Date.now()
+                        };
+                        //console.log(bid);
+                        bidsHTML += getBidRowHTML(bid);
+                        $("#bid-history").prepend(bidHTML);
+                    })
+                }
+            });
+        } else {
+            // need Approval
+            $("#bid-button").text("Approving...");
+            const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
+
+            //the transaction
+            const tx = {
+                'from': ethereum.selectedAddress,
+                'to': wethAddress,
+                'gasPrice': gas,
+                'nonce': "" + nonce,
+                'data': WETH.methods.approve(auctionAddress, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
+            };
+            //console.log(tx);
+
+            const txHash = await ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [tx],
+            });
+            //console.log(txHash);
+            var pendingTxHash = txHash;
+            web3.eth.subscribe('newBlockHeaders', async (error, event) => {
+                if (error) {
+                    console.log("error", error);
+                }
+                const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
+
+                if (blockTxHashes.includes(pendingTxHash)) {
+                    web3.eth.clearSubscriptions();
+                    //console.log("Bid received!");
+                    $("#bid-button").text("Bid");
+                    approved = newBid;
+                }
+            });
+        }
     });
 
     $("#settle-button").click(async function(){
@@ -484,7 +521,7 @@ function bidFormHTML(a) {
         <div class="input-group"><input id="new-bid" aria-label=""
             aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
             value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
-            class="Bid_bidBtn__2MzFj btn btn-primary">Bid</button></div>
+            class="Bid_bidBtn__2MzFj btn btn-primary">Approve</button></div>
         `;
     }
     return html;

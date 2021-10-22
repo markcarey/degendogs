@@ -8,7 +8,7 @@ const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0xE824317d92e782cA7dc077c8df7870b2aF4eb238";
+const contractAddress = "0xe84850d8A38264F9c1605E1D4e4Afa76D4A3C86C";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -259,7 +259,6 @@ async function issue(newOwner, tokenId, amount) {
       'to': contractAddress,
       'nonce': nonce,
       'gas': 2000000,
-      'maxPriorityFeePerGas': 1999999987,
       'data': nftContract.methods.issue(newOwner, tokenId, amount).encodeABI()
     };
   
@@ -306,7 +305,7 @@ async function issue(newOwner, tokenId, amount) {
   }
 
 //mint(); //"19290123456790"); // 50 per month
-//issue("0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661", 0, "1000000000000000000");
+//issue("0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D", 0, "1000000000000000000"); // Dog Master
 //issue("0x0F74e1B1b88Dfe9DE2dd5d066BE94345ab0590F1", 1, "100000000000000000"); // NFT Words
 //issue("0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661", 2, "100000000000000000"); 
 //issue("0x0F74e1B1b88Dfe9DE2dd5d066BE94345ab0590F1", 3, "1000000000000000000"); // NFT Words
@@ -324,5 +323,5 @@ async function issue(newOwner, tokenId, amount) {
 //defi();
 //claimComp();
 //latestExchangeRate();
-setMinter("0x28008a049599C677c7a96ac416f413e2979A1a12");
+setMinter("0x6c1bF94d79595cEeF53c43C8728b81F0D2328F2D");
 //tokenURI(1);

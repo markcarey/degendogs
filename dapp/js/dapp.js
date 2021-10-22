@@ -3,9 +3,9 @@ var BN = web3.utils.BN;
 
 const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0xE824317d92e782cA7dc077c8df7870b2aF4eb238";
+const dogAddress = "0xe84850d8A38264F9c1605E1D4e4Afa76D4A3C86C";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x28008a049599C677c7a96ac416f413e2979A1a12";
+const auctionAddress = "0x6c1bF94d79595cEeF53c43C8728b81F0D2328F2D";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 
 

@@ -304,65 +304,7 @@ contract Dog is ERC721, Ownable {
         return closed;
     }
     
-      // executing every time the token is moved, including intial minting
-      // When the token is first "issued", i.e. moved from the first contract, it will start the streams
-    function _beforeTokenTransfer(
-        address oldReceiver,
-        address newReceiver,
-        uint256 tokenId
-    ) internal override {
-            require(newReceiver != address(0), "New receiver is zero address");
-            // @dev because our app is registered as final, we can't take downstream apps
-
-            if ( oldReceiver == address(this) ) {
-                uint256 _amount = winningBid[tokenId];
-                uint256 _super = cTokensForDog[tokenId];
-                flowRates[tokenId] = 0;
-                // 10% back to inital owner
-                flowsForToken[tokenId].push(Flow(
-                    {
-                        tokenId: tokenId,
-                        timestamp: block.timestamp + 365*24*60*60,
-                        flowRate: int96(uint96(_super.div(10).div(31536000)))
-                    }
-                ));
-                // shared portion: 40% of proceeds
-                for (uint256 i = 0; i < lastId; i++) {
-                    flowsForToken[tokenId].push(Flow(
-                        {
-                            tokenId: i,
-                            timestamp: block.timestamp + 365*24*60*60,
-                            flowRate: int96(uint96(_super.div(10).mul(4).div(lastId).div(31536000)))
-                        }
-                    ));
-                }
-                // 20% to the 10 before Dog owner
-                if (tokenId > 9) {
-                    flowsForToken[tokenId].push(Flow(
-                        {
-                            tokenId: tokenId - 10,
-                            timestamp: block.timestamp + 365*24*60*60,
-                            flowRate: int96(uint96(_super.div(5).div(31536000)))
-                        }
-                    ));
-                }
-
-                for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
-                    address receiver = ownerOf(flowsForToken[tokenId][i].tokenId);
-                    if ( flowsForToken[tokenId][i].tokenId == tokenId) {
-                        receiver = newReceiver;
-                    }
-                    _createOrRedirectFlows(oldReceiver, receiver, flowsForToken[tokenId][i].flowRate);
-                    flowRates[flowsForToken[tokenId][i].tokenId] += flowsForToken[tokenId][i].flowRate;
-                }
-
-            } else {
-                if (newReceiver != address(this)) {
-                    // being transferred to new owner - redirect the flow
-                    _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
-                }
-            }
-      }
+    // TODO: add back before tranfer hook here when ready
 
     function _createOrRedirectFlows(
         address oldReceiver,

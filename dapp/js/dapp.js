@@ -251,7 +251,7 @@ async function currentAuction(thisDog) {
     }
     $("#bid-button").click(async function(){
         var newBid = $("#new-bid").val();
-        if ( approve >= newBid ) {
+        if ( approved >= newBid ) {
             $("#bid-button").text("Bidding...");
             const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
 

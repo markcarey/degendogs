@@ -76,6 +76,9 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         reservePrice = _reservePrice;
         minBidIncrementPercentage = _minBidIncrementPercentage;
         duration = _duration;
+
+        IERC20 token = IERC20(weth);
+        token.approve(address(dogs), 2**256 - 1);
     }
 
     /**
@@ -231,8 +234,8 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
             //dogs.burn(_auction.dogId);
         } else {
             //dogs.issue{value: _auction.amount}(_auction.bidder, _auction.dogId, _auction.amount); // Kovan
-            IERC20 token = IERC20(weth);
-            token.approve(address(dogs), _auction.amount);
+            //IERC20 token = IERC20(weth);
+            //token.approve(address(dogs), _auction.amount);
             dogs.issue(_auction.bidder, _auction.dogId, _auction.amount);
         }
 

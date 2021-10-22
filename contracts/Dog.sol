@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
@@ -50,6 +50,7 @@ interface ICompoundComptroller {
 
 contract Dog is ERC721, Ownable {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
     AggregatorV3Interface internal priceFeed;
 
@@ -257,12 +258,19 @@ contract Dog is ERC721, Ownable {
     event NFTIssued(uint256 indexed tokenId, address indexed owner);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
-    function issue(address newOwner, uint256 tokenId, uint256 amount) external payable onlyMinterOrOwner {
+    function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
-        if (msg.value > 0) {
-            _defi(msg.value, tokenId);
-        }
+        //if (msg.value > 0) {
+        //    _defi(msg.value, tokenId);
+        //}
+
+        IERC20 token = IERC20(WETH9);
+        uint256 beforeBalance = token.balanceOf(address(this));
+        token.safeTransferFrom(msg.sender, address(this), amount);
+        uint256 afterBalance = token.balanceOf(address(this));
+        require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
+
         winningBid[tokenId] = amount;
         //_claimComp();
         emit NFTIssued(tokenId, newOwner);

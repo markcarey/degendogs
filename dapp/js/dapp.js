@@ -5,7 +5,7 @@ const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
 const dogAddress = "0x82C152ec6Ad1613456792aF793083026b95cD648";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xAB2C0BEEe5d0423bFF745579c717f020Df48675E";
+const auctionAddress = "0xB5A27d35Cf08fF21bce3D7Ee444CE0b6bFf7996a";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 
 

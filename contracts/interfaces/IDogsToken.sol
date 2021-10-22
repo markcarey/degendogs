@@ -17,7 +17,7 @@ interface IDogsToken is IERC721 {
 
     function mint() external returns (uint256);
 
-    function issue(address newOwner, uint256 tokenId, uint256 amount) external payable;
+    function issue(address newOwner, uint256 tokenId, uint256 amount) external;
 
     function burn(uint256 tokenId) external;
 

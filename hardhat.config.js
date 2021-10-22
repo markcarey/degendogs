@@ -14,14 +14,20 @@ module.exports = {
       }
     }
   },
-   defaultNetwork: "kovan",
+   defaultNetwork: "mumbai",
    networks: {
       hardhat: {},
       kovan: {
-         url: API_URL,
+         url: API_URL_KOVAN,
          accounts: [`0x${PRIVATE_KEY}`],
          gasMultiplier: 3,
          gasPrice: 1000000000 * 2
-      }
+      },
+      mumbai: {
+        url: API_URL,
+        accounts: [`0x${PRIVATE_KEY}`],
+        gasMultiplier: 3,
+        gasPrice: 1000000000 * 2
+     }
    },
 }

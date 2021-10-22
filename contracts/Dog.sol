@@ -52,12 +52,23 @@ contract Dog is ERC721, Ownable {
     using SafeMath for uint256;
 
     AggregatorV3Interface internal priceFeed;
-    IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
-    address private constant WETH9 = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
-    address private constant DAI = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
-    address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
-    address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
-    address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
+
+
+    // Kovan Contracts
+    //IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
+    //address private constant WETH9 = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
+    //address private constant DAI = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
+    //address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
+    //address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
+    //address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
+
+    // Mumbai Contracts
+    IUniswapRouter public constant uniswapRouter = IUniswapRouter(); // 
+    address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9;
+    address private constant DAI = ;
+    address private constant cDAI = ;
+    address private constant cDAIx = ;
+    address private constant comptroller = ;
 
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address

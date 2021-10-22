@@ -260,9 +260,8 @@ async function currentAuction(thisDog) {
                 'from': ethereum.selectedAddress,
                 'to': auctionAddress,
                 'gasPrice': gas,
-                'value': web3.utils.toHex(web3.utils.toWei(newBid)),
                 'nonce': "" + nonce,
-                'data': auction.methods.createBid(a.dogId).encodeABI()
+                'data': auction.methods.createBid(a.dogId, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
             };
             //console.log(tx);
 

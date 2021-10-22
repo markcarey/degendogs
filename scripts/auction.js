@@ -11,6 +11,9 @@ const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctio
 const contractAddress = "0x93c08fe426882B0A69F9D88b9c5Df17Ef8F4F92E";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
+//const WETH = "0x8B231C8323E448152605B35BEb8c2498731C5D30"; // Kovan
+const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // Mumbai -- found at https://docs.aave.com/developers/deployed-contracts/matic-polygon-market
+
 async function initialize() {
   const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
 
@@ -21,7 +24,7 @@ async function initialize() {
     'nonce': nonce,
     'gas': 1000000,
     'maxPriorityFeePerGas': 1999999987,
-    'data': nftContract.methods.initialize("0x8B231C8323E448152605B35BEb8c2498731C5D30", "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*10).encodeABI()
+    'data': nftContract.methods.initialize(WETH, "0xd0A1E359811322d97991E03f863a0C30C2cF029C", 60*1, "100000000000000000", 10, 60*10).encodeABI()
   };
 
   const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);

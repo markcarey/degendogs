@@ -63,12 +63,14 @@ contract Dog is ERC721, Ownable {
     //address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
 
     // Mumbai Contracts
-    IUniswapRouter public constant uniswapRouter = IUniswapRouter(); // 
+    IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564); // 
+
     address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9;
-    address private constant DAI = ;
-    address private constant cDAI = ;
-    address private constant cDAIx = ;
-    address private constant comptroller = ;
+    address private constant DAI = 0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F;
+   
+    address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
+    address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
+    address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
 
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
@@ -110,8 +112,13 @@ contract Dog is ERC721, Ownable {
             "DOG"//_symbol
             ) {
                 
-        _host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
-        _cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
+        // Kovan:
+        //_host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
+        //_cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
+        // Mumbai
+        _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
+        _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
+
         _acceptedToken = ISuperToken(cDAIx);
 
         assert(address(_host) != address(0));
@@ -257,7 +264,7 @@ contract Dog is ERC721, Ownable {
             _defi(msg.value, tokenId);
         }
         winningBid[tokenId] = amount;
-        _claimComp();
+        //_claimComp();
         emit NFTIssued(tokenId, newOwner);
         this.safeTransferFrom(address(this), newOwner, tokenId);
     }

@@ -16,15 +16,20 @@
 
 pragma solidity ^0.8.0;
 
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import { ReentrancyGuardUpgradeable } from '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IDogsAuctionHouse } from './interfaces/IDogsAuctionHouse.sol';
 import { IDogsToken } from './interfaces/IDogsToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
 contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyGuardUpgradeable, OwnableUpgradeable {
+    using SafeERC20 for IERC20;
+    using SafeMath for uint256;
+
     // The Degen Dogs ERC721 token contract
     IDogsToken public dogs;
 
@@ -225,7 +230,8 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         if (_auction.bidder == address(0)) {
             //dogs.burn(_auction.dogId);
         } else {
-            dogs.issue{value: _auction.amount}(_auction.bidder, _auction.dogId, _auction.amount);
+            //dogs.issue{value: _auction.amount}(_auction.bidder, _auction.dogId, _auction.amount); // Kovan
+            dogs.issue(_auction.bidder, _auction.dogId, _auction.amount);
         }
 
         emit AuctionSettled(_auction.dogId, _auction.bidder, _auction.amount);
@@ -239,7 +245,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         // If this is an ETH bid, ensure they sent enough and convert it to WETH under the hood
         if(currency == address(0)) {
             require(msg.value == amount, "Sent ETH Value does not match specified bid amount");
-            IWETH(wethAddress).deposit{value: amount}();
+            IWETH(weth).deposit{value: amount}();
         } else {
             // We must check the balance that was actually transferred to the auction,
             // as some tokens impose a transfer fee and would not actually transfer the
@@ -255,12 +261,12 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
     function _handleOutgoingBid(address to, uint256 amount, address currency) internal {
         // If the auction is in ETH, unwrap it from its underlying WETH and try to send it to the recipient.
         if(currency == address(0)) {
-            IWETH(wethAddress).withdraw(amount);
+            IWETH(weth).withdraw(amount);
 
             // If the ETH transfer fails (sigh), rewrap the ETH and try send it as WETH.
             if(!_safeTransferETH(to, amount)) {
-                IWETH(wethAddress).deposit{value: amount}();
-                IERC20(wethAddress).safeTransfer(to, amount);
+                IWETH(weth).deposit{value: amount}();
+                IERC20(weth).safeTransfer(to, amount);
             }
         } else {
             IERC20(currency).safeTransfer(to, amount);

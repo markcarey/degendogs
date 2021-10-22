@@ -1,12 +1,14 @@
 var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
 var BN = web3.utils.BN;
 
-const cfaAddress = "0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F";
+const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x8B231C8323E448152605B35BEb8c2498731C5D30";
+const dogAddress = "0x82C152ec6Ad1613456792aF793083026b95cD648";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x93c08fe426882B0A69F9D88b9c5Df17Ef8F4F92E";
+const auctionAddress = "0xe903A08792e32aE03B761235F1Fe563AFab413f2";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
+
+
 const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
 const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);
 const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
@@ -378,7 +380,7 @@ async function currentAuction(thisDog) {
 
 }
 currentAuction();
-getFlows();
+//getFlows();
 
 
 

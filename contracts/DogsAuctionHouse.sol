@@ -93,25 +93,28 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
      * @notice Create a bid for a Dog, with a given amount.
      * @dev This contract only accepts payment in ETH.
      */
-    function createBid(uint256 dogId) external payable override nonReentrant {
+    function createBid(uint256 dogId, uint256 amount) external payable override nonReentrant {
         IDogsAuctionHouse.Auction memory _auction = auction;
 
         require(_auction.dogId == dogId, 'Dog not up for auction');
         require(block.timestamp < _auction.endTime, 'Auction expired');
-        require(msg.value >= reservePrice, 'Must send at least reservePrice');
+        require(amount >= reservePrice, 'Must send at least reservePrice');
         require(
-            msg.value >= _auction.amount + ((_auction.amount * minBidIncrementPercentage) / 100),
+            amount >= _auction.amount + ((_auction.amount * minBidIncrementPercentage) / 100),
             'Must send more than last bid by minBidIncrementPercentage amount'
         );
+
+        _handleIncomingBid(amount, weth);
 
         address payable lastBidder = _auction.bidder;
 
         // Refund the last bidder, if applicable
         if (lastBidder != address(0)) {
-            _safeTransferETHWithFallback(lastBidder, _auction.amount);
+            //_safeTransferETHWithFallback(lastBidder, _auction.amount);
+            _handleOutgoingBid(lastBidder, _auction.amount, weth);
         }
 
-        auction.amount = msg.value;
+        auction.amount = amount;
         auction.bidder = payable(msg.sender);
 
         // Extend the auction if the bid was received within `timeBuffer` of the auction end time
@@ -120,7 +123,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
             auction.endTime = _auction.endTime = block.timestamp + timeBuffer;
         }
 
-        emit AuctionBid(_auction.dogId, msg.sender, msg.value, extended);
+        emit AuctionBid(_auction.dogId, msg.sender, amount, extended);
 
         if (extended) {
             emit AuctionExtended(_auction.dogId, _auction.endTime);
@@ -226,6 +229,42 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         }
 
         emit AuctionSettled(_auction.dogId, _auction.bidder, _auction.amount);
+    }
+
+    /**
+     * @dev Given an amount and a currency, transfer the currency to this contract.
+     * If the currency is ETH (0x0), attempt to wrap the amount as WETH
+     */
+    function _handleIncomingBid(uint256 amount, address currency) internal {
+        // If this is an ETH bid, ensure they sent enough and convert it to WETH under the hood
+        if(currency == address(0)) {
+            require(msg.value == amount, "Sent ETH Value does not match specified bid amount");
+            IWETH(wethAddress).deposit{value: amount}();
+        } else {
+            // We must check the balance that was actually transferred to the auction,
+            // as some tokens impose a transfer fee and would not actually transfer the
+            // full amount to the market, resulting in potentally locked funds
+            IERC20 token = IERC20(currency);
+            uint256 beforeBalance = token.balanceOf(address(this));
+            token.safeTransferFrom(msg.sender, address(this), amount);
+            uint256 afterBalance = token.balanceOf(address(this));
+            require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
+        }
+    }
+
+    function _handleOutgoingBid(address to, uint256 amount, address currency) internal {
+        // If the auction is in ETH, unwrap it from its underlying WETH and try to send it to the recipient.
+        if(currency == address(0)) {
+            IWETH(wethAddress).withdraw(amount);
+
+            // If the ETH transfer fails (sigh), rewrap the ETH and try send it as WETH.
+            if(!_safeTransferETH(to, amount)) {
+                IWETH(wethAddress).deposit{value: amount}();
+                IERC20(wethAddress).safeTransfer(to, amount);
+            }
+        } else {
+            IERC20(currency).safeTransfer(to, amount);
+        }
     }
 
     /**

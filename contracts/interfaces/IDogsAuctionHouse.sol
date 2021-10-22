@@ -39,7 +39,7 @@ interface IDogsAuctionHouse {
 
     function settleCurrentAndCreateNewAuction() external;
 
-    function createBid(uint256 dogId) external payable;
+    function createBid(uint256 dogId, uint256 amount) external payable;
 
     function pause() external;
 

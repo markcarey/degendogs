@@ -192,7 +192,7 @@ async function currentAuction(thisDog) {
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
     //console.log(dogIdTopic);
-    const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=27539184&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+    const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=20502186&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
     //console.log(covEventsUrl);
     const response = await fetch(covEventsUrl);
     var covEvents = await response.json();

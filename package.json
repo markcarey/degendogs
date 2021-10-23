@@ -22,6 +22,7 @@
     "hardhat": "^2.6.4"
   },
   "dependencies": {
+    "@aave/protocol-v2": "^1.0.1",
     "@alch/alchemy-web3": "^1.1.4",
     "@chainlink/contracts": "^0.2.2",
     "@openzeppelin/contracts": "^4.3.2",

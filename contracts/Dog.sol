@@ -5,6 +5,8 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+//import {ILendingPool} from "@aave/protocol-v2/contracts/interfaces/ILendingPool.sol";
+
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
@@ -48,6 +50,13 @@ interface ICompoundComptroller {
     function claimComp(address holder) external;
 }
 
+interface ILendingPool {
+    function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
+    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
+    function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf) external;
+    function repay(address asset, uint256 amount, uint256 rateMode, address onBehalfOf) external returns (uint256);
+}
+
 contract Dog is ERC721, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -68,6 +77,9 @@ contract Dog is ERC721, Ownable {
 
     address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9;
     address private constant DAI = 0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F;
+    address private constant aaveLendingPool = 0x9198F13B08E299d85E096929fA9781A1E3d5d827;
+    address private constant amWETH = 0x7aE20397Ca327721F013BB9e140C707F82871b56;
+    address private constant amWETHx = 0x67A87A1daa04Da7aADA1787c1FaFd178553d9FE1;
    
     address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
     address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
@@ -81,7 +93,6 @@ contract Dog is ERC721, Ownable {
     address public minter;
 
     mapping(uint256 => uint256) public winningBid;
-    mapping(uint256 => uint256) public cTokensForDog;
 
     mapping(uint256 => int96) public flowRates;
     struct Flow {
@@ -119,8 +130,7 @@ contract Dog is ERC721, Ownable {
         // Mumbai
         _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
         _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
-
-        _acceptedToken = ISuperToken(cDAIx);
+        _acceptedToken = ISuperToken(amWETHx);
 
         assert(address(_host) != address(0));
         assert(address(_cfa) != address(0));
@@ -211,27 +221,51 @@ contract Dog is ERC721, Ownable {
         troll.claimComp(address(this));
     }
 
-    function _super(uint256 cTokens) internal {
+    function _aave(uint256 tokens) internal returns (uint256) {
+        // Create a reference to the corresponding aToken contract, like amWETH
+        Erc20 aToken = Erc20(amWETH);
+        uint256 _numTokensBefore = aToken.balanceOf(address(this));
+        Erc20(WETH9).approve(aaveLendingPool, tokens);
+        ILendingPool(aaveLendingPool).deposit(WETH9, tokens, address(this), 0);
+        uint256 _numTokensAfter = aToken.balanceOf(address(this));
+        return _numTokensAfter.sub(_numTokensBefore);
+    }
+
+    function _claimAaveRewards() internal {
+        if ( block.chainid == 137 ) {
+            // TODO: get balance https://docs.aave.com/developers/guides/liquidity-mining#getrewardsbalance
+            // then if exceeds threshold:
+            // https://docs.aave.com/developers/guides/liquidity-mining#claimrewards
+            // polygon mainnet rewards at 0x357D51124f59836DeD84c8a1730D72B749d8BC23
+        }
+    }
+
+    function _super(uint256 aTokens) internal {
         // Create a reference to the underlying asset contract, like DAI.
-        CErc20 underlying = CErc20(cDAI);
+        Erc20 underlying = Erc20(amWETH);
 
-        //uint256 _numTokensToSupply = underlying.balanceOf(address(this));
-        uint256 _numTokensToSupply = cTokens;
+        uint256 _numTokensToSupply = aTokens;
 
+        // TODO: still need this?
         uint256 amount = _numTokensToSupply * (10 ** (18 - underlying.decimals()));
 
         // Approve transfer on the ERC20 contract
-        underlying.approve(cDAIx, _numTokensToSupply);
+        underlying.approve(amWETHx, _numTokensToSupply);
 
         // Mint super tokens
         _acceptedToken.upgrade(amount);
     }
 
     function _defi(uint256 amount, uint256 tokenId) internal {
-        uint256 tokens = _swap(amount); // ETH for DAI
-        uint256 cTokens = _comp(tokens);  // DAI for cDAI
-        cTokensForDog[tokenId] = cTokens.mul(1e10);
-        _super(cTokens.div(10)); // 10% of cDAI upgraded to cDAIx
+        IERC20 token = IERC20(WETH9);
+        uint256 beforeBalance = token.balanceOf(address(this));
+        token.safeTransferFrom(msg.sender, address(this), amount);
+        uint256 afterBalance = token.balanceOf(address(this));
+        require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
+
+        //uint256 tokens = _swap(amount); // ETH for DAI
+        uint256 aTokens = _aave(amount);  // WETH for amWETH
+        _super(aTokens.div(10)); // 10% of amWETH upgraded to amWETHx
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -261,15 +295,9 @@ contract Dog is ERC721, Ownable {
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
-        //if (msg.value > 0) {
-        //    _defi(msg.value, tokenId);
-        //}
-
-        IERC20 token = IERC20(WETH9);
-        uint256 beforeBalance = token.balanceOf(address(this));
-        token.safeTransferFrom(msg.sender, address(this), amount);
-        uint256 afterBalance = token.balanceOf(address(this));
-        require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
+        if (amount > 0) {
+            _defi(amount, tokenId);
+        }
 
         winningBid[tokenId] = amount;
         //_claimComp();

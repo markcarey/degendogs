@@ -3,9 +3,9 @@ var BN = web3.utils.BN;
 
 const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0xe84850d8A38264F9c1605E1D4e4Afa76D4A3C86C";
+const dogAddress = "0x192A37dbc96a0706F2216FA32A59479E1B39d14B";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x6c1bF94d79595cEeF53c43C8728b81F0D2328F2D";
+const auctionAddress = "0xEAaf297Ac0b3F1b8c576529eaa8A9E3984495D4E";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9";
 const WETH = new web3.eth.Contract(tokenABI, wethAddress);
@@ -17,7 +17,7 @@ const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
 const cDAIx = new web3.eth.Contract(tokenABI, cDAIxAddress);
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
-var dappChain;
+var dappChain = 80001; // default to Mumbai
 var userChain;
 var accounts;
 var approved = 0;

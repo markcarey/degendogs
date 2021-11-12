@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+//import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import { ERC721 } from './base/ERC721.sol';
+import './base/ERC721Enumerable.sol';
+import { ERC721Checkpointable } from './base/ERC721Checkpointable.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -57,12 +60,21 @@ interface ILendingPool {
     function repay(address asset, uint256 amount, uint256 rateMode, address onBehalfOf) external returns (uint256);
 }
 
-contract Dog is ERC721, Ownable {
+contract Dog is ERC721, ERC721Checkpointable, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     AggregatorV3Interface internal priceFeed;
 
+    // Streamonomics:
+    struct Streamonomics {
+        uint256 percentagetoCurrent;
+        uint256 percentagetoDogsBefore;
+        uint256 dogsBefore;
+        uint256 percentageShared;
+        uint256 dogsShared;
+    }
+    Streamonomics public streamSettings; 
 
     // Kovan Contracts
     //IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
@@ -124,13 +136,24 @@ contract Dog is ERC721, Ownable {
             "DOG"//_symbol
             ) {
                 
-        // Kovan:
-        //_host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
-        //_cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
-        // Mumbai
-        _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
-        _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
-        _acceptedToken = ISuperToken(amWETHx);
+        if ( block.chainid == 42 ) {
+            // Kovan:
+            //_host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
+            //_cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
+        }
+
+        if ( block.chainid == 80001 || block.chainid == 31337 ) {
+            // Mumbai
+            _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
+            _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
+            _acceptedToken = ISuperToken(amWETHx);
+        }
+        if ( block.chainid == 4 ) {
+            // Rinkeby
+            _host = ISuperfluid(0xeD5B5b32110c3Ded02a07c8b8e97513FAfb883B6);
+            _cfa = IConstantFlowAgreementV1(0xF4C5310E51F6079F601a5fb7120bC72a70b96e2A);
+            _acceptedToken = ISuperToken(0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90); // fDAIx ... chnage this later
+        }
 
         assert(address(_host) != address(0));
         assert(address(_cfa) != address(0));
@@ -139,6 +162,18 @@ contract Dog is ERC721, Ownable {
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
 
+        // defaults
+        streamSettings = Streamonomics(10, 20, 10, 40, 1000);
+
+    }
+
+    function setStreamonomics(uint256 _percentagetoCurrent, uint256 _percentagetoDogsBefore, uint256 _dogsBefore, uint256 _percentageShared, uint256 _dogsShared) external onlyOwner {
+        // TODO: add require validation here
+        streamSettings.percentagetoCurrent = _percentagetoCurrent;
+        streamSettings.percentagetoDogsBefore = _percentagetoDogsBefore;
+        streamSettings.dogsBefore = _dogsBefore;
+        streamSettings.percentageShared = _percentageShared;
+        streamSettings.dogsShared = _dogsShared;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -283,7 +318,7 @@ contract Dog is ERC721, Ownable {
     // @dev creates the NFT, but it remains in the contract
     function mint() external onlyMinterOrOwner returns (uint256) {
         //flowRates[lastId] = flowRate;
-        _mint(address(this), lastId);
+        _mint(owner(), address(this), lastId);
         uint256 dogId = lastId;
         lastId += 1;
         return dogId;
@@ -303,6 +338,18 @@ contract Dog is ERC721, Ownable {
         //_claimComp();
         emit NFTIssued(tokenId, newOwner);
         this.safeTransferFrom(address(this), newOwner, tokenId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Checkpointable) {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     function close(uint256 tokenId) external {

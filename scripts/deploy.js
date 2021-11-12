@@ -14,3 +14,6 @@ async function main() {
      console.error(error);
      process.exit(1);
    });
+
+// npx hardhat run scripts/deploy.js --network mumbai
+// npx hardhat verify --network mumbai DEPLOYED_CONTRACT_ADDRESS "Constructor argument 1"

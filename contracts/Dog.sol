@@ -23,6 +23,8 @@ import {
     IConstantFlowAgreementV1
 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
+import { IIdleToken } from "./interfaces/IIdleToken.sol";
+
 interface IUniswapRouter is ISwapRouter {
     function refundETH() external payable;
 }
@@ -139,6 +141,27 @@ contract Dog is ERC721, Ownable {
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
 
+<<<<<<< Updated upstream
+=======
+        // defaults
+        streamSettings = Streamonomics(10, 20, 10, 40, 1000);
+
+    }
+
+    function setStreamonomics(
+        uint256 _percentagetoCurrent, 
+        uint256 _percentagetoDogsBefore, 
+        uint256 _dogsBefore, 
+        uint256 _percentageShared, 
+        uint256 _dogsShared
+    ) external onlyMinterOrOwner {
+        // TODO: add require validation here
+        streamSettings.percentagetoCurrent = _percentagetoCurrent;
+        streamSettings.percentagetoDogsBefore = _percentagetoDogsBefore;
+        streamSettings.dogsBefore = _dogsBefore;
+        streamSettings.percentageShared = _percentageShared;
+        streamSettings.dogsShared = _dogsShared;
+>>>>>>> Stashed changes
     }
 
     function _baseURI() internal view virtual override returns (string memory) {

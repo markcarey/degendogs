@@ -14,18 +14,6 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 
-import {
-    ISuperfluid,
-    ISuperToken,
-    ISuperApp,
-    ISuperAgreement,
-    SuperAppDefinitions
-} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
-
-import {
-    IConstantFlowAgreementV1
-} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
-
 interface IUniswapRouter is ISwapRouter {
     function refundETH() external payable;
 }
@@ -107,9 +95,9 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
     address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
 
-    ISuperfluid private _host; // host
-    IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
-    ISuperToken private _acceptedToken; // accepted token
+    //ISuperfluid private _host; // host
+    //IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
+    //ISuperToken private _acceptedToken; // accepted token
     ITokenVestor private vestor; // Token Vesting contract
 
     // An address who has permissions to mint Dogs
@@ -157,20 +145,20 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
 
         if ( block.chainid == 80001 || block.chainid == 31337 ) {
             // Mumbai
-            _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
-            _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
-            _acceptedToken = ISuperToken(0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f); //fDAIx
+            //_host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
+            //_cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
+            //_acceptedToken = ISuperToken(0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f); //fDAIx
         }
         if ( block.chainid == 4 ) {
             // Rinkeby
-            _host = ISuperfluid(0xeD5B5b32110c3Ded02a07c8b8e97513FAfb883B6);
-            _cfa = IConstantFlowAgreementV1(0xF4C5310E51F6079F601a5fb7120bC72a70b96e2A);
-            _acceptedToken = ISuperToken(0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90); // fDAIx ... chnage this later
+            //_host = ISuperfluid(0xeD5B5b32110c3Ded02a07c8b8e97513FAfb883B6);
+            //_cfa = IConstantFlowAgreementV1(0xF4C5310E51F6079F601a5fb7120bC72a70b96e2A);
+            //_acceptedToken = ISuperToken(0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90); // fDAIx ... chnage this later
         }
 
-        assert(address(_host) != address(0));
-        assert(address(_cfa) != address(0));
-        assert(address(_acceptedToken) != address(0));
+        //assert(address(_host) != address(0));
+        //assert(address(_cfa) != address(0));
+        //assert(address(_acceptedToken) != address(0));
 
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
@@ -301,7 +289,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         underlying.approve(amWETHx, _numTokensToSupply);
 
         // Mint super tokens
-        _acceptedToken.upgrade(amount);
+        //_acceptedToken.upgrade(amount);
     }
 
     function _defi(uint256 amount, uint256 tokenId) internal {
@@ -411,115 +399,14 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         } else {
             if (newReceiver != address(this)) {
                 // being transferred to new owner - redirect the flow
-                _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+                //_createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+                vestor.redirectStreams(oldReceiver, newReceiver, keccak256(abi.encode(address(this), tokenId)));
             }
         }
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
-    }
-
-    function close(uint256 tokenId) external {
-        int96 closedFlowRate = _closeStreamsForToken(tokenId);
-        flowRates[tokenId] -= closedFlowRate;
-        IERC20 tokenContract = IERC20(cDAIx);
-        // reward equivalent of 30 days of closed flow: 60*60*24*30 = 2592000
-        tokenContract.transfer( msg.sender, uint256(uint96(closedFlowRate)).mul(2592000) );
-    }
-
-    function _closeStreamsForToken(uint256 tokenId) internal returns (int96 closedFlowRate) {
-        int96 closed = 0;
-        for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
-            if (block.timestamp > flowsForToken[tokenId][i].timestamp ) {
-                address receiver = ownerOf(flowsForToken[tokenId][i].tokenId);
-                int96 flowRate = flowsForToken[tokenId][i].flowRate;
-                (, int96 outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), receiver); 
-                if (outFlowRate == flowRate) {
-                    _deleteFlow(address(this), receiver);
-                } else if (outFlowRate > flowRate){
-                    // reduce the outflow by flowRate
-                    _updateFlow(receiver, outFlowRate - flowRate);
-                }    
-                closed += flowRate;
-            }
-        }
-        return closed;
-    }
-    
-    // TODO: add back before tranfer hook here when ready
-
-    function _createOrRedirectFlows(
-        address oldReceiver,
-        address newReceiver,
-        int96 flowRate
-    ) internal {
-        // @dev delete flow to old receiver
-        (, int96 outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), oldReceiver); 
-        if (outFlowRate == flowRate) {
-            _deleteFlow(address(this), oldReceiver);
-        } else if (outFlowRate > flowRate){
-            // reduce the outflow by flowRate
-            _updateFlow(oldReceiver, outFlowRate - flowRate);
-        }        
-                    
-        // @dev create flow to new receiver
-        // @dev if this is a new NFT, it will create a flow based on the stored flowrate
-        (, outFlowRate, , ) = _cfa.getFlow(_acceptedToken, address(this), newReceiver);
-        if (outFlowRate == 0) {
-            if (newReceiver != address(this)) {
-                _createFlow(newReceiver, flowRate);
-            }
-        } else {
-            // increase the outflow by flowRate
-            _updateFlow(newReceiver, outFlowRate + flowRate);
-        }
-    }
-    
-    
-    /**************************************************************************
-     * Library
-     *************************************************************************/
-    function _createFlow(address to, int96 flowRate) internal {
-        _host.callAgreement(
-            _cfa,
-            abi.encodeWithSelector(
-                _cfa.createFlow.selector,
-                _acceptedToken,
-                to,
-                flowRate,
-                new bytes(0) // placeholder
-            ),
-            "0x"
-        );
-    }
-    
-    function _updateFlow(address to, int96 flowRate) internal {
-        _host.callAgreement(
-            _cfa,
-            abi.encodeWithSelector(
-                _cfa.updateFlow.selector,
-                _acceptedToken,
-                to,
-                flowRate,
-                new bytes(0) // placeholder
-            ),
-            "0x"
-        );
-    }
-    
-    function _deleteFlow(address from, address to) internal {
-        _host.callAgreement(
-            _cfa,
-            abi.encodeWithSelector(
-                _cfa.deleteFlow.selector,
-                _acceptedToken,
-                from,
-                to,
-                new bytes(0) // placeholder
-            ),
-            "0x"
-        );
     }
 
     function setMinter(address _minter) external onlyOwner {

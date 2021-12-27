@@ -15,6 +15,9 @@ async function main() {
     await (await auctionHouse.initialize(myDog.address, WETH, 60*1, "100000000000000000", 10, 60*10)).wait();
     console.log("Auction house initialized");
 
+    await (await myDog.setMinter(auctionHouse.address)).wait();
+    console.log("Minter set");
+
     const Exec = await ethers.getContractFactory("DegenDAOExecutor");
     const myExec = await Exec.deploy("0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D", 3);
     console.log("Executor deployed to address:", myExec.address);

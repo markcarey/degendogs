@@ -4,7 +4,7 @@
 require('dotenv').config();
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
-const { API_URL, API_URL_KOVAN, API_URL_RINKEBY, ETHERSCAN_API_KEY, PRIVATE_KEY } = process.env;
+const { API_URL, API_URL_KOVAN, API_URL_RINKEBY, POLYSCAN_API_KEY, PRIVATE_KEY } = process.env;
 module.exports = {
   solidity: {
     version: "0.8.0",
@@ -38,6 +38,6 @@ module.exports = {
      }
    },
    etherscan: {
-     apiKey: ETHERSCAN_API_KEY
+     apiKey: POLYSCAN_API_KEY
    }
 }

@@ -60,6 +60,16 @@ interface ILendingPool {
     function repay(address asset, uint256 amount, uint256 rateMode, address onBehalfOf) external returns (uint256);
 }
 
+interface ITokenVestor {
+    function deposit(IERC20 token, uint256 amount) external;
+    function withdraw(IERC20 token, uint256 amount) external;
+    function flowTokenBalance() external returns (uint256);
+    function getNetFlow() external returns (int96);
+    function registerFlow(address adr, int96 flowRate, bool isPermanent, uint256 cliffEnd, uint256 vestingDuration, uint256 cliffAmount, bytes32 ref) external;
+    function registerBatch(address[] calldata adr, int96[] calldata flowRate, uint256[] calldata cliffEnd, uint256[] calldata vestingDuration, uint256[] calldata cliffAmount, bytes32[] calldata ref) external;
+    function redirectStreams(address oldRecipient, address newRecipient, bytes32 ref) external;
+}
+
 contract Dog is ERC721, ERC721Checkpointable, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -100,6 +110,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
     ISuperToken private _acceptedToken; // accepted token
+    ITokenVestor private vestor; // Token Vesting contract
 
     // An address who has permissions to mint Dogs
     address public minter;
@@ -128,14 +139,16 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         _;
     }
 
-    constructor() 
+    constructor(address _tokenVestor) 
         
         // hardcoding to make testing faster
         ERC721(
             "Degen Dog",//_name,  
             "DOG"//_symbol
             ) {
-                
+
+        vestor = ITokenVestor(_tokenVestor);
+
         if ( block.chainid == 42 ) {
             // Kovan:
             //_host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
@@ -146,7 +159,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
             // Mumbai
             _host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
             _cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
-            _acceptedToken = ISuperToken(amWETHx);
+            _acceptedToken = ISuperToken(0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f); //fDAIx
         }
         if ( block.chainid == 4 ) {
             // Rinkeby
@@ -299,8 +312,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
 
         //uint256 tokens = _swap(amount); // ETH for DAI
-        uint256 aTokens = _aave(amount);  // WETH for amWETH
-        _super(aTokens.div(10)); // 10% of amWETH upgraded to amWETHx
+        //uint256 aTokens = _aave(amount);  // WETH for amWETH
+        //_super(aTokens.div(10)); // 10% of amWETH upgraded to amWETHx
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -341,11 +354,66 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     }
 
     function _beforeTokenTransfer(
-        address from,
-        address to,
+        address oldReceiver,
+        address newReceiver,
         uint256 tokenId
     ) internal override(ERC721, ERC721Checkpointable) {
-        super._beforeTokenTransfer(from, to, tokenId);
+        super._beforeTokenTransfer(oldReceiver, newReceiver, tokenId);
+        require(newReceiver != address(0), "New receiver is zero address");
+        // @dev because our app is registered as final, we can't take downstream apps
+
+        if ( oldReceiver == address(this) ) {
+            uint256 _amount = winningBid[tokenId];
+            //uint256 _super = sTokensForDog[tokenId];
+            uint256 _super = _amount;  // TEMP: CHANGE THIS!!!!
+            flowRates[tokenId] = 0;
+            // 10% back to inital owner
+            flowsForToken[tokenId].push(Flow(
+                {
+                    tokenId: tokenId,
+                    timestamp: block.timestamp + 365*24*60*60,
+                    flowRate: int96(uint96(_super.div(10).div(31536000)))
+                }
+            ));
+            
+            // shared portion: 40% of proceeds
+            for (uint256 i = 0; i < lastId; i++) {
+                flowsForToken[tokenId].push(Flow(
+                    {
+                        tokenId: i,
+                        timestamp: block.timestamp + 365*24*60*60,
+                        flowRate: int96(uint96(_super.div(10).mul(4).div(lastId).div(31536000)))
+                    }
+                ));
+            }
+            // 20% to the 10 before Dog owner
+            if (tokenId > 9) {
+                flowsForToken[tokenId].push(Flow(
+                    {
+                        tokenId: tokenId - 10,
+                        timestamp: block.timestamp + 365*24*60*60,
+                        flowRate: int96(uint96(_super.div(5).div(31536000)))
+                    }
+                ));
+            }
+
+            for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
+                address receiver = ownerOf(flowsForToken[tokenId][i].tokenId);
+                if ( flowsForToken[tokenId][i].tokenId == tokenId) {
+                    receiver = newReceiver;
+                }
+                //_createOrRedirectFlows(oldReceiver, receiver, flowsForToken[tokenId][i].flowRate);
+                bytes32 ref = keccak256(abi.encode(address(this), tokenId));
+                vestor.registerFlow(receiver, flowsForToken[tokenId][i].flowRate, false, block.timestamp - 1, 365*24*60*60, 0, ref);
+                flowRates[flowsForToken[tokenId][i].tokenId] += flowsForToken[tokenId][i].flowRate;
+            }
+
+        } else {
+            if (newReceiver != address(this)) {
+                // being transferred to new owner - redirect the flow
+                _createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+            }
+        }
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {

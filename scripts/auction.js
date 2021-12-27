@@ -232,7 +232,7 @@ var ERC20abi = [
 
 //const WETH = "0x8B231C8323E448152605B35BEb8c2498731C5D30"; // Kovan
 const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // Mumbai -- found at https://docs.aave.com/developers/deployed-contracts/matic-polygon-market
-const Dog = "0x192A37dbc96a0706F2216FA32A59479E1B39d14B";
+const Dog = "0xdCf78d88b646f484dd20A0C7e47a0c3faa7913F6";
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
 const contractAddress = "0xEAaf297Ac0b3F1b8c576529eaa8A9E3984495D4E";

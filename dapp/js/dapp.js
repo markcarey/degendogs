@@ -1,20 +1,43 @@
-var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
+//var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
+var chain = "polygon";
+
+var rpcURLs = {};
+rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
+rpcURLs.mumbai = "polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
+rpcURLs.polygon = "polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
+
+rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
+var rpcURL = rpcURLs[chain];
+
+//const prov = {"url": "https://" + rpcURL};
+const prov = {"url": "http://" + rpcURL};       // localhost only
+var provider = new ethers.providers.JsonRpcProvider(prov);
+
+//var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
+var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
+
 var BN = web3.utils.BN;
 
-const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
+// const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
+const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x5De7d187c582bF94E582c30843ECC23222Dc0e08";
+const dogAddress = "0xc07C69689d1e11a7fC41258eA940608Cdb3F3eFD";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xB5d19d5694449546ffD03a0908443137bE940ddF";
+const auctionAddress = "0x16975aB25B5072F72e022963e1f148321aFC1b95";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
-const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9";
+//const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
+const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 const WETH = new web3.eth.Contract(tokenABI, wethAddress);
 
-
+// Kovan
 const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
 const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);
 const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
 const cDAIx = new web3.eth.Contract(tokenABI, cDAIxAddress);
+
+// Polygon
+const idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4";
+const idelWETHx = "0xEB5748f9798B11aF79F892F344F585E3a88aA784";
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
 var dappChain = 80001; // default to Mumbai
@@ -22,6 +45,10 @@ var userChain;
 var accounts;
 var approved = 0;
 var a; // current auction or Dog
+
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+};
 
 function abbrAddress(address){
     if (!address) {
@@ -195,12 +222,16 @@ async function currentAuction(thisDog) {
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
     //console.log(dogIdTopic);
-    const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=23204147&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
-    //console.log(covEventsUrl);
-    const response = await fetch(covEventsUrl);
-    var covEvents = await response.json();
-    //console.log(covEvents);
-    logs = covEvents.data.items;
+
+    var logs = [];
+    if (dappChain != 31337) {
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=23204147&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        //console.log(covEventsUrl);
+        const response = await fetch(covEventsUrl);
+        var covEvents = await response.json();
+        //console.log(covEvents);
+        logs = covEvents.data.items;
+    }
     var bidsHTML = "";
     var bidsHTMLAll = "";
     $.each(logs, function(index, log) {
@@ -234,13 +265,14 @@ async function currentAuction(thisDog) {
     a.bidsHTMLAll = bidsHTMLAll;
     const endTime = a.endTime;
     const currentTime = Date.now() / 1000;
-    const diffTime = endTime - currentTime;
+    var diffTime = endTime - currentTime;
+    diffTime = 86400; // TODO: change this!!!!
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     a.duration = duration;
     var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     if (a.duration.asSeconds() > 0) {
-        countdown(a);
+        //countdown(a);
     }
     if (accounts.length > 0) {
         $("#bid-button").prop("disabled", false);
@@ -342,20 +374,14 @@ async function currentAuction(thisDog) {
                 params: [tx],
             });
             //console.log(txHash);
-            var pendingTxHash = txHash;
-            web3.eth.subscribe('newBlockHeaders', async (error, event) => {
-                if (error) {
-                    console.log("error", error);
-                }
-                const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
-
-                if (blockTxHashes.includes(pendingTxHash)) {
-                    web3.eth.clearSubscriptions();
-                    //console.log("Bid received!");
-                    $("#bid-button").text("Bid");
-                    approved = newBid;
-                }
-            });
+            let transactionReceipt = null
+            while (transactionReceipt == null) { 
+                transactionReceipt = await web3.eth.getTransactionReceipt(txHash);
+                await sleep(500)
+            }
+            //console.log("Bid received!");
+            $("#bid-button").text("Bid");
+            approved = newBid;
         }
     });
 

@@ -1,14 +1,14 @@
 require('dotenv').config();
-const API_URL = process.env.API_URL;
+const API_URL = process.env.API_URL_POLYGON;
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
-const web3 = createAlchemyWeb3(API_URL);
+//const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
+//const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x192A37dbc96a0706F2216FA32A59479E1B39d14B";
+const contractAddress = "0xc07C69689d1e11a7fC41258eA940608Cdb3F3eFD";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -193,6 +193,64 @@ async function swap() {
     });
   }
 
+
+  async function transfer(tokenId, addr) {
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
+  
+    //the transaction
+    const tx = {
+      'from': PUBLIC_KEY,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gas': 10000000,
+      'maxPriorityFeePerGas': 1999999987,
+      'data': nftContract.methods.transferFrom(PUBLIC_KEY, addr, tokenId).encodeABI()
+    };
+  
+    const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+    signPromise.then((signedTx) => {
+  
+      web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(err, hash) {
+        if (!err) {
+          console.log("The hash of your transaction is: ", hash, "\nCheck Alchemy's Mempool to view the status of your transaction!"); 
+        } else {
+          console.log("Something went wrong when submitting your transaction:", err)
+        }
+      });
+    }).catch((err) => {
+      console.log("Promise failed:", err);
+    });
+  }
+
+
+  async function redirect(from, to, ref) {
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
+  
+    //the transaction
+    const tx = {
+      'from': PUBLIC_KEY,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gas': 1000000,
+      'maxPriorityFeePerGas': 1999999987,
+      'data': nftContract.methods.redirectStreams(from, to, ref).encodeABI()
+    };
+  
+    const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+    signPromise.then((signedTx) => {
+  
+      web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(err, hash) {
+        if (!err) {
+          console.log("The hash of your transaction is: ", hash, "\nCheck Alchemy's Mempool to view the status of your transaction!"); 
+        } else {
+          console.log("Something went wrong when submitting your transaction:", err)
+        }
+      });
+    }).catch((err) => {
+      console.log("Promise failed:", err);
+    });
+  }
+
 //doAllTheDefi
 async function defi() {
     const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
@@ -323,5 +381,6 @@ async function issue(newOwner, tokenId, amount) {
 //defi();
 //claimComp();
 //latestExchangeRate();
-setMinter("0xba85aBe9A942FC17a89932c21733e4c982234DaB");
+//setMinter("0xba85aBe9A942FC17a89932c21733e4c982234DaB");
 //tokenURI(1);
+transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");

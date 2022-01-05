@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 //import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { ERC721 } from './base/ERC721.sol';
 import './base/ERC721Enumerable.sol';
@@ -58,6 +60,16 @@ interface ITokenVestor {
     function redirectStreams(address oldRecipient, address newRecipient, bytes32 ref) external;
 }
 
+interface IIdleToken {
+    function token() external view returns (address underlying);
+    function mintIdleToken(uint256 _amount, bool _skipWholeRebalance, address _referral) external returns (uint256 mintedTokens);
+    function redeemIdleToken(uint256 _amount) external returns (uint256 redeemedTokens);
+    function approve(address, uint256) external returns (bool);
+    function transfer(address, uint256) external returns (bool);
+    function balanceOf(address) external returns (uint256);
+    function decimals() external returns (uint8);
+}
+
 contract Dog is ERC721, ERC721Checkpointable, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -85,19 +97,23 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     // Mumbai Contracts
     IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564); // 
 
-    address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9;
+    //address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9; // mumbai
+    
+
     address private constant DAI = 0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F;
     address private constant aaveLendingPool = 0x9198F13B08E299d85E096929fA9781A1E3d5d827;
     address private constant amWETH = 0x7aE20397Ca327721F013BB9e140C707F82871b56;
     address private constant amWETHx = 0x67A87A1daa04Da7aADA1787c1FaFd178553d9FE1;
-   
+
     address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
     address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
     address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
 
-    //ISuperfluid private _host; // host
-    //IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
-    //ISuperToken private _acceptedToken; // accepted token
+    // Polygon:
+    address private constant idleWETH = 0xfdA25D931258Df948ffecb66b5518299Df6527C4;
+    address private constant idleWETHx = 0xEB5748f9798B11aF79F892F344F585E3a88aA784;
+    address private constant WETH9 = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619; // polygon
+
     ITokenVestor private vestor; // Token Vesting contract
 
     // An address who has permissions to mint Dogs
@@ -136,29 +152,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
             ) {
 
         vestor = ITokenVestor(_tokenVestor);
-
-        if ( block.chainid == 42 ) {
-            // Kovan:
-            //_host = ISuperfluid(0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3);
-            //_cfa = IConstantFlowAgreementV1(0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F);
-        }
-
-        if ( block.chainid == 80001 || block.chainid == 31337 ) {
-            // Mumbai
-            //_host = ISuperfluid(0xEB796bdb90fFA0f28255275e16936D25d3418603);
-            //_cfa = IConstantFlowAgreementV1(0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873);
-            //_acceptedToken = ISuperToken(0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f); //fDAIx
-        }
-        if ( block.chainid == 4 ) {
-            // Rinkeby
-            //_host = ISuperfluid(0xeD5B5b32110c3Ded02a07c8b8e97513FAfb883B6);
-            //_cfa = IConstantFlowAgreementV1(0xF4C5310E51F6079F601a5fb7120bC72a70b96e2A);
-            //_acceptedToken = ISuperToken(0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90); // fDAIx ... chnage this later
-        }
-
-        //assert(address(_host) != address(0));
-        //assert(address(_cfa) != address(0));
-        //assert(address(_acceptedToken) != address(0));
 
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
@@ -257,25 +250,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         troll.claimComp(address(this));
     }
 
-    function _aave(uint256 tokens) internal returns (uint256) {
-        // Create a reference to the corresponding aToken contract, like amWETH
-        Erc20 aToken = Erc20(amWETH);
-        uint256 _numTokensBefore = aToken.balanceOf(address(this));
-        Erc20(WETH9).approve(aaveLendingPool, tokens);
-        ILendingPool(aaveLendingPool).deposit(WETH9, tokens, address(this), 0);
-        uint256 _numTokensAfter = aToken.balanceOf(address(this));
-        return _numTokensAfter.sub(_numTokensBefore);
-    }
-
-    function _claimAaveRewards() internal {
-        if ( block.chainid == 137 ) {
-            // TODO: get balance https://docs.aave.com/developers/guides/liquidity-mining#getrewardsbalance
-            // then if exceeds threshold:
-            // https://docs.aave.com/developers/guides/liquidity-mining#claimrewards
-            // polygon mainnet rewards at 0x357D51124f59836DeD84c8a1730D72B749d8BC23
-        }
-    }
-
     function _super(uint256 aTokens) internal {
         // Create a reference to the underlying asset contract, like DAI.
         Erc20 underlying = Erc20(amWETH);
@@ -292,6 +266,18 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         //_acceptedToken.upgrade(amount);
     }
 
+    function _idle(uint256 tokens) internal returns (uint256) {
+        Erc20 underlying = Erc20(WETH9);
+        IIdleToken iToken = IIdleToken(idleWETH);
+        uint256 _numTokensBefore = iToken.balanceOf(address(this));
+        uint256 _numTokensToSupply = tokens;
+        underlying.approve(idleWETH, _numTokensToSupply);
+        uint256 mintResult = iToken.mintIdleToken(_numTokensToSupply, true, address(this));  // TODO: what is best address for referral?
+        uint256 _numTokensAfter = iToken.balanceOf(address(this));
+        uint256 iTokens = _numTokensAfter.sub(_numTokensBefore);
+        return iTokens;
+    }
+
     function _defi(uint256 amount, uint256 tokenId) internal {
         IERC20 token = IERC20(WETH9);
         uint256 beforeBalance = token.balanceOf(address(this));
@@ -300,8 +286,13 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
 
         //uint256 tokens = _swap(amount); // ETH for DAI
-        //uint256 aTokens = _aave(amount);  // WETH for amWETH
+        uint256 iTokens = _idle(amount);  // WETH for amWETH
         //_super(aTokens.div(10)); // 10% of amWETH upgraded to amWETHx
+        uint256 depAmount = iTokens.div(10); // TODO: base this on reserve strategy
+        IIdleToken iToken = IIdleToken(idleWETH);
+        iToken.approve(address(vestor), depAmount);
+        vestor.deposit(IERC20(idleWETH), depAmount);
+        //TODO: what to do with the other 90% ... to timelock?
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -329,6 +320,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     
     // @dev issues the NFT, transferring it to a new owner, and starting the stream
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
+        console.log("start issue");
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
         if (amount > 0) {
@@ -391,16 +383,20 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
                     receiver = newReceiver;
                 }
                 //_createOrRedirectFlows(oldReceiver, receiver, flowsForToken[tokenId][i].flowRate);
-                bytes32 ref = keccak256(abi.encode(address(this), tokenId));
-                vestor.registerFlow(receiver, flowsForToken[tokenId][i].flowRate, false, block.timestamp - 1, 365*24*60*60, 0, ref);
-                flowRates[flowsForToken[tokenId][i].tokenId] += flowsForToken[tokenId][i].flowRate;
+                if ( receiver != address(this) ) {
+                    bytes32 ref = keccak256(abi.encode(address(this), tokenId));
+                    vestor.registerFlow(receiver, flowsForToken[tokenId][i].flowRate, false, block.timestamp - 1, 365*24*60*60, 0, ref);
+                    flowRates[flowsForToken[tokenId][i].tokenId] += flowsForToken[tokenId][i].flowRate;
+                }
             }
 
         } else {
             if (newReceiver != address(this)) {
                 // being transferred to new owner - redirect the flow
-                //_createOrRedirectFlows(oldReceiver, newReceiver, flowRates[tokenId]); // change hard-coded flowrate
+                //console.log("ready to redirectStreams", oldReceiver, newReceiver);
+                //console.logBytes32( keccak256(abi.encode(address(this), tokenId)) );
                 vestor.redirectStreams(oldReceiver, newReceiver, keccak256(abi.encode(address(this), tokenId)));
+                //console.log("after redirectStreams");
             }
         }
     }

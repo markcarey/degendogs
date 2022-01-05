@@ -1,10 +1,10 @@
 require('dotenv').config();
-const API_URL = process.env.API_URL;
+const API_URL = process.env.API_URL_POLYGON;
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
-const web3 = createAlchemyWeb3(API_URL);
+//const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
+//const web3 = createAlchemyWeb3(API_URL);
 var BN = web3.utils.BN;
 
 var ERC20abi = [
@@ -232,10 +232,10 @@ var ERC20abi = [
 
 //const WETH = "0x8B231C8323E448152605B35BEb8c2498731C5D30"; // Kovan
 const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // Mumbai -- found at https://docs.aave.com/developers/deployed-contracts/matic-polygon-market
-const Dog = "0xdCf78d88b646f484dd20A0C7e47a0c3faa7913F6";
+const Dog = "0xc07C69689d1e11a7fC41258eA940608Cdb3F3eFD";
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
-const contractAddress = "0xEAaf297Ac0b3F1b8c576529eaa8A9E3984495D4E";
+const contractAddress = "0x16975aB25B5072F72e022963e1f148321aFC1b95";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 const wethContract = new web3.eth.Contract(ERC20abi, WETH);
 
@@ -410,8 +410,8 @@ async function getAuction() {
 //initialize();
 //unpause();
 //pause();
-createBid(0, '1000000000000000000');
-//getAuction();
+//createBid(0, '1000000000000000000');
+getAuction();
 //settleCurrentAndCreateNewAuction();
 //approve('1000000000000000000');
 

@@ -1,6 +1,7 @@
 async function main() {
-    const vestorAddress = "0xb589E9aADaD54C2e48F6e6808BC14858561e4ac1"; // mumbai
-    const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9";
+    const vestorAddress = "0x8f678d16918bc16F9EB23259a8A7D4c2Baa26B4e"; // localhost:polygon
+    //const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
+    const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 
     // Grab the contract factory 
     const Dog = await ethers.getContractFactory("Dog");
@@ -12,7 +13,7 @@ async function main() {
 
     const auctionHouse = await House.deploy(); // Instance of the contract 
     console.log("Auction House deployed to address:", auctionHouse.address);
-    await (await auctionHouse.initialize(myDog.address, WETH, 60*1, "100000000000000000", 10, 60*10)).wait();
+    await (await auctionHouse.initialize(myDog.address, WETH, 60*1, "100000000000000000", 10, 60*5)).wait();
     console.log("Auction house initialized");
 
     await (await myDog.setMinter(auctionHouse.address)).wait();

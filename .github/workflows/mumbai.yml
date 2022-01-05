@@ -2,7 +2,7 @@ name: Deploy to Skynet Mumbai
 
 on:
   push:
-    branches: [mumbai, tokenvesting]
+    branches: [tokenvesting, main]
 
 jobs:
   build:

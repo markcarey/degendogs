@@ -77,14 +77,13 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     AggregatorV3Interface internal priceFeed;
 
     // Streamonomics:
-    struct Streamonomics {
-        uint256 percentagetoCurrent;
-        uint256 percentagetoDogsBefore;
-        uint256 dogsBefore;
-        uint256 percentageShared;
-        uint256 dogsShared;
+    struct Streamonomic {
+        uint256 percentage;
+        uint256 start;
+        uint256 step;
+        uint256 limit;
     }
-    Streamonomics public streamSettings; 
+    Streamonomic[] public streamonomics;
 
     // Kovan Contracts
     //IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
@@ -134,6 +133,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
 
+    uint256 constant YEAR = 60*60*24*365;
+
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
         _;
@@ -156,18 +157,25 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
 
-        // defaults
-        streamSettings = Streamonomics(10, 20, 10, 40, 1000);
+        // default streamonomics -- can be replaced with setStreamonomics
+        streamonomics.push(Streamonomic(10,1,1,1));
+        streamonomics.push(Streamonomic(30,1,5,20));
+        streamonomics.push(Streamonomic(10,10,1,1));
 
     }
 
-    function setStreamonomics(uint256 _percentagetoCurrent, uint256 _percentagetoDogsBefore, uint256 _dogsBefore, uint256 _percentageShared, uint256 _dogsShared) external onlyOwner {
-        // TODO: add require validation here
-        streamSettings.percentagetoCurrent = _percentagetoCurrent;
-        streamSettings.percentagetoDogsBefore = _percentagetoDogsBefore;
-        streamSettings.dogsBefore = _dogsBefore;
-        streamSettings.percentageShared = _percentageShared;
-        streamSettings.dogsShared = _dogsShared;
+    function setStreamonomics(uint256[] calldata percentage, uint256[] calldata start, uint256[] calldata step, uint256[] calldata limit) external onlyOwner {
+        require(percentage.length == start.length, "invalid start length");
+        require(start.length == step.length, "invalid step length");
+        require(step.length == limit.length, "invalid limit length");
+        delete streamonomics;
+        uint256 total;
+        for(uint i = 0; i < percentage.length; i++) {
+            streamonomics.push(Streamonomic(percentage[i], start[i], step[i], limit[i]));
+            total += percentage[i];
+        }
+        require(total <= 100, "!over 100");
+        //TODO: emit event(s)?
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -347,46 +355,29 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
             //uint256 _super = sTokensForDog[tokenId];
             uint256 _super = _amount;  // TEMP: CHANGE THIS!!!!
             flowRates[tokenId] = 0;
-            // 10% back to inital owner
-            flowsForToken[tokenId].push(Flow(
-                {
-                    tokenId: tokenId,
-                    timestamp: block.timestamp + 365*24*60*60,
-                    flowRate: int96(uint96(_super.div(10).div(31536000)))
-                }
-            ));
-            
-            // shared portion: 40% of proceeds
-            for (uint256 i = 0; i < lastId; i++) {
-                flowsForToken[tokenId].push(Flow(
-                    {
-                        tokenId: i,
-                        timestamp: block.timestamp + 365*24*60*60,
-                        flowRate: int96(uint96(_super.div(10).mul(4).div(lastId).div(31536000)))
-                    }
-                ));
-            }
-            // 20% to the 10 before Dog owner
-            if (tokenId > 9) {
-                flowsForToken[tokenId].push(Flow(
-                    {
-                        tokenId: tokenId - 10,
-                        timestamp: block.timestamp + 365*24*60*60,
-                        flowRate: int96(uint96(_super.div(5).div(31536000)))
-                    }
-                ));
-            }
 
-            for (uint256 i = 0; i < flowsForToken[tokenId].length; i++) {
-                address receiver = ownerOf(flowsForToken[tokenId][i].tokenId);
-                if ( flowsForToken[tokenId][i].tokenId == tokenId) {
-                    receiver = newReceiver;
-                }
-                //_createOrRedirectFlows(oldReceiver, receiver, flowsForToken[tokenId][i].flowRate);
-                if ( receiver != address(this) ) {
-                    bytes32 ref = keccak256(abi.encode(address(this), tokenId));
-                    vestor.registerFlow(receiver, flowsForToken[tokenId][i].flowRate, false, block.timestamp - 1, 365*24*60*60, 0, ref);
-                    flowRates[flowsForToken[tokenId][i].tokenId] += flowsForToken[tokenId][i].flowRate;
+            // loop through streamonomics rules
+            for(uint i = 0; i < streamonomics.length; i++) {
+                console.log("i", i);
+                Streamonomic memory rule = streamonomics[i];
+                uint256 share = _amount.mul(rule.percentage).div(rule.limit).div(100);
+                console.log("share", share);
+                int96 flowRate = int96(uint96(share.div(YEAR)));
+                console.log("flowRate: ->");
+                console.logInt(flowRate);
+                // start from current tokenId and move backwards based on `start` and `step` increments
+                for(uint256 j = tokenId - rule.start; j >= 0; j - rule.step) {
+                    console.log("j", j);
+                    address receiver = ownerOf(j);
+                    console.log("receiver", receiver);
+                    if ( receiver != address(this) ) {
+                        bytes32 ref = keccak256(abi.encode(address(this), j));
+                        console.log("ref:->");
+                        console.logBytes32(ref);
+                        vestor.registerFlow(receiver, flowRate, false, block.timestamp - 1, YEAR, 0, ref);
+                        console.log("after registerFlow");
+                        flowRates[j] += flowRate;
+                    }
                 }
             }
 

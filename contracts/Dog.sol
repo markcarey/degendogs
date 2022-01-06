@@ -110,6 +110,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     // An address who has permissions to mint Dogs
     address public minter;
 
+    address public treasury;
+
     mapping(uint256 => uint256) public winningBid;
 
     mapping(uint256 => int96) public flowRates;
@@ -122,10 +124,28 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     
     uint256 public lastId; // this is so we can increment the number
 
+    // default to 4 weeks
+    uint256 public reserveDuration = 60*60*24*28;
+
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
 
     uint256 constant YEAR = 60*60*24*365;
+
+    event TreasuryUpdated(
+        address oldAddress,
+        address newAddress
+    );
+
+    event VestorUpdated(
+        address oldAddress,
+        address newAddress
+    );
+
+    event MinterUpdated(
+        address oldAddress,
+        address newAddress
+    );
 
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
@@ -157,7 +177,29 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     }
 
     function setVestor(address _vestor) external onlyOwner {
+        emit VestorUpdated(address(vestor), _vestor);
         vestor = ITokenVestor(_vestor);
+    }
+
+    function _targetReserves() internal returns(uint256 targetReserves) {
+        int96 totalFlowRate = vestor.getNetFlow() * -1;
+        targetReserves = uint256(uint96(totalFlowRate)).mul(reserveDuration);
+    }
+    function setreserveDuration(uint256 _duration) external onlyOwner {
+        require(_duration > 0, "!zero");
+        reserveDuration = _duration;
+    }
+    function _targetReserveForAmount(uint256 amt) internal view returns(uint256 reserve) {
+        uint256 pct;
+        for(uint i = 0; i < streamonomics.length; i++) {
+            pct += streamonomics[i].percentage;
+        }
+        reserve = amt.mul(pct).div(100).div(YEAR).mul(reserveDuration);
+    }
+
+    function setTreasury(address _treasury) external onlyOwner {
+        emit TreasuryUpdated(treasury, _treasury);
+        treasury = _treasury;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -274,15 +316,19 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         token.safeTransferFrom(msg.sender, address(this), amount);
         uint256 afterBalance = token.balanceOf(address(this));
         require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
-
-        //uint256 tokens = _swap(amount); // ETH for DAI
-        uint256 iTokens = _idle(amount);  // WETH for amWETH
-        //_super(aTokens.div(10)); // 10% of amWETH upgraded to amWETHx
-        uint256 depAmount = iTokens.div(10); // TODO: base this on reserve strategy
+        uint256 iTokens = _idle(amount);  // WETH for idleWETH
         IIdleToken iToken = IIdleToken(idleWETH);
-        iToken.approve(address(vestor), depAmount);
-        vestor.deposit(IERC20(idleWETH), depAmount);
-        //TODO: what to do with the other 90% ... to timelock?
+        uint256 vestorBalance = vestor.flowTokenBalance();
+        uint256 target = _targetReserves().add(_targetReserveForAmount(iTokens));
+        if ( target > vestorBalance ) {
+            uint256 depAmount = target.sub(vestorBalance);
+            iToken.approve(address(vestor), depAmount);
+            vestor.deposit(IERC20(idleWETH), depAmount);
+        }
+        uint256 iBalance = iToken.balanceOf(address(this));
+        if ( treasury != address(0) ) {
+            iToken.transfer(treasury, iBalance);
+        }
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -403,6 +449,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     }
 
     function setMinter(address _minter) external onlyOwner {
+        emit MinterUpdated(minter, _minter);
         minter = _minter;
     }
 

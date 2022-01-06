@@ -232,10 +232,10 @@ var ERC20abi = [
 
 //const WETH = "0x8B231C8323E448152605B35BEb8c2498731C5D30"; // Kovan
 const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // Mumbai -- found at https://docs.aave.com/developers/deployed-contracts/matic-polygon-market
-const Dog = "0x97a978cebdBF8f67362E8936173feAB0519fBc85";
+const Dog = "0x3FbcA0A065f96093c6f159544e20d74DCd55b501";
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
-const contractAddress = "0x3829805B2E8B1c7F044FcACF100a8de92C5D00dC";
+const contractAddress = "0x2F6b13efA5dAfF6fb6BAA4683ca826f1ACDd1EEe";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 const wethContract = new web3.eth.Contract(ERC20abi, WETH);
 

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
+import './Streamonomics.sol';
 //import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { ERC721 } from './base/ERC721.sol';
 import './base/ERC721Enumerable.sol';
@@ -70,20 +71,11 @@ interface IIdleToken {
     function decimals() external returns (uint8);
 }
 
-contract Dog is ERC721, ERC721Checkpointable, Ownable {
+contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     AggregatorV3Interface internal priceFeed;
-
-    // Streamonomics:
-    struct Streamonomic {
-        uint256 percentage;
-        uint256 start;
-        uint256 step;
-        uint256 limit;
-    }
-    Streamonomic[] public streamonomics;
 
     // Kovan Contracts
     //IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
@@ -162,20 +154,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         streamonomics.push(Streamonomic(30,1,5,20));
         streamonomics.push(Streamonomic(10,10,1,1));
 
-    }
-
-    function setStreamonomics(uint256[] calldata percentage, uint256[] calldata start, uint256[] calldata step, uint256[] calldata limit) external onlyOwner {
-        require(percentage.length == start.length, "invalid start length");
-        require(start.length == step.length, "invalid step length");
-        require(step.length == limit.length, "invalid limit length");
-        delete streamonomics;
-        uint256 total;
-        for(uint i = 0; i < percentage.length; i++) {
-            streamonomics.push(Streamonomic(percentage[i], start[i], step[i], limit[i]));
-            total += percentage[i];
-        }
-        require(total <= 100, "!over 100");
-        //TODO: emit event(s)?
     }
 
     function setVestor(address _vestor) external onlyOwner {

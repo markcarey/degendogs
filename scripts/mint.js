@@ -8,7 +8,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0xe92DD82D672F06B1014F686dea64716f03e89415";
+const contractAddress = "0xEA15f5dd50C3cFb77EC9bdCd10F714a3253ADf5a";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -222,6 +222,47 @@ async function swap() {
     });
   }
 
+  async function setStreamonomics() {
+    var streams = await nftContract.methods.getStreamonomics().call();
+    console.log("Streamonomics: " + JSON.stringify(streams));
+
+
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
+  
+    var percentage = [20,30,10];
+    var start = [0,0,0];
+    var step = [1,10,10];
+    var limit = [1,5,10];
+
+    //the transaction
+    const tx = {
+      'from': PUBLIC_KEY,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gas': 10000000,
+      'maxPriorityFeePerGas': 1999999987,
+      'data': nftContract.methods.setStreamonomics(percentage, start, step, limit).encodeABI()
+    };
+  
+    const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+    signPromise.then((signedTx) => {
+  
+      web3.eth.sendSignedTransaction(signedTx.rawTransaction, async function(err, hash) {
+        if (!err) {
+          console.log("The hash of your transaction is: ", hash, "\nCheck Alchemy's Mempool to view the status of your transaction!"); 
+
+          streams = await nftContract.methods.getStreamonomics().call();
+          console.log("Streamonomics: " + JSON.stringify(streams));
+
+        } else {
+          console.log("Something went wrong when submitting your transaction:", err)
+        }
+      });
+    }).catch((err) => {
+      console.log("Promise failed:", err);
+    });
+  }
+
 
   async function redirect(from, to, ref) {
     const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
@@ -383,4 +424,5 @@ async function issue(newOwner, tokenId, amount) {
 //latestExchangeRate();
 //setMinter("0xba85aBe9A942FC17a89932c21733e4c982234DaB");
 //tokenURI(1);
-transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
+//transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
+setStreamonomics();

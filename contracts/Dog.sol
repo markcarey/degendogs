@@ -178,6 +178,10 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
         //TODO: emit event(s)?
     }
 
+    function setVestor(address _vestor) external onlyOwner {
+        vestor = ITokenVestor(_vestor);
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return "https://degendogs.club/meta/";
     }
@@ -360,23 +364,47 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable {
             for(uint i = 0; i < streamonomics.length; i++) {
                 console.log("i", i);
                 Streamonomic memory rule = streamonomics[i];
-                uint256 share = _amount.mul(rule.percentage).div(rule.limit).div(100);
-                console.log("share", share);
-                int96 flowRate = int96(uint96(share.div(YEAR)));
-                console.log("flowRate: ->");
-                console.logInt(flowRate);
-                // start from current tokenId and move backwards based on `start` and `step` increments
-                for(uint256 j = tokenId - rule.start; j >= 0; j - rule.step) {
-                    console.log("j", j);
-                    address receiver = ownerOf(j);
-                    console.log("receiver", receiver);
-                    if ( receiver != address(this) ) {
-                        bytes32 ref = keccak256(abi.encode(address(this), j));
-                        console.log("ref:->");
-                        console.logBytes32(ref);
-                        vestor.registerFlow(receiver, flowRate, false, block.timestamp - 1, YEAR, 0, ref);
-                        console.log("after registerFlow");
-                        flowRates[j] += flowRate;
+                // skip the rule if we are too early for it to apply
+                if ( rule.start <= tokenId ) {
+                    uint256 pieces = rule.limit;
+                    console.log("pieces", pieces);
+                    if ( tokenId.sub(rule.start) < rule.step.mul(rule.limit) ) {
+                        // share with < rule.limit tokens
+                        pieces = tokenId.sub(rule.start).div(rule.step) + 1;
+                    }
+                    console.log("pieces", pieces);
+                    uint256 share = _amount.mul(rule.percentage).div(pieces).div(100);
+                    console.log("share", share);
+                    int96 flowRate = int96(uint96(share.div(YEAR)));
+                    console.log("flowRate: ->");
+                    console.logInt(flowRate);
+                    uint256 latest = tokenId - rule.start;
+                    uint256 count;
+                    // start from current tokenId and move backwards based on `start` and `step` increments
+                    for(uint256 j = latest; j >= 0; j -= rule.step) {
+                        console.log("j", j);
+                        count++;
+                        console.log("count", count);
+                        address receiver = ownerOf(j);
+                        console.log("receiver", receiver);
+                        if ( receiver != address(this) ) {
+                            bytes32 ref = keccak256(abi.encode(address(this), j));
+                            console.log("ref:->");
+                            console.logBytes32(ref);
+                            vestor.registerFlow(receiver, flowRate, false, block.timestamp - 1, YEAR, 0, ref);
+                            console.log("after registerFlow");
+                            flowRates[j] += flowRate;
+                        }
+                        // check if next j iteration takes us below zero
+                        if ( rule.step > j ) {
+                            console.log("BREAK: rule.step >= j");
+                            break;
+                        }
+                        // check limit
+                        if ( count == rule.limit ) {
+                            console.log("BREAK: count == limit");
+                            break;
+                        }
                     }
                 }
             }

@@ -4,52 +4,13 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 import './Streamonomics.sol';
-//import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { ERC721 } from './base/ERC721.sol';
 import './base/ERC721Enumerable.sol';
 import { ERC721Checkpointable } from './base/ERC721Checkpointable.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-//import {ILendingPool} from "@aave/protocol-v2/contracts/interfaces/ILendingPool.sol";
-
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
-import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
-
-interface IUniswapRouter is ISwapRouter {
-    function refundETH() external payable;
-}
-
-interface Erc20 {
-    function approve(address, uint256) external returns (bool);
-    function transfer(address, uint256) external returns (bool);
-    function balanceOf(address) external returns (uint256);
-    function decimals() external returns (uint8);
-}
-
-
-interface CErc20 {
-    function mint(uint256) external returns (uint256);
-    function exchangeRateCurrent() external returns (uint256);
-    function supplyRatePerBlock() external returns (uint256);
-    function redeem(uint) external returns (uint);
-    function redeemUnderlying(uint) external returns (uint);
-    function approve(address, uint256) external returns (bool);
-    function balanceOf(address) external returns (uint256);
-    function decimals() external returns (uint8);
-}
-
-interface ICompoundComptroller {
-    function claimComp(address holder) external;
-}
-
-interface ILendingPool {
-    function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
-    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
-    function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf) external;
-    function repay(address asset, uint256 amount, uint256 rateMode, address onBehalfOf) external returns (uint256);
-}
 
 interface ITokenVestor {
     function deposit(IERC20 token, uint256 amount) external;
@@ -82,35 +43,9 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     uint256 private constant ONE_18 = 10**18;
 
-    AggregatorV3Interface internal priceFeed;
-
-    // Kovan Contracts
-    //IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
-    //address private constant WETH9 = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
-    //address private constant DAI = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
-    //address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
-    //address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
-    //address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
-
-    // Mumbai Contracts
-    IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564); // 
-
-    //address private constant WETH9 = 0x3C68CE8504087f89c640D02d133646d98e64ddd9; // mumbai
-    
-
-    address private constant DAI = 0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F;
-    address private constant aaveLendingPool = 0x9198F13B08E299d85E096929fA9781A1E3d5d827;
-    address private constant amWETH = 0x7aE20397Ca327721F013BB9e140C707F82871b56;
-    address private constant amWETHx = 0x67A87A1daa04Da7aADA1787c1FaFd178553d9FE1;
-
-    address private constant cDAI = 0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD;
-    address private constant cDAIx = 0x3ED99f859D586e043304ba80d8fAe201D4876D57;
-    address private constant comptroller = 0x5eAe89DC1C671724A672ff0630122ee834098657;
-
     // Polygon:
-    address private constant idleWETH = 0xfdA25D931258Df948ffecb66b5518299Df6527C4;
-    address private constant idleWETHx = 0xEB5748f9798B11aF79F892F344F585E3a88aA784;
-    address private constant WETH9 = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619; // polygon
+    address private idleWETH; // = 0xfdA25D931258Df948ffecb66b5518299Df6527C4;
+    address private weth; // = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619; // polygon
 
     ITokenVestor private vestor; // Token Vesting contract
 
@@ -139,6 +74,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
+    string public metadataBaseURI;
 
     uint256 constant YEAR = 60*60*24*365;
 
@@ -162,6 +98,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         uint256 newPercentage
     );
 
+    event BaseURIUpdated(
+        string oldURI,
+        string newURI
+    );
+
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
         _;
@@ -171,25 +112,27 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         _;
     }
 
-    constructor(address _tokenVestor, address _donationDAO) 
-        
-        // hardcoding to make testing faster
-        ERC721(
-            "Degen Dog",//_name,  
-            "DOG"//_symbol
-            ) {
+    constructor(
+        address _tokenVestor, 
+        address _donationDAO, 
+        address _weth, 
+        address _idletoken, 
+        string memory _name, 
+        string memory _symbol,
+        string memory _metadataBaseURI
+        ) 
+        ERC721(_name, _symbol) {
 
         vestor = ITokenVestor(_tokenVestor);
         donationDAO = IDAOSuperApp(_donationDAO);
-
-        // chainlink ETH/DAI on Kovan
-        priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
+        weth = _weth;
+        idleWETH = _idletoken;
+        metadataBaseURI = _metadataBaseURI;
 
         // default streamonomics -- can be replaced with setStreamonomics
         streamonomics.push(Streamonomic(10,1,1,1));
         streamonomics.push(Streamonomic(30,1,5,20));
         streamonomics.push(Streamonomic(10,10,1,1));
-
     }
 
     function setVestor(address _vestor) external onlyOwner {
@@ -229,23 +172,39 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
-        return "https://degendogs.club/meta/";
+        return metadataBaseURI;
+    }
+    function setBaseURI(string calldata _uri) external onlyOwner {
+        emit BaseURIUpdated(metadataBaseURI, _uri);
+        metadataBaseURI = _uri;
+    }
+
+    function flowRateForTokenId(uint256 _tokenId) external view returns (int96) {
+        return flowRates[_tokenId];
+    }
+
+    function _getTreasury() internal view returns(address) {
+        if ( treasury != address(0) ) {
+            return treasury;
+        } else {
+            return address(this);
+        }
     }
 
     function _idle(uint256 tokens) internal returns (uint256) {
-        Erc20 underlying = Erc20(WETH9);
+        IERC20 underlying = IERC20(weth);
         IIdleToken iToken = IIdleToken(idleWETH);
         uint256 _numTokensBefore = iToken.balanceOf(address(this));
         uint256 _numTokensToSupply = tokens;
         underlying.approve(idleWETH, _numTokensToSupply);
-        uint256 mintResult = iToken.mintIdleToken(_numTokensToSupply, true, address(this));  // TODO: what is best address for referral?
+        iToken.mintIdleToken(_numTokensToSupply, true, _getTreasury());
         uint256 _numTokensAfter = iToken.balanceOf(address(this));
         uint256 iTokens = _numTokensAfter.sub(_numTokensBefore);
         return iTokens;
     }
 
     function _defi(uint256 amount, address newOwner) internal returns(uint256) {
-        IERC20 token = IERC20(WETH9);
+        IERC20 token = IERC20(weth);
         IIdleToken iToken = IIdleToken(idleWETH);
         uint256 beforeBalance = token.balanceOf(address(this));
         token.safeTransferFrom(msg.sender, address(this), amount);
@@ -257,19 +216,18 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
             if (donationPercentage > 0) {
                 uint256 donationAmount = amount.mul(donationPercentage).div(100);
                 token.approve(address(donationDAO), donationAmount);
-                donationDAO.deposit(WETH9, donationAmount, newOwner);
+                donationDAO.deposit(weth, donationAmount, newOwner);
                 toIdleAmount -= donationAmount;
             }
         }
         
-        console.log("toIdleAmount", toIdleAmount);
+        //console.log("toIdleAmount", toIdleAmount);
         uint256 iTokens = _idle(toIdleAmount);  // WETH for idleWETH
-        console.log("iTokens", iTokens);
+        //console.log("iTokens", iTokens);
         uint256 price = iToken.tokenPrice();
-        console.log("price", price);
-        //mintedTokens = _amount.mul(ONE_18).div(idlePrice);
+        //console.log("price", price);
         uint256 estTokens = amount.mul(ONE_18).div(price);
-        console.log("estTokens", estTokens);
+        //console.log("estTokens", estTokens);
 
         uint256 vestorBalance = vestor.flowTokenBalance();
         uint256 target = _targetReserves().add(_targetReserveForAmount(estTokens));
@@ -310,7 +268,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     
     // @dev issues the NFT, transferring it to a new owner, and starting the streams
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
-        console.log("start issue");
+        //console.log("start issue");
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
         uint256 iTokensAmount;

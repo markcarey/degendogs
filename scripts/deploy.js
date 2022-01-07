@@ -3,18 +3,24 @@ async function main() {
     const donationAddress = "0x47D057a7720A41a40C79Ea1c514A320F2972eCA6"; // localhost:polygon
     //const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
     const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
+    const name = "Degen Dogs";
+    const symbol = "DOG";
+    const baseURI = "https://degendogs.club/meta/";
+    const idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4"; // polygon
+    const bidTokenName = "Dog Biscuits";
+    const bidTokenSymbol = "BSCT";
 
     // Grab the contract factory 
     const Dog = await ethers.getContractFactory("Dog");
     const House = await ethers.getContractFactory("DogsAuctionHouse");
  
     // Start deployment, returning a promise that resolves to a contract object
-    const myDog = await Dog.deploy(vestorAddress, donationAddress); // Instance of the contract 
+    const myDog = await Dog.deploy(vestorAddress, donationAddress, WETH, idleWETH, name, symbol, baseURI); // Instance of the contract 
     console.log("Dog deployed to address:", myDog.address);
 
     const auctionHouse = await House.deploy(); // Instance of the contract 
     console.log("Auction House deployed to address:", auctionHouse.address);
-    await (await auctionHouse.initialize(myDog.address, WETH, 60*1, "100000000000000000", 10, 60*5)).wait();
+    await (await auctionHouse.initialize(myDog.address, WETH, 60*1, "100000000000000000", 10, 60*5, bidTokenName, bidTokenSymbol)).wait();
     console.log("Auction house initialized");
 
     await (await myDog.setMinter(auctionHouse.address)).wait();

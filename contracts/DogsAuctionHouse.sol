@@ -25,6 +25,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IDogsAuctionHouse } from './interfaces/IDogsAuctionHouse.sol';
 import { IDogsToken } from './interfaces/IDogsToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
+import { BidTokens } from './BidTokens.sol';
 
 contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     using SafeERC20 for IERC20;
@@ -48,6 +49,9 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
     // The duration of a single auction
     uint256 public duration;
 
+    // The voting rewards token
+    BidTokens public bidToken;
+
     // The active auction
     IDogsAuctionHouse.Auction public auction;
 
@@ -62,7 +66,9 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         uint256 _timeBuffer,
         uint256 _reservePrice,
         uint8 _minBidIncrementPercentage,
-        uint256 _duration
+        uint256 _duration,
+        string calldata bidTokenName,
+        string calldata bidTokenSymbol
     ) external initializer {
         __Pausable_init();
         __ReentrancyGuard_init();
@@ -76,6 +82,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         reservePrice = _reservePrice;
         minBidIncrementPercentage = _minBidIncrementPercentage;
         duration = _duration;
+        bidToken = new BidTokens(bidTokenName, bidTokenSymbol);
 
         IERC20 token = IERC20(weth);
         token.approve(address(dogs), 2**256 - 1);
@@ -124,6 +131,10 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
 
         auction.amount = amount;
         auction.bidder = payable(msg.sender);
+
+        if (msg.sender != lastBidder) {
+            bidToken.mint(msg.sender, amount.mul(1000));
+        }
 
         // Extend the auction if the bid was received within `timeBuffer` of the auction end time
         bool extended = _auction.endTime - block.timestamp < timeBuffer;

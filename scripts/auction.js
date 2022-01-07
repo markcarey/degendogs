@@ -235,7 +235,7 @@ const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // Mumbai -- found at
 const Dog = "0x3FbcA0A065f96093c6f159544e20d74DCd55b501";
 
 const contract = require("../artifacts/contracts/DogsAuctionHouse.sol/DogsAuctionHouse.json");
-const contractAddress = "0x2F6b13efA5dAfF6fb6BAA4683ca826f1ACDd1EEe";
+const contractAddress = "0x796c77F8A217cf6062A9B69a5bAC849817691A02";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 const wethContract = new web3.eth.Contract(ERC20abi, WETH);
 
@@ -407,11 +407,17 @@ async function getAuction() {
     console.log("The Auction is: " + JSON.stringify(auction));
 }
 
+async function bidToken() {
+  const auction = await nftContract.methods.bidToken().call();
+  console.log("The bidToken is: " + JSON.stringify(auction));
+}
+
 //initialize();
 //unpause();
 //pause();
 //createBid(0, '1000000000000000000');
-getAuction();
+//getAuction();
+bidToken();
 //settleCurrentAndCreateNewAuction();
 //approve('1000000000000000000');
 

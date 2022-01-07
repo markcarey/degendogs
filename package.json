@@ -17,8 +17,11 @@
   },
   "homepage": "https://github.com/markcarey/degendogs#readme",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "ethers": "^5.4.7",
+    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.3",
     "hardhat": "^2.6.4"
   },
   "dependencies": {
@@ -26,6 +29,7 @@
     "@alch/alchemy-web3": "^1.1.4",
     "@chainlink/contracts": "^0.2.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.7",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "^4.3.2",
     "@openzeppelin/contracts-upgradeable": "^4.3.2",
     "@superfluid-finance/ethereum-contracts": "^1.0.0-rc.7",

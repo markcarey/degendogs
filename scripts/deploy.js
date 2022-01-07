@@ -1,5 +1,6 @@
 async function main() {
     const vestorAddress = "0x8f678d16918bc16F9EB23259a8A7D4c2Baa26B4e"; // localhost:polygon
+    const donationAddress = "0x47D057a7720A41a40C79Ea1c514A320F2972eCA6"; // localhost:polygon
     //const WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
     const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 
@@ -8,7 +9,7 @@ async function main() {
     const House = await ethers.getContractFactory("DogsAuctionHouse");
  
     // Start deployment, returning a promise that resolves to a contract object
-    const myDog = await Dog.deploy(vestorAddress); // Instance of the contract 
+    const myDog = await Dog.deploy(vestorAddress, donationAddress); // Instance of the contract 
     console.log("Dog deployed to address:", myDog.address);
 
     const auctionHouse = await House.deploy(); // Instance of the contract 

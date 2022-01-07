@@ -8,7 +8,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x3FbcA0A065f96093c6f159544e20d74DCd55b501";
+const contractAddress = "0x1e646cc354B3e94080892307b516dBfF09F4f39A";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {

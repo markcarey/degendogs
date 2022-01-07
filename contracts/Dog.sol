@@ -61,10 +61,15 @@ interface ITokenVestor {
     function redirectStreams(address oldRecipient, address newRecipient, bytes32 ref) external;
 }
 
+interface IDAOSuperApp {
+    function deposit(address tokenAddress, uint _amount, address beneficiary) external;
+}
+
 interface IIdleToken {
     function token() external view returns (address underlying);
     function mintIdleToken(uint256 _amount, bool _skipWholeRebalance, address _referral) external returns (uint256 mintedTokens);
     function redeemIdleToken(uint256 _amount) external returns (uint256 redeemedTokens);
+    function tokenPrice() external view returns (uint256 price);
     function approve(address, uint256) external returns (bool);
     function transfer(address, uint256) external returns (bool);
     function balanceOf(address) external returns (uint256);
@@ -74,6 +79,8 @@ interface IIdleToken {
 contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
+
+    uint256 private constant ONE_18 = 10**18;
 
     AggregatorV3Interface internal priceFeed;
 
@@ -112,6 +119,9 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     address public treasury;
 
+    IDAOSuperApp public donationDAO;
+    uint256 public donationPercentage = 10;
+
     mapping(uint256 => uint256) public winningBid;
 
     mapping(uint256 => int96) public flowRates;
@@ -147,6 +157,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         address newAddress
     );
 
+    event DonationPercentageUpdated(
+        uint256 oldPercentage,
+        uint256 newPercentage
+    );
+
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
         _;
@@ -156,7 +171,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         _;
     }
 
-    constructor(address _tokenVestor) 
+    constructor(address _tokenVestor, address _donationDAO) 
         
         // hardcoding to make testing faster
         ERC721(
@@ -165,6 +180,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
             ) {
 
         vestor = ITokenVestor(_tokenVestor);
+        donationDAO = IDAOSuperApp(_donationDAO);
 
         // chainlink ETH/DAI on Kovan
         priceFeed = AggregatorV3Interface(0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541);
@@ -202,100 +218,18 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         treasury = _treasury;
     }
 
+    function setDonationPercentage(uint256 _pct) external onlyOwner {
+        emit DonationPercentageUpdated(donationPercentage, _pct);
+        uint256 streamPct;
+        for(uint i = 0; i < streamonomics.length; i++) {
+            streamPct += streamonomics[i].percentage;
+        }
+        require(_pct <= (100 - streamPct), "!>100");
+        donationPercentage = _pct;
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return "https://degendogs.club/meta/";
-    }
-
-    /**
-     * Returns the latest price
-     */
-    function _chainlink_price() internal returns (int) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = priceFeed.latestRoundData();
-        return price;
-    }
-
-    function _swap(uint256 amountIn) internal returns (uint256) {
-        uint256 min = uint256( _chainlink_price() );
-        min = min.mul(97);
-        min = min.div(100);
-
-        uint256 deadline = block.timestamp + 15;
-        address tokenIn = WETH9;
-        address tokenOut = DAI;
-        uint24 fee = 3000;
-        address recipient = address(this);
-        uint256 amountOutMinimum = min;
-        uint160 sqrtPriceLimitX96 = 0;
-
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams(
-            tokenIn,
-            tokenOut,
-            fee,
-            recipient,
-            deadline,
-            amountIn,
-            amountOutMinimum,
-            sqrtPriceLimitX96
-        );
-
-        uint256 amountOut = uniswapRouter.exactInputSingle{ value: amountIn }(params);
-        uniswapRouter.refundETH();
-
-        return amountOut;
-    }
-
-    function _comp(uint256 tokens) internal returns (uint256) {
-        // Create a reference to the underlying asset contract, like DAI.
-        Erc20 underlying = Erc20(DAI);
-
-        // Create a reference to the corresponding cToken contract, like cDAI
-        CErc20 cToken = CErc20(cDAI);
-
-        uint256 _numTokensBefore = cToken.balanceOf(address(this));
-
-        uint256 _numTokensToSupply = tokens;
-
-        // Approve transfer on the ERC20 contract
-        underlying.approve(cDAI, _numTokensToSupply);
-
-         // Mint cTokens
-        uint256 mintResult = cToken.mint(_numTokensToSupply); // does not return number of cTokens
-
-        uint256 _numTokensAfter = cToken.balanceOf(address(this));
-        uint256 cTokens = _numTokensAfter.sub(_numTokensBefore);
-
-        return cTokens;
-    }
-
-    function claimComp() external onlyOwner{
-        _claimComp();
-    }
-
-    function _claimComp() internal {
-        ICompoundComptroller troll = ICompoundComptroller(comptroller);
-        troll.claimComp(address(this));
-    }
-
-    function _super(uint256 aTokens) internal {
-        // Create a reference to the underlying asset contract, like DAI.
-        Erc20 underlying = Erc20(amWETH);
-
-        uint256 _numTokensToSupply = aTokens;
-
-        // TODO: still need this?
-        uint256 amount = _numTokensToSupply * (10 ** (18 - underlying.decimals()));
-
-        // Approve transfer on the ERC20 contract
-        underlying.approve(amWETHx, _numTokensToSupply);
-
-        // Mint super tokens
-        //_acceptedToken.upgrade(amount);
     }
 
     function _idle(uint256 tokens) internal returns (uint256) {
@@ -310,16 +244,35 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         return iTokens;
     }
 
-    function _defi(uint256 amount, uint256 tokenId) internal {
+    function _defi(uint256 amount, address newOwner) internal returns(uint256) {
         IERC20 token = IERC20(WETH9);
+        IIdleToken iToken = IIdleToken(idleWETH);
         uint256 beforeBalance = token.balanceOf(address(this));
         token.safeTransferFrom(msg.sender, address(this), amount);
         uint256 afterBalance = token.balanceOf(address(this));
         require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
-        uint256 iTokens = _idle(amount);  // WETH for idleWETH
-        IIdleToken iToken = IIdleToken(idleWETH);
+        
+        uint256 toIdleAmount = amount;
+        if ( address(donationDAO) != address(0) ) {
+            if (donationPercentage > 0) {
+                uint256 donationAmount = amount.mul(donationPercentage).div(100);
+                token.approve(address(donationDAO), donationAmount);
+                donationDAO.deposit(WETH9, donationAmount, newOwner);
+                toIdleAmount -= donationAmount;
+            }
+        }
+        
+        console.log("toIdleAmount", toIdleAmount);
+        uint256 iTokens = _idle(toIdleAmount);  // WETH for idleWETH
+        console.log("iTokens", iTokens);
+        uint256 price = iToken.tokenPrice();
+        console.log("price", price);
+        //mintedTokens = _amount.mul(ONE_18).div(idlePrice);
+        uint256 estTokens = amount.mul(ONE_18).div(price);
+        console.log("estTokens", estTokens);
+
         uint256 vestorBalance = vestor.flowTokenBalance();
-        uint256 target = _targetReserves().add(_targetReserveForAmount(iTokens));
+        uint256 target = _targetReserves().add(_targetReserveForAmount(estTokens));
         if ( target > vestorBalance ) {
             uint256 depAmount = target.sub(vestorBalance);
             iToken.approve(address(vestor), depAmount);
@@ -329,6 +282,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         if ( treasury != address(0) ) {
             iToken.transfer(treasury, iBalance);
         }
+        return estTokens;
     }
 
     // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
@@ -354,17 +308,16 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     
     event NFTIssued(uint256 indexed tokenId, address indexed owner);
     
-    // @dev issues the NFT, transferring it to a new owner, and starting the stream
+    // @dev issues the NFT, transferring it to a new owner, and starting the streams
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         console.log("start issue");
         require(newOwner != address(this), "Issue to a new address");
         require(ownerOf(tokenId) == address(this), "NFT already issued");
+        uint256 iTokensAmount;
         if (amount > 0) {
-            _defi(amount, tokenId);
+            iTokensAmount = _defi(amount, newOwner);
         }
-
-        winningBid[tokenId] = amount;
-        //_claimComp();
+        winningBid[tokenId] = iTokensAmount;
         emit NFTIssued(tokenId, newOwner);
         this.safeTransferFrom(address(this), newOwner, tokenId);
     }
@@ -380,8 +333,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
         if ( oldReceiver == address(this) ) {
             uint256 _amount = winningBid[tokenId];
-            //uint256 _super = sTokensForDog[tokenId];
-            uint256 _super = _amount;  // TEMP: CHANGE THIS!!!!
             flowRates[tokenId] = 0;
 
             // loop through streamonomics rules

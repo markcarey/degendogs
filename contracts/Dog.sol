@@ -43,9 +43,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     uint256 private constant ONE_18 = 10**18;
 
-    // Polygon:
-    address private idleWETH; // = 0xfdA25D931258Df948ffecb66b5518299Df6527C4;
-    address private weth; // = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619; // polygon
+    address private idleWETH;
+    address private weth;
 
     ITokenVestor private vestor; // Token Vesting contract
 
@@ -221,13 +220,9 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
             }
         }
         
-        //console.log("toIdleAmount", toIdleAmount);
         uint256 iTokens = _idle(toIdleAmount);  // WETH for idleWETH
-        //console.log("iTokens", iTokens);
         uint256 price = iToken.tokenPrice();
-        //console.log("price", price);
         uint256 estTokens = amount.mul(ONE_18).div(price);
-        //console.log("estTokens", estTokens);
 
         uint256 vestorBalance = vestor.flowTokenBalance();
         uint256 target = _targetReserves().add(_targetReserveForAmount(estTokens));
@@ -243,12 +238,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         return estTokens;
     }
 
-    // temporary functions for dev because I keep losing all my faucet ETH to older versions of contracts!!
     function withdrawToken(address _tokenContract) external onlyOwner {
         IERC20 tokenContract = IERC20(_tokenContract);
-
-        // transfer the token from address of this contract
-        // to address of the user (executing the withdrawToken() function)
         tokenContract.transfer(msg.sender, tokenContract.balanceOf(address(this)) );
     }
     function withdrawETH() external payable onlyOwner {
@@ -257,7 +248,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     
     // @dev creates the NFT, but it remains in the contract
     function mint() external onlyMinterOrOwner returns (uint256) {
-        //flowRates[lastId] = flowRate;
         _mint(owner(), address(this), lastId);
         uint256 dogId = lastId;
         lastId += 1;
@@ -377,7 +367,5 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         _contractURIHash = newContractURIHash;
     }
 
-    receive() external payable {
-        //_defi(msg.value);
-    }
+    receive() external payable {}
 }

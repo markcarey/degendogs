@@ -41,6 +41,9 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
+    // The dogMaster address (creators org)
+    address public dogMaster;
+
     uint256 private constant ONE_18 = 10**18;
 
     address private idleWETH;
@@ -102,6 +105,19 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         string newURI
     );
 
+    event DogMasterUpdated(
+        address dogMaster
+    );
+
+    event DogCreated(
+        uint256 tokenId
+    );
+
+    event NFTIssued(
+        uint256 indexed tokenId, 
+        address indexed owner
+    );
+
     modifier onlyMinter() {
         require(msg.sender == minter, 'Sender is not the minter');
         _;
@@ -111,11 +127,20 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         _;
     }
 
+    /**
+     * @notice Require that the sender is the dogMaster.
+     */
+    modifier onlyDogMaster() {
+        require(msg.sender == dogMaster, 'Sender is not the dogMaster');
+        _;
+    }
+
     constructor(
         address _tokenVestor, 
         address _donationDAO, 
         address _weth, 
         address _idletoken, 
+        address _dogMaster,
         string memory _name, 
         string memory _symbol,
         string memory _metadataBaseURI
@@ -126,6 +151,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         donationDAO = IDAOSuperApp(_donationDAO);
         weth = _weth;
         idleWETH = _idletoken;
+        dogMaster = _dogMaster;
         metadataBaseURI = _metadataBaseURI;
 
         // default streamonomics -- can be replaced with setStreamonomics
@@ -246,15 +272,24 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         payable(msg.sender).transfer(address(this).balance);
     }
     
-    // @dev creates the NFT, but it remains in the contract
+    /**
+     * @notice Mint a Dog, along with a possible dogmaster reward
+     * Dog. Dogmaster reward Dogs are minted every 11 Dogs, starting at 0,
+     * until 420 Dogs have been minted (~1 year).
+     * @dev Call _mint with the to address(es).
+     */
     function mint() external onlyMinterOrOwner returns (uint256) {
+        if (lastId <= 420 && lastId % 11 == 0) {
+            _mint(owner(), dogMaster, lastId);
+            emit DogCreated(lastId);
+            lastId++;
+        }
         _mint(owner(), address(this), lastId);
+        emit DogCreated(lastId);
         uint256 dogId = lastId;
-        lastId += 1;
+        lastId++;
         return dogId;
     }
-    
-    event NFTIssued(uint256 indexed tokenId, address indexed owner);
     
     // @dev issues the NFT, transferring it to a new owner, and starting the streams
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
@@ -365,6 +400,16 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      */
     function setContractURIHash(string memory newContractURIHash) external onlyOwner {
         _contractURIHash = newContractURIHash;
+    }
+
+    /**
+     * @notice Set the dogMaster address.
+     * @dev Only callable by the dogMaster.
+     */
+    function setDogMaster(address _dogMaster) external override onlyDogMaster {
+        dogMaster = _dogMaster;
+
+        emit DogMasterUpdated(_dogMaster);
     }
 
     receive() external payable {}

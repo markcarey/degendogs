@@ -10,12 +10,14 @@ async function main() {
     const bidTokenName = "Dog Biscuits";
     const bidTokenSymbol = "BSCT";
 
+    const dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this
+
     // Grab the contract factory 
     const Dog = await ethers.getContractFactory("Dog");
     const House = await ethers.getContractFactory("DogsAuctionHouse");
  
     // Start deployment, returning a promise that resolves to a contract object
-    const myDog = await Dog.deploy(vestorAddress, donationAddress, WETH, idleWETH, name, symbol, baseURI); // Instance of the contract 
+    const myDog = await Dog.deploy(vestorAddress, donationAddress, WETH, idleWETH, dogMaster, name, symbol, baseURI); // Instance of the contract 
     console.log("Dog deployed to address:", myDog.address);
 
     const auctionHouse = await House.deploy(); // Instance of the contract 

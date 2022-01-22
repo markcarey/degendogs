@@ -406,7 +406,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      * @notice Set the dogMaster address.
      * @dev Only callable by the dogMaster.
      */
-    function setDogMaster(address _dogMaster) external override onlyDogMaster {
+    function setDogMaster(address _dogMaster) external onlyDogMaster {
         dogMaster = _dogMaster;
 
         emit DogMasterUpdated(_dogMaster);

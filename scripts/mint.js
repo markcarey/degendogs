@@ -54,6 +54,11 @@ async function tokenURI(tokenId) {
     console.log("The metadata is at: " + uri);
 }
 
+async function ownerOf(tokenId) {
+  const addr = await nftContract.methods.ownerOf(tokenId).call();
+  console.log("The owner is: " + addr);
+}
+
 async function swap() {
     const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
   
@@ -453,4 +458,5 @@ async function issue(newOwner, tokenId, amount) {
 //tokenURI(1);
 //transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
 //setStreamonomics();
-setTreasury("0x369e06C46790d7174Bd96Da75Db5c2977647Ce11");
+//setTreasury("0x369e06C46790d7174Bd96Da75Db5c2977647Ce11");
+ownerOf(0);

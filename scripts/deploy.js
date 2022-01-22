@@ -5,7 +5,7 @@ async function main() {
     const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
     const name = "Degen Dogs";
     const symbol = "DOG";
-    const baseURI = "https://degendogs.club/meta/";
+    const baseURI = "https://api.degendogs.club/meta/";
     const idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4"; // polygon
     const bidTokenName = "Dog Biscuits";
     const bidTokenSymbol = "BSCT";

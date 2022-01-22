@@ -1,5 +1,6 @@
 cache/
 artifacts/
+.DS_STORE
 
 # Logs
 logs

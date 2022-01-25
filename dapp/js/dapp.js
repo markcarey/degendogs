@@ -1,32 +1,32 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "polygon";
+var chain = "mumbai";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
 rpcURLs.mumbai = "polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
 rpcURLs.polygon = "polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
 
-rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
+//rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
 var rpcURL = rpcURLs[chain];
 
-//const prov = {"url": "https://" + rpcURL};
-const prov = {"url": "http://" + rpcURL};       // localhost only
+const prov = {"url": "https://" + rpcURL};
+//const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
 
-//var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
-var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
+var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
+//var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;
 
 // const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
 const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x0823D3F8244295b72600879E5A2c99E1C4217545";
+const dogAddress = "0x4046ad63C0C191dbE206a698E0C5a1e1F0998c07";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x85b7F751376fB78627EdC9CeAB7b8424F8DEB698";
+const auctionAddress = "0x432E550D7E0f850Cfc1e32e6CE40509bede38e7B";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
-//const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
-const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
+const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
+//const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 const WETH = new web3.eth.Contract(tokenABI, wethAddress);
 
 // Kovan
@@ -206,7 +206,10 @@ async function currentAuction(thisDog) {
         };
     } 
     //console.log(a);
-    $("#dog-image").attr("src", "/images/" + a.dogId + ".png").attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
+    const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
+    var tempImage = new Image();
+    tempImage.src = imageUrl;
+    $("#dog-image").attr("src", imageUrl).attr("alt", "Dog " + a.dogId + " is a member of the Degen Dogs Club");
     $("#dog-title").text("Dog " + a.dogId);
     var date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     $("#dog-date").text(date);
@@ -225,7 +228,7 @@ async function currentAuction(thisDog) {
 
     var logs = [];
     if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=23204147&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=24227980&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
         //console.log(covEventsUrl);
         const response = await fetch(covEventsUrl);
         var covEvents = await response.json();
@@ -586,11 +589,14 @@ function getDogHTML(a) {
         timerHeading = "Winner";
         bidHeading = "Winning Bid";
     }
+    const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
+    var tempImage = new Image();
+    tempImage.src = imageUrl;
     var html = `
         <div class="row">
             <div class="Auction_nounContentCol__1o5ER col-lg-6">
             <div class="Auction_nounWrapper__3JSNc"><img id="dog-image"
-                src="/images/${a.dogId}.png"
+                src="${imageUrl}"
                 alt="Dog ${a.dogId} is a member of the Degen Dogs Club" class="Noun_img__1GJxo img-fluid"></div>
             </div>
             <div class="Auction_auctionActivityCol__3U2jw col-lg-6">
@@ -652,7 +658,7 @@ function getBidHistoryModal(a) {
         <div class="modal-content">
             <div class="AuctionActivity_modalHeader__2pkxA modal-header">
             <div class="AuctionActivity_modalHeaderNounImgWrapper__3boIZ"><img
-                src="/images/${a.dogId}.png"
+                src="https://api.degendogs.club/images/${a.dogId}.png"
                 alt="Dog ${a.dogId} is a member of the Degen Dogs Club" class="Noun_img__1GJxo img-fluid"></div>
             <div class="AuctionActivity_modalTitleWrapper__2w2pt modal-title h4">
                 <h1>Dog ${a.dogId}<br> Bid History</h1>

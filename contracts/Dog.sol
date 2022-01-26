@@ -61,6 +61,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     mapping(uint256 => uint256) public winningBid;
 
+    mapping(uint256 => string) public tokenURIs;
+
     mapping(uint256 => int96) public flowRates;
     struct Flow {
         uint256 tokenId;
@@ -116,6 +118,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     event NFTIssued(
         uint256 indexed tokenId, 
         address indexed owner
+    );
+
+    event PermanentURI(
+        string _value, 
+        uint256 indexed _id
     );
 
     modifier onlyMinter() {
@@ -305,6 +312,14 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         this.safeTransferFrom(address(this), newOwner, tokenId);
     }
 
+    function tokenURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
+        if ( bytes(tokenURIs[tokenId]).length > 0 ) {
+            return tokenURIs[tokenId];
+        } else {
+            return super.tokenURI(tokenId);
+        }
+    }
+
     function _beforeTokenTransfer(
         address oldReceiver,
         address newReceiver,
@@ -408,8 +423,16 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      */
     function setDogMaster(address _dogMaster) external onlyDogMaster {
         dogMaster = _dogMaster;
-
         emit DogMasterUpdated(_dogMaster);
+    }
+
+    /**
+     * @notice Sets explict tokenURI for {_id}
+     * @dev Future use to optionally freeze metadata to decentralized storage
+     */
+    function setTokenURI(string calldata _uri, uint256 _id) external onlyOwner {
+        tokenURIs[_id] = _uri;
+        emit PermanentURI(_uri, _id);
     }
 
     receive() external payable {}

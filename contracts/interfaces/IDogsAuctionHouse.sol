@@ -31,6 +31,8 @@ interface IDogsAuctionHouse {
 
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
 
+    event AuctionDurationUpdated(uint256 duration);
+
     event AuctionReservePriceUpdated(uint256 reservePrice);
 
     event AuctionMinBidIncrementPercentageUpdated(uint256 minBidIncrementPercentage);

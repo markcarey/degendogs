@@ -183,6 +183,16 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
     }
 
     /**
+     * @notice Set the auction duration.
+     * @dev Only callable by the owner.
+     */
+    function setDuration(uint256 _duration) external override onlyOwner {
+        duration = _duration;
+
+        emit AuctionDurationUpdated(_duration);
+    }
+
+    /**
      * @notice Set the auction reserve price.
      * @dev Only callable by the owner.
      */
@@ -203,6 +213,28 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
     }
 
     /**
+     * @notice Get the auction duration for {id}
+     * @dev Checks hardcoded early cadence schedule and then defaults to {duration} after that
+     */
+    function _getDuration(uint256 id) internal view returns(uint256) {
+        if ( id > 50 ) {
+            return duration;
+        } else if ( id > 46 ) {
+            // 12 hours
+            return 60*60*12;
+        } else if ( id > 39 ) {
+            // 8 hours
+            return 60*60*8;
+        } else if ( id > 26 ) {
+            // 4 hours
+            return 60*60*4;
+        } else {
+            // 2 hours up to id 26
+            return 60*60*12;
+        }
+    }
+
+    /**
      * @notice Create an auction.
      * @dev Store the auction details in the `auction` state variable and emit an AuctionCreated event.
      * If the mint reverts, the minter was updated without pausing this contract first. To remedy this,
@@ -211,7 +243,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
     function _createAuction() internal {
         try dogs.mint() returns (uint256 dogId) {
             uint256 startTime = block.timestamp;
-            uint256 endTime = startTime + duration;
+            uint256 endTime = startTime + _getDuration(dogId);
 
             auction = Auction({
                 dogId: dogId,

@@ -8,7 +8,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x4735Dab2A96E3eB3A110330Edf3Eb5280ac0825E";
+const contractAddress = "0xfE1f7F911B9Ae2025BEcf4EbFeDB02a31409487b";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mint() {
@@ -435,6 +435,33 @@ async function issue(newOwner, tokenId, amount) {
     });
   }
 
+  async function setTokenURI(uri, id) {
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
+  
+    //the transaction
+    const tx = {
+      'from': PUBLIC_KEY,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gas': 3000000,
+      'data': nftContract.methods.setTokenURI(uri, id).encodeABI()
+    };
+  
+    const signPromise = web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+    signPromise.then((signedTx) => {
+  
+      web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(err, hash) {
+        if (!err) {
+          console.log("The hash of your transaction is: ", hash, "\nCheck Alchemy's Mempool to view the status of your transaction!"); 
+        } else {
+          console.log("Something went wrong when submitting your transaction:", err)
+        }
+      });
+    }).catch((err) => {
+      console.log("Promise failed:", err);
+    });
+  }
+
 //mint(); //"19290123456790"); // 50 per month
 //issue("0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D", 0, "1000000000000000000"); // Dog Master
 //issue("0x0F74e1B1b88Dfe9DE2dd5d066BE94345ab0590F1", 1, "100000000000000000"); // NFT Words
@@ -455,8 +482,9 @@ async function issue(newOwner, tokenId, amount) {
 //claimComp();
 //latestExchangeRate();
 //setMinter("0xba85aBe9A942FC17a89932c21733e4c982234DaB");
-//tokenURI(1);
+tokenURI(1);
+//setTokenURI("", 1);
 //transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
 //setStreamonomics();
 //setTreasury("0x369e06C46790d7174Bd96Da75Db5c2977647Ce11");
-ownerOf(0);
+//ownerOf(0);

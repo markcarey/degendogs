@@ -230,7 +230,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
             return 60*60*4;
         } else {
             // 2 hours up to id 26
-            return 60*60*12;
+            return 60*60*2;
         }
     }
 

@@ -427,10 +427,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     }
 
     /**
-     * @notice Sets explict tokenURI for {_id}
-     * @dev Future use to optionally freeze metadata to decentralized storage
+     * @notice Sets and freezes explict tokenURI for {_id}
+     * @dev Future use, to optionally freeze metadata to decentralized storage
      */
-    function setTokenURI(string calldata _uri, uint256 _id) external onlyOwner {
+    function freezeTokenURI(string calldata _uri, uint256 _id) external onlyOwner {
+        require(bytes(tokenURIs[_id]).length == 0, "!already frozen");
         tokenURIs[_id] = _uri;
         emit PermanentURI(_uri, _id);
     }

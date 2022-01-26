@@ -5,6 +5,7 @@ var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
 rpcURLs.mumbai = "polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
 rpcURLs.polygon = "polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
+rpcURLs.ethereum = "eth-mainnet.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
 
 //rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
 var rpcURL = rpcURLs[chain];
@@ -12,6 +13,8 @@ var rpcURL = rpcURLs[chain];
 const prov = {"url": "https://" + rpcURL};
 //const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
+
+var ens = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
 var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
 //var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
@@ -21,9 +24,9 @@ var BN = web3.utils.BN;
 // const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
 const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x4046ad63C0C191dbE206a698E0C5a1e1F0998c07";
+const dogAddress = "0x051508e970483264e0EB44F849BB30a71291CEf8";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x432E550D7E0f850Cfc1e32e6CE40509bede38e7B";
+const auctionAddress = "0x21CcD19ae3Db87048D010D598d46dBea8De37684";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
 //const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
@@ -50,11 +53,18 @@ const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
 
-function abbrAddress(address){
-    if (!address) {
-        address = ethereum.selectedAddress;
-    }
-    return address.slice(0,4) + "..." + address.slice(address.length - 4);
+async function abbrAddress(address){
+    return new Promise(async function(resolve) {
+        if (!address) {
+            address = ethereum.selectedAddress;
+        }
+        var name = await ens.lookupAddress(address);
+        if (name) {
+            resolve(name);
+        } else {
+            resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
+        }
+    });
 }
 
 async function main() {
@@ -64,7 +74,7 @@ async function main() {
     accounts = await web3.eth.getAccounts();
     //connectWallet();
     if (accounts.length > 0) {
-        $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
+        $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
         $("#bid-button").prop("disabled", false);
     }
 
@@ -110,7 +120,7 @@ async function connectWallet() {
                 // Metamask is ready to go!
                 //console.log(result);
                 accounts = result;
-                $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
+                $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
                 $("#bid-button").prop("disabled", false);
             })
             .catch(reason => {
@@ -170,7 +180,7 @@ function countdown(a){
             // time's up
             clearInterval(timer);
             var a = await auction.methods.auction().call();
-            var winner = abbrAddress(a.bidder);
+            var winner = await abbrAddress(a.bidder);
             $("#timer").html(`
                 <h2>${winner}</h2>
             `
@@ -237,7 +247,7 @@ async function currentAuction(thisDog) {
     }
     var bidsHTML = "";
     var bidsHTMLAll = "";
-    $.each(logs, function(index, log) {
+    $.each(logs, async function(index, log) {
         //console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
         //console.log(event);
@@ -260,9 +270,9 @@ async function currentAuction(thisDog) {
         };
         //console.log(bid);
         if (index < 3) {
-            bidsHTML += getBidRowHTML(bid);
+            bidsHTML += await getBidRowHTML(bid);
         }
-        bidsHTMLAll += getBidRowHTML(bid, true);
+        bidsHTMLAll += await getBidRowHTML(bid, true);
     });
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
@@ -272,10 +282,10 @@ async function currentAuction(thisDog) {
     diffTime = 86400; // TODO: change this!!!!
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     a.duration = duration;
-    var dogHTML = getDogHTML(a);
+    var dogHTML = await getDogHTML(a);
     $("#dog").html(dogHTML);
     if (a.duration.asSeconds() > 0) {
-        //countdown(a);
+        countdown(a);
     }
     if (accounts.length > 0) {
         $("#bid-button").prop("disabled", false);
@@ -322,7 +332,7 @@ async function currentAuction(thisDog) {
                         "bidder": ethereum.selectedAddress,
                         "date": Date.now()
                     };
-                    var bidHTML = getBidRowHTML(bid);
+                    var bidHTML = await getBidRowHTML(bid);
                     $("#bid-history").prepend(bidHTML);
                     $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
                     a.minBid = parseFloat(newBid) * 1.1;
@@ -340,7 +350,7 @@ async function currentAuction(thisDog) {
                     .on("connected", function(subscriptionId){
                         //console.log(subscriptionId);
                     })
-                    .on("data", function(log){
+                    .on("data", async function(log){
                         //console.log(log);
                         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.data);
                         //console.log(event);
@@ -352,7 +362,7 @@ async function currentAuction(thisDog) {
                             "date": Date.now()
                         };
                         //console.log(bid);
-                        bidsHTML += getBidRowHTML(bid);
+                        bidsHTML += await getBidRowHTML(bid);
                         $("#bid-history").prepend(bidHTML);
                     })
                 }
@@ -468,8 +478,8 @@ $( document ).ready(function() {
 });
 
 // HTML templates
-function getBidRowHTML(bid, modal) {
-    var address = abbrAddress(bid.bidder);
+async function getBidRowHTML(bid, modal) {
+    var address = await abbrAddress(bid.bidder);
     var date = moment(bid.date).format("MMMM DD [at] HH:mm");
     var html = `
         <li class="BidHistory_bidRow__bc1Zf">
@@ -522,7 +532,7 @@ function getBidRowHTML(bid, modal) {
                 </li>
         `;
     }
-    return html;
+    return Promise.resolve(html);
 }
 
 function bidFormHTML(a) {
@@ -555,7 +565,7 @@ function bidFormHTML(a) {
     return html;
 }
 
-function getTimerHTML(a) {
+async function getTimerHTML(a) {
     var html = `
     <div class="AuctionTimer_timerSection__2RlJK"><span>0<span
                             class="AuctionTimer_small__3FXgu">h</span></span></div>
@@ -565,16 +575,16 @@ function getTimerHTML(a) {
                             class="AuctionTimer_small__3FXgu">s</span></span></div>
     `;
     if (a.duration.asSeconds() < 0) {
-        html = abbrAddress(a.bidder);
+        html = await abbrAddress(a.bidder);
     }
-    return html;
+    return Promise.resolve(html);
 }
 
-function getDogHTML(a) {
+async function getDogHTML(a) {
     a.date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     a.currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
     a.formHTML = bidFormHTML(a);
-    a.timerHTML = getTimerHTML(a);
+    a.timerHTML = await getTimerHTML(a);
     var next = `disabled=""`;
     var prev = ""
     if ( a.settled ) {
@@ -646,7 +656,7 @@ function getDogHTML(a) {
             </div>
         </div>
     `;
-    return html;
+    return Promise.resolve(html);
 }
 
 function getBidHistoryModal(a) {
@@ -702,19 +712,3 @@ function wrongNetworkModal(){
     `;
     return html;
 }
-
-var os = [
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847046526097424385",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847047625609052161",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847048725120679937",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847049824632307713",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847050924143935489",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847052023655563265",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847053123167191041",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847054222678818817",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847055322190446593",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847056421702074369",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847057521213702145",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847058620725329921",
-    "https://testnets.opensea.io/assets/0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656/42398452190972679717300800056945679336581597704135043767047847059720236957697"
-];

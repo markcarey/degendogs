@@ -5,6 +5,7 @@ require('dotenv').config();
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-web3");
+require("@nomiclabs/hardhat-waffle");
 const { API_URL, API_URL_KOVAN, API_URL_RINKEBY, API_URL_POLYGON, POLYSCAN_API_KEY, PRIVATE_KEY } = process.env;
 module.exports = {
   solidity: {

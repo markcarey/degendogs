@@ -64,12 +64,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     mapping(uint256 => string) public tokenURIs;
 
     mapping(uint256 => int96) public flowRates;
-    struct Flow {
-        uint256 tokenId;
-        uint256 timestamp;
-        int96 flowRate;
-    }
-    mapping(uint256 => Flow[]) private flowsForToken;
     
     uint256 public lastId; // this is so we can increment the number
 
@@ -100,6 +94,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     event DonationPercentageUpdated(
         uint256 oldPercentage,
         uint256 newPercentage
+    );
+
+    event ReserveDurationUpdated(
+        uint256 oldDuration,
+        uint256 newDuration
     );
 
     event BaseURIUpdated(
@@ -178,6 +177,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     }
     function setreserveDuration(uint256 _duration) external onlyOwner {
         require(_duration > 0, "!zero");
+        emit ReserveDurationUpdated(reserveDuration, _duration);
         reserveDuration = _duration;
     }
     function _targetReserveForAmount(uint256 amt) internal view returns(uint256 reserve) {

@@ -9,8 +9,8 @@ const signer = new ethers.Wallet(PRIVATE_KEY, ethers.provider);
 var addr = {};
 var chain = "mumbai";
 if (chain == "polygon") {
-  addr.vestor = "0x8f678d16918bc16F9EB23259a8A7D4c2Baa26B4e"; // localhost:polygon
-  addr.donation = "0x47D057a7720A41a40C79Ea1c514A320F2972eCA6"; // localhost:polygon
+  addr.vestor = "0xdbdF8EA5C514bd1ca8A294a1e6C361502592E457"; // localhost:polygon
+  addr.donation = "0x81D0D2b927D1FdE461Bb43Ec38993C6359a40942"; // localhost:polygon
   addr.WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
   addr.idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4"; // polygon
   addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this

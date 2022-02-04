@@ -8,8 +8,231 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0xfE1f7F911B9Ae2025BEcf4EbFeDB02a31409487b";
+const contractAddress = "0x281E88Ed346bFF38c053c947Bc15575331Da4e79";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
+
+var ERC20abi = [
+  {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+          {
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "constant": false,
+      "inputs": [
+          {
+              "name": "_spender",
+              "type": "address"
+          },
+          {
+              "name": "_value",
+              "type": "uint256"
+          }
+      ],
+      "name": "approve",
+      "outputs": [
+          {
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+          {
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "constant": false,
+      "inputs": [
+          {
+              "name": "_from",
+              "type": "address"
+          },
+          {
+              "name": "_to",
+              "type": "address"
+          },
+          {
+              "name": "_value",
+              "type": "uint256"
+          }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+          {
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+          {
+              "name": "",
+              "type": "uint8"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "constant": true,
+      "inputs": [
+          {
+              "name": "_owner",
+              "type": "address"
+          }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+          {
+              "name": "balance",
+              "type": "uint256"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+          {
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "constant": false,
+      "inputs": [
+          {
+              "name": "_to",
+              "type": "address"
+          },
+          {
+              "name": "_value",
+              "type": "uint256"
+          }
+      ],
+      "name": "transfer",
+      "outputs": [
+          {
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "constant": true,
+      "inputs": [
+          {
+              "name": "_owner",
+              "type": "address"
+          },
+          {
+              "name": "_spender",
+              "type": "address"
+          }
+      ],
+      "name": "allowance",
+      "outputs": [
+          {
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+          }
+      ],
+      "name": "Approval",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+          }
+      ],
+      "name": "Transfer",
+      "type": "event"
+  }
+];
 
 async function mint() {
   const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); //get latest nonce
@@ -462,6 +685,27 @@ async function issue(newOwner, tokenId, amount) {
     });
   }
 
+  async function getSome(token, eoa) {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [eoa],
+    });
+    const signer = await ethers.getSigner(eoa);
+    let contract = new ethers.Contract(
+      token,
+      ERC20abi,
+      signer
+    );
+    var bal = contract.balanceOf(eoa);
+    await contract.transfer(PUBLIC_KEY, bal).then((transferResult) => {
+      console.log(transferResult);
+    });
+    await hre.network.provider.request({
+      method: "hardhat_stopImpersonatingAccount",
+      params: [eoa],
+    });
+  }
+
 //mint(); //"19290123456790"); // 50 per month
 //issue("0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D", 0, "1000000000000000000"); // Dog Master
 //issue("0x0F74e1B1b88Dfe9DE2dd5d066BE94345ab0590F1", 1, "100000000000000000"); // NFT Words
@@ -482,9 +726,12 @@ async function issue(newOwner, tokenId, amount) {
 //claimComp();
 //latestExchangeRate();
 //setMinter("0xba85aBe9A942FC17a89932c21733e4c982234DaB");
-tokenURI(1);
+//tokenURI(1);
 //setTokenURI("", 1);
 //transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
 //setStreamonomics();
 //setTreasury("0x369e06C46790d7174Bd96Da75Db5c2977647Ce11");
 //ownerOf(0);
+//getSome("0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x5c5a4ae893c4232a050b01a84e193e107dd80ca2");
+getSome("0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x72A53cDBBcc1b9efa39c834A540550e23463AAcB");
+

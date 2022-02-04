@@ -1,5 +1,5 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "mumbai";
+var chain = "polygon";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
@@ -7,29 +7,29 @@ rpcURLs.mumbai = "polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszL
 rpcURLs.polygon = "polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
 rpcURLs.ethereum = "eth-mainnet.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
 
-//rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
+rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
 var rpcURL = rpcURLs[chain];
 
-const prov = {"url": "https://" + rpcURL};
-//const prov = {"url": "http://" + rpcURL};       // localhost only
+//const prov = {"url": "https://" + rpcURL};
+const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
 
 var ens = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
-var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
-//var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
+//var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
+var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;
 
 // const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
 const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x051508e970483264e0EB44F849BB30a71291CEf8";
+const dogAddress = "0x4046ad63C0C191dbE206a698E0C5a1e1F0998c07";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x21CcD19ae3Db87048D010D598d46dBea8De37684";
+const auctionAddress = "0xE590907FB839A683D6b6Da36Bcf566757e617B06";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
-const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
-//const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
+//const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
+const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 const WETH = new web3.eth.Contract(tokenABI, wethAddress);
 
 // Kovan

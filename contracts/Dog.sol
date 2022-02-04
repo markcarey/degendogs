@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+//import "hardhat/console.sol";
 
 import './Streamonomics.sol';
 import { ERC721 } from './base/ERC721.sol';
@@ -62,13 +62,14 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     mapping(uint256 => uint256) public winningBid;
 
     mapping(uint256 => string) public tokenURIs;
-
-    mapping(uint256 => int96) public flowRates;
     
     uint256 public lastId; // this is so we can increment the number
 
     // default to 4 weeks
     uint256 public reserveDuration = 60*60*24*28;
+
+    // optional delay to starting streams, requiring a separate txn to launch them
+    uint256 public flowDelay;
 
     // IPFS content hash of contract-level metadata
     string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
@@ -125,11 +126,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     );
 
     modifier onlyMinter() {
-        require(msg.sender == minter, 'Sender is not the minter');
+        require(msg.sender == minter, '!minter');
         _;
     }
     modifier onlyMinterOrOwner() {
-        require( (msg.sender == minter) || (msg.sender == owner()), 'Sender is not the minter nor owner');
+        require( (msg.sender == minter) || (msg.sender == owner()), '!minter||owner');
         _;
     }
 
@@ -137,7 +138,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      * @notice Require that the sender is the dogMaster.
      */
     modifier onlyDogMaster() {
-        require(msg.sender == dogMaster, 'Sender is not the dogMaster');
+        require(msg.sender == dogMaster, '!dogMaster');
         _;
     }
 
@@ -203,16 +204,16 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         donationPercentage = _pct;
     }
 
+    function setFlowDelay(uint256 _seconds) external onlyOwner {
+        flowDelay = _seconds;
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return metadataBaseURI;
     }
     function setBaseURI(string calldata _uri) external onlyOwner {
         emit BaseURIUpdated(metadataBaseURI, _uri);
         metadataBaseURI = _uri;
-    }
-
-    function flowRateForTokenId(uint256 _tokenId) external view returns (int96) {
-        return flowRates[_tokenId];
     }
 
     function _getTreasury() internal view returns(address) {
@@ -241,7 +242,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         uint256 beforeBalance = token.balanceOf(address(this));
         token.safeTransferFrom(msg.sender, address(this), amount);
         uint256 afterBalance = token.balanceOf(address(this));
-        require(beforeBalance.add(amount) == afterBalance, "Token transfer call did not transfer expected amount");
+        require(beforeBalance.add(amount) == afterBalance, "!amount");
         
         uint256 toIdleAmount = amount;
         if ( address(donationDAO) != address(0) ) {
@@ -253,7 +254,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
             }
         }
         
-        uint256 iTokens = _idle(toIdleAmount);  // WETH for idleWETH
+        _idle(toIdleAmount);  // WETH for idleWETH
         uint256 price = iToken.tokenPrice();
         uint256 estTokens = amount.mul(ONE_18).div(price);
 
@@ -301,8 +302,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     // @dev issues the NFT, transferring it to a new owner, and starting the streams
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         //console.log("start issue");
-        require(newOwner != address(this), "Issue to a new address");
-        require(ownerOf(tokenId) == address(this), "NFT already issued");
+        require(newOwner != address(this), "!this");
+        require(ownerOf(tokenId) == address(this), "issued");
         uint256 iTokensAmount;
         if (amount > 0) {
             iTokensAmount = _defi(amount, newOwner);
@@ -326,56 +327,54 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         uint256 tokenId
     ) internal override(ERC721, ERC721Checkpointable) {
         super._beforeTokenTransfer(oldReceiver, newReceiver, tokenId);
-        require(newReceiver != address(0), "New receiver is zero address");
+        require(newReceiver != address(0), "!0x");
         // @dev because our app is registered as final, we can't take downstream apps
 
         if ( oldReceiver == address(this) ) {
             uint256 _amount = winningBid[tokenId];
-            flowRates[tokenId] = 0;
 
             // loop through streamonomics rules
             for(uint i = 0; i < streamonomics.length; i++) {
-                console.log("i", i);
+                //console.log("i", i);
                 Streamonomic memory rule = streamonomics[i];
                 // skip the rule if we are too early for it to apply
                 if ( rule.start <= tokenId ) {
                     uint256 pieces = rule.limit;
-                    console.log("pieces", pieces);
+                    //console.log("pieces", pieces);
                     if ( tokenId.sub(rule.start) < rule.step.mul(rule.limit) ) {
                         // share with < rule.limit tokens
                         pieces = tokenId.sub(rule.start).div(rule.step) + 1;
                     }
-                    console.log("pieces", pieces);
+                    //console.log("pieces", pieces);
                     uint256 share = _amount.mul(rule.percentage).div(pieces).div(100);
-                    console.log("share", share);
+                    //console.log("share", share);
                     int96 flowRate = int96(uint96(share.div(YEAR)));
-                    console.log("flowRate: ->");
-                    console.logInt(flowRate);
+                    //console.log("flowRate: ->");
+                    //console.logInt(flowRate);
                     uint256 latest = tokenId - rule.start;
                     uint256 count;
                     // start from current tokenId and move backwards based on `start` and `step` increments
                     for(uint256 j = latest; j >= 0; j -= rule.step) {
-                        console.log("j", j);
+                        //console.log("j", j);
                         count++;
-                        console.log("count", count);
+                        //console.log("count", count);
                         address receiver = ownerOf(j);
-                        console.log("receiver", receiver);
+                        //console.log("receiver", receiver);
                         if ( receiver != address(this) ) {
                             bytes32 ref = keccak256(abi.encode(address(this), j));
-                            console.log("ref:->");
-                            console.logBytes32(ref);
-                            vestor.registerFlow(receiver, flowRate, false, block.timestamp - 1, YEAR, 0, ref);
-                            console.log("after registerFlow");
-                            flowRates[j] += flowRate;
+                            //console.log("ref:->");
+                            //console.logBytes32(ref);
+                            vestor.registerFlow(receiver, flowRate, false, block.timestamp.sub(1).add(flowDelay), YEAR, 0, ref);
+                            //console.log("after registerFlow");
                         }
                         // check if next j iteration takes us below zero
                         if ( rule.step > j ) {
-                            console.log("BREAK: rule.step >= j");
+                            //console.log("BREAK: rule.step >= j");
                             break;
                         }
                         // check limit
                         if ( count == rule.limit ) {
-                            console.log("BREAK: count == limit");
+                            //console.log("BREAK: count == limit");
                             break;
                         }
                     }
@@ -383,7 +382,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
             }
 
         } else {
-            if (newReceiver != address(this)) {
+            if ( (newReceiver != address(this)) && (oldReceiver != address(0)) ) {
                 // being transferred to new owner - redirect the flow
                 //console.log("ready to redirectStreams", oldReceiver, newReceiver);
                 //console.logBytes32( keccak256(abi.encode(address(this), tokenId)) );
@@ -431,7 +430,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      * @dev Future use, to optionally freeze metadata to decentralized storage
      */
     function freezeTokenURI(string calldata _uri, uint256 _id) external onlyOwner {
-        require(bytes(tokenURIs[_id]).length == 0, "!already frozen");
+        require(bytes(tokenURIs[_id]).length == 0, "frozen");
         tokenURIs[_id] = _uri;
         emit PermanentURI(_uri, _id);
     }

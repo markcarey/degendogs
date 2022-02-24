@@ -6,30 +6,32 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-web3");
 require("@nomiclabs/hardhat-waffle");
-const { API_URL, API_URL_KOVAN, API_URL_RINKEBY, API_URL_POLYGON, POLYSCAN_API_KEY, PRIVATE_KEY, BIDDER1_PRIV, BIDDER2_PRIV, BIDDER3_PRIV, BIDDER4_PRIV } = process.env;
+const { API_URL, API_URL_KOVAN, API_URL_RINKEBY, API_URL_POLYGON, POLYSCAN_API_KEY, PRIVATE_KEY, PRIVATE_KEY_TV, BIDDER1_PRIV, BIDDER2_PRIV, BIDDER3_PRIV, BIDDER4_PRIV } = process.env;
 module.exports = {
   solidity: {
     version: "0.8.0",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
+        runs: 1000
       }
     }
   },
-   defaultNetwork: "localhost",
+   defaultNetwork: "mumbai",
    networks: {
       hardhat: {
+        chainId: 1337,
         accounts: [
           { privateKey: `0x${PRIVATE_KEY}`, balance: "10000000000000000000000"},
           { privateKey: `0x${BIDDER1_PRIV}`, balance: "10000000000000000000000"},
           { privateKey: `0x${BIDDER2_PRIV}`, balance: "10000000000000000000000"},
           { privateKey: `0x${BIDDER3_PRIV}`, balance: "10000000000000000000000"},
-          { privateKey: `0x${BIDDER4_PRIV}`, balance: "10000000000000000000000"}
+          { privateKey: `0x${BIDDER4_PRIV}`, balance: "10000000000000000000000"},
+          { privateKey: `0x${PRIVATE_KEY_TV}`, balance: "10000000000000000000000"}
         ],
         forking: {
           url: API_URL_POLYGON,
-          blockNumber: 24469749  // assumes polygon fork
+          blockNumber: 24975385  // assumes polygon fork
         },
         timeout: 240000,
         loggingEnabled: true,

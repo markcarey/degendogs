@@ -1,5 +1,5 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "polygon";
+var chain = "mumbai";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
@@ -7,42 +7,42 @@ rpcURLs.mumbai = "polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszL
 rpcURLs.polygon = "polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj";
 rpcURLs.ethereum = "eth-mainnet.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
 
-rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
+//rpcURLs.polygon = "localhost:8545";  // CHANGE THIS!!!!!!
 var rpcURL = rpcURLs[chain];
 
-//const prov = {"url": "https://" + rpcURL};
-const prov = {"url": "http://" + rpcURL};       // localhost only
+const prov = {"url": "https://" + rpcURL};
+//const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
 
 var ens = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
-//var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
-var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
+var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
+//var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;
 
 // const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
 const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x4046ad63C0C191dbE206a698E0C5a1e1F0998c07";
+const dogAddress = "0x63595e55f9050385C77D61AFF198f7ac6103b8da";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0xE590907FB839A683D6b6Da36Bcf566757e617B06";
+const auctionAddress = "0x75eB4eDB3afC4250F714E9b8e029D25dd3ED6D5E";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
-//const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
-const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
+const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
+//const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
 const WETH = new web3.eth.Contract(tokenABI, wethAddress);
 
-// Kovan
-const cDAIAddress = "0xF0d0EB522cfa50B716B3b1604C4F0fA6f04376AD";
-const cDAI = new web3.eth.Contract(tokenABI, cDAIAddress);
-const cDAIxAddress = "0x3ED99f859D586e043304ba80d8fAe201D4876D57";
-const cDAIx = new web3.eth.Contract(tokenABI, cDAIxAddress);
-
 // Polygon
-const idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4";
-const idelWETHx = "0xEB5748f9798B11aF79F892F344F585E3a88aA784";
+const idleWETHAddress = "0xfdA25D931258Df948ffecb66b5518299Df6527C4";
+const idleWETHxAddress = "0xEB5748f9798B11aF79F892F344F585E3a88aA784";
+const idleWETH = new web3.eth.Contract(tokenABI, idleWETHAddress);
+const idleWETHx = new web3.eth.Contract(tokenABI, idleWETHxAddress);
+const treasury = "0x150C3e22b050B767f0925D1775Aa95Fb05DB2924";
+const vestorAddress = "0x6883C0b7d92C0D88a53329967822bB40e235689F";
+const vestor = new web3.eth.Contract(vestorABI, vestorAddress);
 
-var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei;
+
+var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei; // TODO: fix for production
 var dappChain = 80001; // default to Mumbai
 var userChain;
 var accounts;
@@ -139,21 +139,31 @@ function fromWei(amount) {
 var flowTimer;
 async function getFlows() {
     clearInterval(flowTimer);
-    var dogBalanceCDAI = await cDAI.methods.balanceOf(dogAddress).call();
-    //console.log(dogBalanceCDAI / 1e8);
-    var dogBalanceCDAIx = await cDAIx.methods.balanceOf(dogAddress).call();
-    //console.log(fromWei(dogBalanceCDAIx));
-    var dogBalance = parseFloat(dogBalanceCDAI / 1e8) + parseFloat(fromWei(dogBalanceCDAIx));
-    //console.log(dogBalance);
-    var userBalance = await cDAIx.methods.balanceOf(ethereum.selectedAddress).call();
-    //console.log(fromWei(userBalance));
+    var dogBalanceIdleWETH = await idleWETH.methods.balanceOf(dogAddress).call();
+    console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
+    var dogBalanceIdleWETHx = await idleWETHx.methods.balanceOf(dogAddress).call();
+    console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
+    var treasuryBalanceIdleWETH = await idleWETH.methods.balanceOf(treasury).call();
+    console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
+    var treasuryBalanceIdleWETHx = await idleWETHx.methods.balanceOf(treasury).call();
+    console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
+    var vestorBalanceIdleWETHx = await idleWETHx.methods.balanceOf(vestorAddress).call();
+    console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
+    var dogBalance = parseFloat(dogBalanceIdleWETH / 1e18) + 
+        parseFloat(dogBalanceIdleWETHx / 1e18) +
+        parseFloat(treasuryBalanceIdleWETH / 1e18) + 
+        parseFloat(treasuryBalanceIdleWETHx / 1e18) +
+        parseFloat(vestorBalanceIdleWETHx / 1e18);
+    console.log("dogBalance", dogBalance);
+    var userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
+    console.log("userBalance", fromWei(userBalance));
     userBalance = parseFloat(fromWei(userBalance));
-    var dogFlow = await cfa.methods.getNetFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress).call();
-    //console.log(fromWei(dogFlow));
+    var dogFlow = await cfa.methods.getNetFlow(idleWETHxAddress, vestorAddress).call();
+    console.log("dogFlow", fromWei(dogFlow));
     dogFlow = parseFloat(fromWei(dogFlow));
-    var userFlow = await cfa.methods.getFlow("0x3ED99f859D586e043304ba80d8fAe201D4876D57", dogAddress, ethereum.selectedAddress).call();
-    //console.log(userFlow);
-    //console.log(fromWei(userFlow.flowRate));
+    var userFlow = await cfa.methods.getFlow(idleWETHxAddress, vestorAddress, ethereum.selectedAddress).call();
+    console.log("userFlow", userFlow);
+    console.log("userFlowRate", fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
 
     $("#treasury").text(dogBalance.toFixed(4));

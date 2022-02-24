@@ -25,9 +25,9 @@ contract Streamonomics is Ownable {
     );
 
     function setStreamonomics(uint256[] calldata percentage, uint256[] calldata start, uint256[] calldata step, uint256[] calldata limit) external onlyOwner {
-        require(percentage.length == start.length, "invalid start length");
-        require(start.length == step.length, "invalid step length");
-        require(step.length == limit.length, "invalid limit length");
+        require(percentage.length == start.length, "!length");
+        require(start.length == step.length, "!length");
+        require(step.length == limit.length, "!length");
         emit StreamonomicsDeleted(streamonomics.length);
         delete streamonomics;
         uint256 total;
@@ -36,7 +36,7 @@ contract Streamonomics is Ownable {
             emit StreamonomicAdded(percentage[i], start[i], step[i], limit[i]);
             total += percentage[i];
         }
-        require(total <= 100, "!over 100");
+        require(total <= 100, "!>100");
     }
 
     function getStreamonomics() external view returns(Streamonomic[] memory) {

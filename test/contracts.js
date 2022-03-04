@@ -322,10 +322,16 @@ var myDog, auctionHouse, myExec, myLogic, myProxy, vestor, iToken, sToken, sBalS
 var chainTime;
 var ah = [];
 
-var votePeriod = 300000;  // blocks --- 300K blocks == almost 3 days
-var voteDelay = 86400; // blocks --- 86,400 == two days based on 2s blocktime on Polygon
-var proposalThresholdPct = 25;
+// Auction Settings
+//TODO:
+
+// Governance Settings
+var polygonBlocksPerDay = 38000;
+var votePeriod = polygonBlocksPerDay * 7;  // blocks --- ~7 days
+var voteDelay = 1; // blocks --- allow votes immediately after proposal submitted
+var proposalThresholdPct = 25; // 0.25%
 var quorumPct = 2000;  // 20%
+var timelockDelay = 60 * 60 * 24 * 2; // Default: 2 days
 
 const debug = true;
 const logOutput = false;
@@ -1762,7 +1768,7 @@ before('Deploy Contracts', async function () {
     });
     log("expected Proxy addr", expectedProxyAddress);
 
-    myExec = await Exec.deploy(expectedProxyAddress, 3);
+    myExec = await Exec.deploy(expectedProxyAddress, timelockDelay);
     await myExec.deployed();
     log("Executor deployed to address:", myExec.address);
     

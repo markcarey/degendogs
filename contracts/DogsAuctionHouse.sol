@@ -228,6 +228,9 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         } else if ( id > 26 ) {
             // 4 hours
             return 60*60*4;
+        } else if ( id == 1 ) {
+            // 72 hours - Ukraine Dog
+            return 60*60*24*3;
         } else {
             // 2 hours up to id 26
             return 60*60*2;

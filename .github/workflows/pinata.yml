@@ -1,0 +1,32 @@
+name: Deploy to Pinata
+on: [push]
+
+jobs:
+  pinata:
+    runs-on: ubuntu-latest
+    name: Deploy to Pinata
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - name: Pinata deploy action step
+        id: deploy
+        uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
+        with:
+          pin-name: 'DegenDogsDapp'
+          path: './dapp'
+          pinata-api-key: ${{ secrets.PINATA_API_KEY }}
+          pinata-secret-api-key: ${{ secrets.PINATA_SECRET_API_KEY }}
+          verbose: true
+          remove-old: true
+      # Use the output from the `deploy` step
+      - name: Get the output hash
+        run: echo "The hash was ${{ steps.deploy.outputs.hash }}"
+      - name: Update DNSLink
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          RECORD_DOMAIN: "degendogs.club"
+          RECORD_NAME: "_dnslink.ipfs"
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        id: dnslink
+        uses: textileio/cloudflare-update-dnslink@master
+        with:
+          cid: ${{ steps.deploy.outputs.hash }}

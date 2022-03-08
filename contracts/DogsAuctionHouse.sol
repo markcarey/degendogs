@@ -217,6 +217,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
      * @dev Checks hardcoded early cadence schedule and then defaults to {duration} after that
      */
     function _getDuration(uint256 id) internal view returns(uint256) {
+        return 60*10;               // TODO: CHANGE THIS!!!!!!!!!
         if ( id > 50 ) {
             return duration;
         } else if ( id > 46 ) {
@@ -279,9 +280,6 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
         if (_auction.bidder == address(0)) {
             //dogs.burn(_auction.dogId);
         } else {
-            //dogs.issue{value: _auction.amount}(_auction.bidder, _auction.dogId, _auction.amount); // Kovan
-            //IERC20 token = IERC20(weth);
-            //token.approve(address(dogs), _auction.amount);
             dogs.issue(_auction.bidder, _auction.dogId, _auction.amount);
         }
 

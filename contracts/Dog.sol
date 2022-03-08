@@ -14,11 +14,9 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 
 interface ITokenVestor {
     function deposit(IERC20 token, uint256 amount) external;
-    function withdraw(IERC20 token, uint256 amount) external;
     function flowTokenBalance() external returns (uint256);
     function getNetFlow() external returns (int96);
     function registerFlow(address adr, int96 flowRate, bool isPermanent, uint256 cliffEnd, uint256 vestingDuration, uint256 cliffAmount, bytes32 ref) external;
-    function registerBatch(address[] calldata adr, int96[] calldata flowRate, uint256[] calldata cliffEnd, uint256[] calldata vestingDuration, uint256[] calldata cliffAmount, bytes32[] calldata ref) external;
     function redirectStreams(address oldRecipient, address newRecipient, bytes32 ref) external;
 }
 
@@ -29,12 +27,10 @@ interface IDAOSuperApp {
 interface IIdleToken {
     function token() external view returns (address underlying);
     function mintIdleToken(uint256 _amount, bool _skipWholeRebalance, address _referral) external returns (uint256 mintedTokens);
-    function redeemIdleToken(uint256 _amount) external returns (uint256 redeemedTokens);
     function tokenPrice() external view returns (uint256 price);
     function approve(address, uint256) external returns (bool);
     function transfer(address, uint256) external returns (bool);
     function balanceOf(address) external returns (uint256);
-    function decimals() external returns (uint8);
 }
 
 contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
@@ -43,8 +39,6 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
 
     // The dogMaster address (creators org)
     address public dogMaster;
-
-    uint256 private constant ONE_18 = 10**18;
 
     address private idleWETH;
     address private weth;
@@ -72,10 +66,8 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     uint256 public flowDelay;
 
     // IPFS content hash of contract-level metadata
-    string private _contractURIHash = 'QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o';
+    string private _contractURIHash;
     string public metadataBaseURI;
-
-    uint256 constant YEAR = 60*60*24*365;
 
     event TreasuryUpdated(
         address oldAddress,
@@ -131,11 +123,11 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     );
 
     modifier onlyMinter() {
-        require(msg.sender == minter, '!minter');
+        require(msg.sender == minter, '!m');
         _;
     }
     modifier onlyMinterOrOwner() {
-        require( (msg.sender == minter) || (msg.sender == owner()), '!minter||owner');
+        require( (msg.sender == minter) || (msg.sender == owner()), '!m||o');
         _;
     }
 
@@ -143,7 +135,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      * @notice Require that the sender is the dogMaster.
      */
     modifier onlyDogMaster() {
-        require(msg.sender == dogMaster, '!dogMaster');
+        require(msg.sender == dogMaster, '!dM');
         _;
     }
 
@@ -182,7 +174,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         targetReserves = uint256(uint96(totalFlowRate)).mul(reserveDuration);
     }
     function setreserveDuration(uint256 _duration) external onlyOwner {
-        require(_duration > 0, "!zero");
+        require(_duration > 0, "!0");
         emit ReserveDurationUpdated(reserveDuration, _duration);
         reserveDuration = _duration;
     }
@@ -191,7 +183,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         for(uint i = 0; i < streamonomics.length; i++) {
             pct += streamonomics[i].percentage;
         }
-        reserve = amt.mul(pct).div(100).div(YEAR).mul(reserveDuration);
+        reserve = amt.mul(pct).div(100).div(31536000).mul(reserveDuration);
     }
 
     function setTreasury(address _treasury) external onlyOwner {
@@ -247,40 +239,48 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         return iTokens;
     }
 
-    function _defi(uint256 amount, address newOwner) internal returns(uint256) {
+    function _defi(uint256 amount, address newOwner, uint256 tokenId) internal returns(uint256) {
         IERC20 token = IERC20(weth);
         IIdleToken iToken = IIdleToken(idleWETH);
         uint256 beforeBalance = token.balanceOf(address(this));
         token.safeTransferFrom(msg.sender, address(this), amount);
         uint256 afterBalance = token.balanceOf(address(this));
-        require(beforeBalance.add(amount) == afterBalance, "!amount");
+        require(beforeBalance.add(amount) == afterBalance, "!amt");
         
         uint256 toIdleAmount = amount;
         if ( address(donationDAO) != address(0) ) {
             if (donationPercentage > 0) {
                 uint256 donationAmount = amount.mul(donationPercentage).div(100);
+                if (tokenId == 1) {
+                    // 100% donation for Dog#1: Ukraine Dog
+                    donationAmount = amount;
+                }
                 token.approve(address(donationDAO), donationAmount);
                 donationDAO.deposit(weth, donationAmount, newOwner);
                 toIdleAmount -= donationAmount;
             }
         }
         
-        _idle(toIdleAmount);  // WETH for idleWETH
-        uint256 price = iToken.tokenPrice();
-        uint256 estTokens = amount.mul(ONE_18).div(price);
+        if (toIdleAmount == 0) {
+            return 0;
+        } else {
+            _idle(toIdleAmount);  // WETH for idleWETH
+            uint256 price = iToken.tokenPrice();
+            uint256 estTokens = amount.mul(10**18).div(price);
 
-        uint256 vestorBalance = vestor.flowTokenBalance();
-        uint256 target = _targetReserves().add(_targetReserveForAmount(estTokens));
-        if ( target > vestorBalance ) {
-            uint256 depAmount = target.sub(vestorBalance);
-            iToken.approve(address(vestor), depAmount);
-            vestor.deposit(IERC20(idleWETH), depAmount);
+            uint256 vestorBalance = vestor.flowTokenBalance();
+            uint256 target = _targetReserves().add(_targetReserveForAmount(estTokens));
+            if ( target > vestorBalance ) {
+                uint256 depAmount = target.sub(vestorBalance);
+                iToken.approve(address(vestor), depAmount);
+                vestor.deposit(IERC20(idleWETH), depAmount);
+            }
+            uint256 iBalance = iToken.balanceOf(address(this));
+            if ( treasury != address(0) ) {
+                iToken.transfer(treasury, iBalance);
+            }
+            return estTokens;
         }
-        uint256 iBalance = iToken.balanceOf(address(this));
-        if ( treasury != address(0) ) {
-            iToken.transfer(treasury, iBalance);
-        }
-        return estTokens;
     }
 
     function withdrawToken(address _tokenContract) external onlyOwner {
@@ -305,23 +305,27 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
         }
         _mint(owner(), address(this), lastId);
         emit DogCreated(lastId);
-        uint256 dogId = lastId;
+        //uint256 dogId = lastId;
         lastId++;
-        return dogId;
+        return lastId - 1;
     }
     
     // @dev issues the NFT, transferring it to a new owner, and starting the streams
     function issue(address newOwner, uint256 tokenId, uint256 amount) external onlyMinterOrOwner {
         //console.log("start issue");
-        require(newOwner != address(this), "!this");
-        require(ownerOf(tokenId) == address(this), "issued");
+        require(newOwner != address(this), "!me");
+        require(ownerOf(tokenId) == address(this), "done");
         uint256 iTokensAmount;
         if (amount > 0) {
-            iTokensAmount = _defi(amount, newOwner);
+            iTokensAmount = _defi(amount, newOwner, tokenId);
+        } else {
+            newOwner = _getTreasury();
         }
-        winningBid[tokenId] = iTokensAmount;
-        emit NFTIssued(tokenId, newOwner);
-        this.safeTransferFrom(address(this), newOwner, tokenId);
+        if (newOwner != address(this) ) {
+            winningBid[tokenId] = iTokensAmount;
+            emit NFTIssued(tokenId, newOwner);
+            this.safeTransferFrom(address(this), newOwner, tokenId);
+        }
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
@@ -361,7 +365,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
                         //console.log("pieces", pieces);
                         uint256 share = _amount.mul(rule.percentage).div(pieces).div(100);
                         //console.log("share", share);
-                        int96 flowRate = int96(uint96(share.div(YEAR)));
+                        int96 flowRate = int96(uint96(share.div(31536000)));
                         //console.log("flowRate: ->");
                         //console.logInt(flowRate);
                         uint256 latest = tokenId - rule.start;
@@ -377,7 +381,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
                                 bytes32 ref = keccak256(abi.encode(address(this), j));
                                 //console.log("ref:->");
                                 //console.logBytes32(ref);
-                                vestor.registerFlow(receiver, flowRate, false, block.timestamp.sub(1).add(flowDelay), YEAR, 0, ref);
+                                vestor.registerFlow(receiver, flowRate, false, block.timestamp.sub(1).add(flowDelay), 31536000, 0, ref);
                                 //console.log("after registerFlow");
                             }
                             // check if next j iteration takes us below zero
@@ -419,7 +423,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     /**
      * @notice The IPFS URI of contract-level metadata.
      */
-    function contractURI() public view returns (string memory) {
+    function contractURI() external view returns (string memory) {
         return string(abi.encodePacked('ipfs://', _contractURIHash));
     }
 
@@ -445,7 +449,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
      * @dev Future use, to optionally freeze metadata to decentralized storage
      */
     function freezeTokenURI(string calldata _uri, uint256 _id) external onlyOwner {
-        require(bytes(tokenURIs[_id]).length == 0, "frozen");
+        require(bytes(tokenURIs[_id]).length == 0, "fzn");
         tokenURIs[_id] = _uri;
         emit PermanentURI(_uri, _id);
     }

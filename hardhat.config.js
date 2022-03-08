@@ -31,7 +31,7 @@ module.exports = {
         ],
         forking: {
           url: API_URL_POLYGON,
-          blockNumber: 24975385  // assumes polygon fork
+          blockNumber: 25689025  // assumes polygon fork
         },
         timeout: 240000,
         loggingEnabled: true,
@@ -68,6 +68,6 @@ module.exports = {
    }
 }
 
-// npx hardhat verify --network mumbai DEPLOYED_CONTRACT_ADDRESS
-// npx hardhat node --fork https://polygon-mainnet.g.alchemy.com/v2/zdeZwAwHBiBZzLtxdWtShZzuAjBPjoUW --fork-block-number 24390154
+// npx hardhat verify --network mumbai 0x63595e55f9050385C77D61AFF198f7ac6103b8da
+// npx hardhat node --fork https://polygon-mainnet.g.alchemy.com/v2/zdeZwAwHBiBZzLtxdWtShZzuAjBPjoUW --max-memory 9000 --fork-block-number 25689025
 // 

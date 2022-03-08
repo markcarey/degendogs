@@ -24,9 +24,9 @@ var BN = web3.utils.BN;
 // const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
 const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
 const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0x63595e55f9050385C77D61AFF198f7ac6103b8da";
+const dogAddress = "0xd8E7da598519018783a823D62ed0c3B762E1dbb5";
 const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x75eB4eDB3afC4250F714E9b8e029D25dd3ED6D5E";
+const auctionAddress = "0x8F0128359AAD933f09D0B728E44490cf7bB678a1";
 const auction = new web3.eth.Contract(auctionABI, auctionAddress);
 const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
 //const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
@@ -186,6 +186,7 @@ function countdown(a){
 
     timer = setInterval(async () => {
         duration = moment.duration(duration - interval, 'milliseconds');
+        var hours = duration.hours();
         if (duration.asSeconds() < 0) {
             // time's up
             clearInterval(timer);
@@ -198,8 +199,11 @@ function countdown(a){
             $("#current-bid h4").text("Winning Bid");
             currentAuction();
         } else {
+            if ( duration.days() > 0 ) {
+                hours += duration.days() * 24;
+            }
             $("#timer").html(`
-                <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.hours()}<span
+                <div class="AuctionTimer_timerSection__2RlJK"><span>${hours}<span
                 class="AuctionTimer_small__3FXgu">h</span></span></div>
                 <div class="AuctionTimer_timerSection__2RlJK"><span>${duration.minutes()}<span
                     class="AuctionTimer_small__3FXgu">m</span></span></div>
@@ -248,7 +252,7 @@ async function currentAuction(thisDog) {
 
     var logs = [];
     if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=24227980&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25377639&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
         //console.log(covEventsUrl);
         const response = await fetch(covEventsUrl);
         var covEvents = await response.json();
@@ -565,10 +569,10 @@ function bidFormHTML(a) {
         }
     } else {
         html = `
-        <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${a.minBid}</span> ETH</p>
+        <p class="Bid_minBidCopy__1WI1j">Minimum bid: <span id="dog-min-bid">${a.minBid}</span> WETH</p>
         <div class="input-group"><input id="new-bid" aria-label=""
             aria-describedby="basic-addon1" min="0" type="number" class="Bid_bidInput__39un5 form-control"
-            value=""><span class="Bid_customPlaceholder__3KOvn">ETH</span><button id="bid-button" disabled="" type="button"
+            value=""><span class="Bid_customPlaceholder__3KOvn">WETH</span><button id="bid-button" disabled="" type="button"
             class="Bid_bidBtn__2MzFj btn btn-primary">Approve</button></div>
         `;
     }

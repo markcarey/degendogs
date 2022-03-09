@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="282px" height="282px" viewBox="0 0 282 282" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>CircleOnlyLogo</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#6FA4F2" stop-opacity="0.1" offset="0%"></stop>
+            <stop stop-color="#0F6BEB" stop-opacity="0.1" offset="52.4255701%"></stop>
+            <stop stop-color="#0B50B0" stop-opacity="0.1" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="71.8392532%" y1="117.226664%" x2="43.4468892%" y2="29.7273462%" id="linearGradient-2">
+            <stop stop-color="#6FA4F2" offset="3.765791e-05%"></stop>
+            <stop stop-color="#0F6BEB" offset="50.51%"></stop>
+            <stop stop-color="#0B50B0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="57.7533037%" y1="73.9720911%" x2="29.3608862%" y2="-13.5273592%" id="linearGradient-3">
+            <stop stop-color="#6FA4F2" offset="3.765791e-05%"></stop>
+            <stop stop-color="#0F6BEB" offset="50.51%"></stop>
+            <stop stop-color="#0B50B0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Backgrounds" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="IDLE-IS-LIVE" transform="translate(-464.000000, -167.000000)">
+            <g id="CircleOnlyLogo" transform="translate(455.000000, 158.000000)">
+                <rect id="Rectangle" x="0" y="0" width="300" height="300"></rect>
+                <path d="M150.439883,289.442815 C227.209083,289.442815 289.442815,227.209083 289.442815,150.439883 C289.442815,73.6706829 227.209083,11.4369501 150.439883,11.4369501 C73.6706829,11.4369501 11.4369501,73.6706829 11.4369501,150.439883 C11.4369501,193.014656 30.5775922,231.118892 60.7231081,256.616824 C62.7538489,258.334482 64.8345297,259.994933 66.9626635,261.595689 C90.207431,279.080122 119.113489,289.442815 150.439883,289.442815 Z" id="Oval" stroke="url(#linearGradient-1)" stroke-width="3" fill="#FFFFFF"></path>
+                <g id="Group-Copy-2" transform="translate(85.337243, 70.381232)">
+                    <polygon id="Path" fill="url(#linearGradient-2)" points="55.7716276 0 55.7716276 128.635848 0.35039766 128.635848 0 128.436167 0 32.1111218 2.12741436 30.8839187"></polygon>
+                    <polygon id="Path" fill="url(#linearGradient-3)" points="73.5538856 160.997067 73.5538856 32.3612196 128.975116 32.3612196 129.325513 32.5609001 129.325513 128.885946 127.198099 130.113149"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

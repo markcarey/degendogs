@@ -14,6 +14,9 @@ const prov = {"url": "https://" + rpcURL};
 //const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
 
+// Metamask provider
+provider = new ethers.providers.Web3Provider(window.ethereum)
+
 var ens = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
 var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
@@ -21,26 +24,51 @@ var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
 
 var BN = web3.utils.BN;
 
-// const cfaAddress = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873"; // mumbai
-const cfaAddress = "0x6EeE6060f715257b970700bc2656De21dEdF074C"; // polygon
-const cfa = new web3.eth.Contract(cfaABI, cfaAddress);
-const dogAddress = "0xd8E7da598519018783a823D62ed0c3B762E1dbb5";
-const dog = new web3.eth.Contract(dogABI, dogAddress);
-const auctionAddress = "0x8F0128359AAD933f09D0B728E44490cf7bB678a1";
-const auction = new web3.eth.Contract(auctionABI, auctionAddress);
-const wethAddress = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; // mumbai
-//const wethAddress = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
-const WETH = new web3.eth.Contract(tokenABI, wethAddress);
+var addr = {};
+if (chain == "polygon") {
+  addr.dog = "";
+  addr.auction = "";
+  addr.treasury = "";
+  addr.BSCT = "";
+  addr.vestorFactory = "0x67514828B3b3aa5a0289d738bDCaDeEf7d644ab2"; //localhost
+  addr.vestor = "0xdbdF8EA5C514bd1ca8A294a1e6C361502592E457"; // localhost:polygon
+  addr.donation = "0x22B5CD016C8D9c6aC5338Cc08174a7FA824Bc5E4"; // polygon --> Unchain Ukraine
+  addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
+  addr.WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
+  addr.idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4"; // polygon
+  addr.idleWETHx = "0xEB5748f9798B11aF79F892F344F585E3a88aA784"; // polygon
+  addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this
+  addr.dogBot = "0xFe341be90f9c2Cc7e65Ef4e820f632aB6495b85E";
+  addr.SuperHost = "0x3E14dC1b13c488a8d5D310918780c983bD5982E7";
+  addr.cfa = "0x6EeE6060f715257b970700bc2656De21dEdF074C";
+}
+if (chain == "mumbai") {
+  //Mumbai:
+  addr.dog = "0xd8E7da598519018783a823D62ed0c3B762E1dbb5";
+  addr.auction = "0x8F0128359AAD933f09D0B728E44490cf7bB678a1";
+  addr.treasury = "0x421f3E96667f7f8b446B4Ac455A86CDfD61F52BF";
+  addr.BSCT = "0xDfb27a2de0D6B4b3C945DaeF4F3bAd346cCd3849";
+  addr.vestorFactory = "0xeb45B0eB67a4733E36c4d2aC55554EdF7e156dac";
+  addr.vestor = "0xCc596827B9C5A18d6ea226e7281010a5F4a839E9"; // mumbai for mock idleWETH
+  addr.donation = "0x4C30BBf9b39679e6Df06b444435f4b75CF20603e"; // mumbai: Ukraine.sol
+  addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
+  addr.WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; 
+  addr.idleWETH = "0x490B8896ff200D32a100A05B7c0507E492938BBb"; // MOCK
+  addr.idleWETHx = "0x0CCe2C9980711ddc5AA725AF68A10960E49Fd2Ed"; // wrap of MOCK
+  addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this
+  addr.dogBot = "0xFe341be90f9c2Cc7e65Ef4e820f632aB6495b85E";
+  addr.SuperHost = "0xEB796bdb90fFA0f28255275e16936D25d3418603";
+  addr.cfa = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
+}
 
-// Polygon
-const idleWETHAddress = "0xfdA25D931258Df948ffecb66b5518299Df6527C4";
-const idleWETHxAddress = "0xEB5748f9798B11aF79F892F344F585E3a88aA784";
-const idleWETH = new web3.eth.Contract(tokenABI, idleWETHAddress);
-const idleWETHx = new web3.eth.Contract(tokenABI, idleWETHxAddress);
-const treasury = "0x150C3e22b050B767f0925D1775Aa95Fb05DB2924";
-const vestorAddress = "0x6883C0b7d92C0D88a53329967822bB40e235689F";
-const vestor = new web3.eth.Contract(vestorABI, vestorAddress);
-
+const cfa = new web3.eth.Contract(cfaABI, addr.cfa);
+const dog = new web3.eth.Contract(dogABI, addr.dog);
+const auction = new web3.eth.Contract(auctionABI, addr.auction);
+const WETH = new web3.eth.Contract(tokenABI, addr.WETH);
+const idleWETH = new web3.eth.Contract(tokenABI, addr.idleWETH);
+const idleWETHx = new web3.eth.Contract(tokenABI, addr.idleWETHx);
+const vestor = new web3.eth.Contract(vestorABI, addr.vestor);
+const BSCT = new web3.eth.Contract(tokenABI, addr.BSCT);
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei; // TODO: fix for production
 var dappChain = 80001; // default to Mumbai
@@ -65,6 +93,39 @@ async function abbrAddress(address){
             resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
         }
     });
+}
+
+async function addToken() {
+    const tokenAddress = addr.BSCT;
+    const tokenSymbol = "BSCT";
+    const tokenDecimals = 18;
+    var tokenImage = "https://degendogs/images/BSCT.png";
+    //console.log("tokenImage", tokenImage);
+
+    try {
+        // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+        const wasAdded = await ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+                type: 'ERC20', // Initially only supports ERC20, but eventually more!
+                options: {
+                    address: tokenAddress, // The address that the token is at.
+                    symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+                    decimals: tokenDecimals, // The number of decimals in the token
+                    image: tokenImage, // A string url of the token logo
+                },
+            },
+        });
+
+        if (wasAdded) {
+            console.log('Thanks for your interest!');
+        } else {
+            console.log('Your loss!');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    return false;
 }
 
 async function main() {
@@ -139,15 +200,15 @@ function fromWei(amount) {
 var flowTimer;
 async function getFlows() {
     clearInterval(flowTimer);
-    var dogBalanceIdleWETH = await idleWETH.methods.balanceOf(dogAddress).call();
+    var dogBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.dog).call();
     console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
-    var dogBalanceIdleWETHx = await idleWETHx.methods.balanceOf(dogAddress).call();
+    var dogBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.dog).call();
     console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
-    var treasuryBalanceIdleWETH = await idleWETH.methods.balanceOf(treasury).call();
+    var treasuryBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.treasury).call();
     console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
-    var treasuryBalanceIdleWETHx = await idleWETHx.methods.balanceOf(treasury).call();
+    var treasuryBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.treasury).call();
     console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
-    var vestorBalanceIdleWETHx = await idleWETHx.methods.balanceOf(vestorAddress).call();
+    var vestorBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.vestor).call();
     console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
     var dogBalance = parseFloat(dogBalanceIdleWETH / 1e18) + 
         parseFloat(dogBalanceIdleWETHx / 1e18) +
@@ -158,10 +219,10 @@ async function getFlows() {
     var userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
     console.log("userBalance", fromWei(userBalance));
     userBalance = parseFloat(fromWei(userBalance));
-    var dogFlow = await cfa.methods.getNetFlow(idleWETHxAddress, vestorAddress).call();
+    var dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
     console.log("dogFlow", fromWei(dogFlow));
     dogFlow = parseFloat(fromWei(dogFlow));
-    var userFlow = await cfa.methods.getFlow(idleWETHxAddress, vestorAddress, ethereum.selectedAddress).call();
+    var userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
     console.log("userFlow", userFlow);
     console.log("userFlowRate", fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
@@ -242,7 +303,7 @@ async function currentAuction(thisDog) {
     var minBid = web3.utils.fromWei(a.amount) * 1.1
     if ( minBid == 0 ) {
         // reserve price
-        minBid = 0.1;
+        minBid = 0.05;
     }
     a.minBid = minBid.toFixed(2);
     $("#dog-min-bid").text(a.minBid);
@@ -252,7 +313,7 @@ async function currentAuction(thisDog) {
 
     var logs = [];
     if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25377639&ending-block=latest&sender-address=" + auctionAddress + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25377639&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
         //console.log(covEventsUrl);
         const response = await fetch(covEventsUrl);
         var covEvents = await response.json();
@@ -261,10 +322,12 @@ async function currentAuction(thisDog) {
     }
     var bidsHTML = "";
     var bidsHTMLAll = "";
-    $.each(logs, async function(index, log) {
-        //console.log(log);
+    //$.each(logs, async function(index, log) {
+    for (let index = 0; index < logs.length; index++) {
+        var log = logs[index];
+        console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        //console.log(event);
+        console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
             a.amount = event[1];
@@ -282,22 +345,24 @@ async function currentAuction(thisDog) {
             "txn": log.tx_hash,
             "date": log.block_signed_at
         };
-        //console.log(bid);
+        console.log(bid);
         if (index < 3) {
             bidsHTML += await getBidRowHTML(bid);
+            console.log("bidsHTML",bidsHTML);
         }
         bidsHTMLAll += await getBidRowHTML(bid, true);
-    });
+    }
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
     const endTime = a.endTime;
     const currentTime = Date.now() / 1000;
     var diffTime = endTime - currentTime;
-    diffTime = 86400; // TODO: change this!!!!
+    //diffTime = 86400; // TODO: change this!!!!
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     a.duration = duration;
     var dogHTML = await getDogHTML(a);
     $("#dog").html(dogHTML);
+    console.log("duration", a.duration.asSeconds());
     if (a.duration.asSeconds() > 0) {
         countdown(a);
     }
@@ -317,7 +382,7 @@ async function currentAuction(thisDog) {
             //the transaction
             const tx = {
                 'from': ethereum.selectedAddress,
-                'to': auctionAddress,
+                'to': addr.auction,
                 'gasPrice': gas,
                 'nonce': "" + nonce,
                 'data': auction.methods.createBid(a.dogId, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
@@ -355,7 +420,7 @@ async function currentAuction(thisDog) {
                     $("#new-bid").val("");
                     //setTimeout(currentAuction, 5000);
                     var subscription = web3.eth.subscribe('logs', {
-                        address: auctionAddress,
+                        address: addr.auction,
                         topics: ["0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3", dogIdTopic]
                     }, function(error, result){
                         if (!error)
@@ -389,10 +454,10 @@ async function currentAuction(thisDog) {
             //the transaction
             const tx = {
                 'from': ethereum.selectedAddress,
-                'to': wethAddress,
+                'to': addr.WETH,
                 'gasPrice': gas,
                 'nonce': "" + nonce,
-                'data': WETH.methods.approve(auctionAddress, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
+                'data': WETH.methods.approve(addr.auction, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
             };
             //console.log(tx);
 
@@ -418,7 +483,7 @@ async function currentAuction(thisDog) {
         //the transaction
         const tx = {
             'from': ethereum.selectedAddress,
-            'to': auctionAddress,
+            'to': addr.auction,
             'gasPrice': gas,
             'nonce': "" + nonce,
             'data': auction.methods.settleCurrentAndCreateNewAuction().encodeABI()
@@ -469,11 +534,15 @@ async function currentAuction(thisDog) {
 
 }
 currentAuction();
-//getFlows();
+getFlows();
 
 
 
 $( document ).ready(function() {
+
+    // TODO: remove this for launch !!!!!!!!!
+    $("#dog").remove();
+
     $(".connect").click(function(){
         connectWallet();
         return false;
@@ -507,7 +576,7 @@ async function getBidRowHTML(bid, modal) {
             <div class="BidHistory_rightSectionWrapper__3oem5">
                 <div class="BidHistory_bidAmount__7W-Hz">Ξ ${bid.bid}</div>
                 <div class="BidHistory_linkSymbol__29ypX"><a
-                    href="https://kovan.etherscan.io/tx/${bid.txn}"
+                    href="https://polygonscan.com/tx/${bid.txn}"
                     target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false"
                     data-prefix="fas" data-icon="external-link-alt"
                     class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
@@ -533,7 +602,7 @@ async function getBidRowHTML(bid, modal) {
                     <div class="BidHistory_rightSectionWrapper__3N0DM">
                     <div class="BidHistory_bidAmount__3yfv7">Ξ ${bid.bid}</div>
                     <div class="BidHistory_linkSymbol__2qaZG"><a
-                        href="https://kovan.etherscan.io/tx/${bid.txn}"
+                        href="https://ppolygonscan.com/tx/${bid.txn}"
                         target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
                             data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -712,13 +781,14 @@ function wrongNetworkModal(){
                     <div class="modal-title h4">Wrong Network Detected</div>
                 </div>
                 <div class="modal-body">
-                    <p>Degen Dogs Clubs is currently on the Kovan Test Network. Mainnet launch coming soon.</p>
+                    <p>Degen Dogs Clubs is on the Polygon Network.</p>
                     <p><b>To get started, please switch your network by following the instructions below:</b></p>
                     <ol>
                         <li>Open Metamask</li>
                         <li>Click the network select dropdown</li>
-                        <li>Click on "Kovan Test Network"</li>
+                        <li>Click on "Matic Mainnet" or "Polygon"</li>
                     </ol>
+                    <p><strong>Not seeing it?</strong> <a href="https://docs.degendogs.club/basics/auctions#getting-weth-on-polygon" target="_blank">Click here</a>.
                 </div>
             </div>
         </div>

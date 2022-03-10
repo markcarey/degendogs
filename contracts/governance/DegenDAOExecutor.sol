@@ -20,7 +20,9 @@
 
 pragma solidity ^0.8.0;
 
-contract DegenDAOExecutor {
+import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
+
+contract DegenDAOExecutor is IERC721Receiver {
     event NewAdmin(address indexed newAdmin);
     event NewPendingAdmin(address indexed newPendingAdmin);
     event NewDelay(uint256 indexed newDelay);
@@ -171,6 +173,15 @@ contract DegenDAOExecutor {
     function getBlockTimestamp() internal view returns (uint256) {
         // solium-disable-next-line security/no-block-members
         return block.timestamp;
+    }
+
+    function onERC721Received(
+        address operator, 
+        address from, 
+        uint256 tokenId, 
+        bytes calldata data) external pure override returns (bytes4) 
+    {
+        return IERC721Receiver.onERC721Received.selector;
     }
 
     receive() external payable {}

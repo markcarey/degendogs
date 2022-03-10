@@ -6,6 +6,8 @@ var BN = web3.utils.BN;
 const API_URL = process.env.API_URL;
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const DEPLOYER_ADDR = process.env.DEPLOYER_ADDR;
+const DEPLOYER_PRIV = process.env.DEPLOYER_PRIV;
 var biddersPriv = [
   PRIVATE_KEY,
   process.env.BIDDER1_PRIV,
@@ -31,7 +33,7 @@ const govJSON = require("../artifacts/contracts/governance/DegenDAOLogicV1.sol/D
 const newContractHash = "bafkreidgmzjyncpofwxiqnaod7pfdwuhmoakuwsenr54dx4xp32ewy5y6y";
 const newMetaHash = "bafkreifq7jr7qprkodhdkhcuodo3ht4rn7oy362abpd4ercmqf5synhwtq";
 const newBaseURI = "https://degendogs.club/metadata/new/";
-const newReserveDuration = 60*60*24*21;
+const newReserveDuration = 60*60*24*7*8;
 const newDonationPercentage = 5;
 
 var lastId = 0;
@@ -47,9 +49,9 @@ function encodeParameters(types, values) {
 
 function commaify(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
-const signer = new ethers.Wallet(PRIVATE_KEY, ethers.provider);
+const signer = new ethers.Wallet(DEPLOYER_PRIV, ethers.provider);
 const signers = [
-  signer,
+  new ethers.Wallet(process.env.PRIVATE_KEY, ethers.provider),
   new ethers.Wallet(process.env.BIDDER1_PRIV, ethers.provider),
   new ethers.Wallet(process.env.BIDDER2_PRIV, ethers.provider),
   new ethers.Wallet(process.env.BIDDER3_PRIV, ethers.provider),
@@ -286,16 +288,16 @@ var sTokenABI = [{"inputs":[{"internalType":"contract ISuperfluid","name":"host"
 var iTokenABI = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"target","type":"address"},{"indexed":true,"internalType":"address","name":"initiator","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"}],"name":"FlashLoan","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"PauserAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"PauserRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_rebalancer","type":"address"},{"indexed":false,"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"Rebalance","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_amount","type":"uint256"},{"indexed":false,"internalType":"address","name":"_ref","type":"address"}],"name":"Referral","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"constant":true,"inputs":[],"name":"COMP","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"IDLE","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"addPauser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"allAvailableTokens","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"fee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"feeAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"flashFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"contract IERC3156FlashBorrower","name":"_receiver","type":"address"},{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"bytes","name":"_params","type":"bytes"}],"name":"flashLoan","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"flashLoanFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getAPRs","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getAllAvailableTokens","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getAllocations","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getAvgAPR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getGovTokens","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"_usr","type":"address"}],"name":"getGovTokensAmounts","outputs":[{"internalType":"uint256[]","name":"_amounts","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"_protocolToken","type":"address"}],"name":"getProtocolTokenToGov","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"govTokens","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"govTokensIndexes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"govTokensLastBalances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"gst2","outputs":[{"internalType":"contract GasToken","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"idleController","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"symbol","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"name":"initialize","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"initialize","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"initialize","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"isOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"isPauser","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"isRiskAdjusted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"lastAllocations","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lastITokenPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"maxFlashLoan","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maxUnlentPerc","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"address","name":"_referral","type":"address"}],"name":"mintIdleToken","outputs":[{"internalType":"uint256","name":"mintedTokens","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"oracle","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"protocolWrappers","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"rebalance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"rebalancer","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"redeemIdleToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"bool[]","name":"_skipGovTokenRedeem","type":"bool[]"}],"name":"redeemIdleTokenSkipGov","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"redeemInterestBearingTokens","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"renouncePauser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_aToken","type":"address"}],"name":"setAToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address[]","name":"protocolTokens","type":"address[]"},{"internalType":"address[]","name":"wrappers","type":"address[]"},{"internalType":"address[]","name":"_newGovTokens","type":"address[]"},{"internalType":"address[]","name":"_newGovTokensEqualLen","type":"address[]"}],"name":"setAllAvailableTokensAndWrappers","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256[]","name":"_allocations","type":"uint256[]"}],"name":"setAllocations","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_cToken","type":"address"}],"name":"setCToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_fee","type":"uint256"}],"name":"setFee","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_feeAddress","type":"address"}],"name":"setFeeAddress","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_perc","type":"uint256"}],"name":"setMaxUnlentPerc","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_oracle","type":"address"}],"name":"setOracleAddress","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_rebalancer","type":"address"}],"name":"setRebalancer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_tokenHelper","type":"address"}],"name":"setTokenHelper","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"stkAAVE","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"token","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenHelper","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"tokenPriceWithFee","outputs":[{"internalType":"uint256","name":"priceWFee","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userAvgPrices","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"usersGovTokensIndexes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 
 var addr = {};
-var chain = "mumbai";
+var chain = "polygon";
 if (chain == "polygon") {
-  addr.vestorFactory = "0x67514828B3b3aa5a0289d738bDCaDeEf7d644ab2"; //localhost
+  addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon mainnet
   addr.vestor = "0xdbdF8EA5C514bd1ca8A294a1e6C361502592E457"; // localhost:polygon
   addr.donation = "0x22B5CD016C8D9c6aC5338Cc08174a7FA824Bc5E4"; // polygon --> Unchain Ukraine
   addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
   addr.WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon
   addr.idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4"; // polygon
   addr.idleWETHx = "0xEB5748f9798B11aF79F892F344F585E3a88aA784"; // polygon
-  addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this
+  addr.dogMaster = process.env.DOGMASTER;
   addr.dogBot = "0xFe341be90f9c2Cc7e65Ef4e820f632aB6495b85E";
   addr.SuperHost = "0x3E14dC1b13c488a8d5D310918780c983bD5982E7";
   addr.cfa = "0x6EeE6060f715257b970700bc2656De21dEdF074C";
@@ -309,7 +311,7 @@ if (chain == "mumbai") {
   addr.WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; 
   addr.idleWETH = "0x490B8896ff200D32a100A05B7c0507E492938BBb"; // MOCK
   addr.idleWETHx = "0x0CCe2C9980711ddc5AA725AF68A10960E49Fd2Ed"; // wrap of MOCK
-  addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // TODO: change this
+  addr.dogMaster = "0xFa083DfD09F3a7380f6dF6E25dd277E2780de41D"; // use for Mumbai only
   addr.dogBot = "0xFe341be90f9c2Cc7e65Ef4e820f632aB6495b85E";
   addr.SuperHost = "0xEB796bdb90fFA0f28255275e16936D25d3418603";
   addr.cfa = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
@@ -1738,7 +1740,7 @@ before('Deploy Contracts', async function () {
       }
     ];
 
-    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY);
+    const nonce = await web3.eth.getTransactionCount(DEPLOYER_ADDR);
 
     const vFactory = new ethers.Contract(addr.vestorFactory, vestorFactoryABI, signer);
     log("b4 create vestor");
@@ -1772,7 +1774,7 @@ before('Deploy Contracts', async function () {
     log("Auction House Unpaused");
 
     const expectedProxyAddress = ethers.utils.getContractAddress({
-      from: PUBLIC_KEY,
+      from: DEPLOYER_ADDR,
       nonce: parseInt(nonce) + 9,
     });
     log("expected Proxy addr", expectedProxyAddress);
@@ -1785,7 +1787,7 @@ before('Deploy Contracts', async function () {
     await myLogic.deployed();
     log("Logic deployed to address:", myLogic.address);
 
-    myProxy = await Proxy.deploy(myExec.address, myDog.address, PUBLIC_KEY, PUBLIC_KEY, myLogic.address, votePeriod, voteDelay, proposalThresholdPct, quorumPct, { gasLimit: 5000000 });
+    myProxy = await Proxy.deploy(myExec.address, myDog.address, DEPLOYER_ADDR, DEPLOYER_ADDR, myLogic.address, votePeriod, voteDelay, proposalThresholdPct, quorumPct, { gasLimit: 5000000 });
     await myProxy.deployed();
     log("Proxy deployed to address:", myProxy.address);
 
@@ -1809,7 +1811,7 @@ describe("Auction House", function () {
 
     it("Should have set owner address", async function () {
         var owner = await auctionHouse.owner();
-        expect(owner.toString()).to.equal(PUBLIC_KEY);
+        expect(owner.toString()).to.equal(DEPLOYER_ADDR);
     });
 
     it("Should have set Dog contract address", async function () {
@@ -1866,7 +1868,7 @@ describe("Dog", function () {
 
     it("Should have set owner address", async function () {
         var owner = await myDog.owner();
-        expect(owner.toString()).to.equal(PUBLIC_KEY);
+        expect(owner.toString()).to.equal(DEPLOYER_ADDR);
     });
 
     it("Should have Auction contract as minter", async function () {
@@ -1905,7 +1907,7 @@ describe("Dog", function () {
       expect(await myDog.treasury()).to.equal(myExec.address);
     });
 
-    it("Should set dogMaster address", async function () {
+    it.skip("Should set dogMaster address", async function () {
       const master = await myDog.dogMaster();
       await expect(myDog.setDogMaster(addr.dogMaster))
           .to.emit(myDog, 'DogMasterUpdated')
@@ -2019,7 +2021,7 @@ describe("Bidding and Settling", function () {
     log("vestor reserves", vBal);
   });
   
-  for (let i = 2; i < 29; i++) {
+  for (let i = 2; i < 42; i++) {
 
     it("Bid and settle auction for Dog#" + Math.random(), async function () {
       this.timeout(240000);
@@ -2081,7 +2083,7 @@ describe("Bidding and Settling", function () {
   afterEach("claim streams", async function(){
     for (let i = 0; i < signers.length; i++) {
       var ready = await vestor.launchReady(biddersPub[i]);
-      log("ready", ready);
+      //log("ready", ready);
       if (ready[0]) {
         log("ready to launch for", biddersPub[i]);
         await (await vestor.launchVestingForAddress(biddersPub[i])).wait();
@@ -2181,7 +2183,7 @@ describe("SuperFluid", function () {
     //sBal = '1000';   // TODO: fix this
     var amt = parseInt(sBal) - parseInt(sBalStart);
     log("amt", amt);
-    await (await sToken.downgrade(amt.toString())).wait();
+    await (await sToken.connect(signers[0]).downgrade(amt.toString())).wait();
     var iBalAfter = await iToken.balanceOf(PUBLIC_KEY);
     log("iBalAfter", iBalAfter);
     expect(iBalAfter - iBalBefore).to.be.closeTo(amt, 1000);
@@ -2215,7 +2217,7 @@ describe("Idle Finance", function () {
     log("price", price);
     var expectedAmt = iBal * price / 1e18;
     log("expected", expectedAmt);
-    await (await iToken.redeemIdleToken(iBal)).wait();
+    await (await iToken.connect(signers[0]).redeemIdleToken(iBal)).wait();
     var wethAfter = await weth.balanceOf(PUBLIC_KEY);
     log("wethAfter", wethAfter);
     expect(wethAfter).to.be.gt(wethBefore);
@@ -2263,7 +2265,7 @@ describe("Dog Flows and Transfers", function () {
     expect(flowRate).to.be.gt(0);
   });
 
-  it('Should issue Dog#6 from Dog Contract', async function () {
+  it.skip('Should issue Dog#6 from Dog Contract', async function () {
     const tokenId = 6;
     expect(await myDog.ownerOf(tokenId))
       .to.equal(myDog.address); 
@@ -2275,6 +2277,18 @@ describe("Dog Flows and Transfers", function () {
     .to.equal(PUBLIC_KEY); 
   });
 
+  it('Should have already sent Dog#6 to treasury', async function () {
+    const tokenId = 6;
+    expect(await myDog.ownerOf(tokenId))
+      .to.equal(myExec.address); 
+  });
+
+  it('Should have already sent Dog#11 to dogMasters', async function () {
+    const tokenId = 11;
+    expect(await myDog.ownerOf(tokenId))
+      .to.equal(addr.dogMaster); 
+  });
+
   it("Should transfer Dog#1 to new address", async function(){
     const tokenId = 1;
     const owner = await myDog.ownerOf(tokenId);
@@ -2283,11 +2297,13 @@ describe("Dog Flows and Transfers", function () {
     var vBal = await sToken.balanceOf(addr.vestor);
     log("vestor reserves", vBal);
 
+    var thisDog = new ethers.Contract(myDog.address, dogJSON.abi, signers[0]);
+
     const newOwner = "0xC0867C71B92F41AfA48f62Bc9BB21b8CF4262F78"; // Kramer
-    await expect(myDog["safeTransferFrom(address,address,uint256)"](PUBLIC_KEY, newOwner, tokenId))
-      .to.emit(myDog, 'Transfer')
+    await expect(thisDog["safeTransferFrom(address,address,uint256)"](PUBLIC_KEY, newOwner, tokenId))
+      .to.emit(thisDog, 'Transfer')
       .withArgs(PUBLIC_KEY, newOwner, tokenId);
-    expect(await myDog.ownerOf(tokenId))
+    expect(await thisDog.ownerOf(tokenId))
       .to.equal(newOwner); 
   });
 
@@ -2370,7 +2386,7 @@ describe("Governance", function () {
   before("load gov proxy with implementation abi", async function(){
     network = await ethers.provider.getNetwork();
     if (myProxy) {
-      gov = new ethers.Contract(myProxy.address, govJSON.abi, signer);
+      gov = new ethers.Contract(myProxy.address, govJSON.abi, signers[0]);
     } else {
       gov = new ethers.Contract("0x0CF107a8a32d7FeD552A5AE14da6344071A31896", govJSON.abi, signer);
     }
@@ -2378,11 +2394,11 @@ describe("Governance", function () {
 
   it("Should set voteDelay", async function () {
     voteDelay = 100;
-    await expect(gov._setVotingDelay(voteDelay))
+    await expect(gov.connect(signer)._setVotingDelay(voteDelay))
         .to.emit(gov, 'VotingDelaySet');
   });
 
-  it("Should set votePeriod", async function () {
+  it.skip("Should set votePeriod", async function () {
     votePeriod = 43200;
     await expect(gov._setVotingPeriod(votePeriod))
         .to.emit(gov, 'VotingPeriodSet');
@@ -2450,14 +2466,15 @@ describe("Governance", function () {
     //advance blocks
     var blocks = voteDelay + 100;
     if ( network.chainId == 1337) {
-      for (let i = 0; i < blocks; i++) {
-        await hre.network.provider.send('evm_mine');
+      //for (let i = 0; i < blocks; i++) {
+        //await hre.network.provider.send('evm_mine');
         //var currentBlock = await hre.network.provider.send('eth_blockNumber');
         //log("current block", parseInt(currentBlock));
         //if ( parseInt(currentBlock) > parseInt(proposal.startBlock) ) {
         //  break;
         //}
-      }
+      //}
+      await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
     }
     await expect(gov.castVote(id, support))
             .to.emit(gov, 'VoteCast');
@@ -2475,15 +2492,16 @@ describe("Governance", function () {
     log("endblock", parseInt(proposal.endBlock));
     //advance blocks
     var blocks = votePeriod + 100;
-    for (let i = 0; i < blocks; i++) {
-      await hre.network.provider.send('evm_mine');
+    //for (let i = 0; i < blocks; i++) {
+      //await hre.network.provider.send('evm_mine');
       //var currentBlock = await hre.network.provider.send('eth_blockNumber');
       //log("current block", parseInt(currentBlock));
       //if ( parseInt(currentBlock) > parseInt(proposal.endBlock) ) {
       //  break;
       //}
-    }
-    await expect(gov.queue(id))
+    //}
+    await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
+    await expect(gov.connect(signer).queue(id))
             .to.emit(gov, 'ProposalQueued');
   });
 
@@ -2518,6 +2536,8 @@ describe("Governance", function () {
       method: "evm_setNextBlockTimestamp",
       params: [chainTime],
     });
+    var iBal = await iToken.balanceOf(myExec.address);
+    log("treasury iToken bal", iBal);
     var beforeBal = await sToken.balanceOf(addr.vestor);
     await expect(gov.execute(id))
             .to.emit(gov, 'ProposalExecuted');
@@ -2538,7 +2558,7 @@ describe("Governance", function () {
     const id = await gov.proposalCount();
     log("proposal id", id);
     expect(id - pCount).to.equal(1);
-    await expect(gov.veto(id))
+    await expect(gov.connect(signer).veto(id))
             .to.emit(gov, 'ProposalVetoed');
     const state = await gov.state(id);
     log("state", state);

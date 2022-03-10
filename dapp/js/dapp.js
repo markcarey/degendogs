@@ -541,7 +541,7 @@ getFlows();
 $( document ).ready(function() {
 
     // TODO: remove this for launch !!!!!!!!!
-    $("#dog").remove();
+    //$("#dog").remove();
 
     $(".connect").click(function(){
         connectWallet();

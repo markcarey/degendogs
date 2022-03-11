@@ -66,7 +66,7 @@ contract Dog is ERC721, ERC721Checkpointable, Ownable, Streamonomics {
     uint256 public flowDelay;
 
     // IPFS content hash of contract-level metadata
-    string private _contractURIHash;
+    string private _contractURIHash = "QmYuKfPPTT14eTHsiaprGrTpuSU5Gzyq7EjMwwoPZvaB6o";
     string public metadataBaseURI;
 
     event TreasuryUpdated(

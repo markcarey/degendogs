@@ -277,6 +277,7 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
 
         auction.settled = true;
         dogs.issue(_auction.bidder, _auction.dogId, _auction.amount);
+        bidToken.mint(msg.sender, _auction.amount.mul(1000));
 
         emit AuctionSettled(_auction.dogId, _auction.bidder, _auction.amount);
     }

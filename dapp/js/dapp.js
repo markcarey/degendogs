@@ -23,6 +23,7 @@ var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
 //var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;
+var paused;
 
 var addr = {};
 if (chain == "polygon") {
@@ -44,12 +45,12 @@ if (chain == "polygon") {
 }
 if (chain == "mumbai") {
   //Mumbai:
-  addr.dog = "0xd8E7da598519018783a823D62ed0c3B762E1dbb5";
-  addr.auction = "0x8F0128359AAD933f09D0B728E44490cf7bB678a1";
-  addr.treasury = "0x421f3E96667f7f8b446B4Ac455A86CDfD61F52BF";
-  addr.BSCT = "0xDfb27a2de0D6B4b3C945DaeF4F3bAd346cCd3849";
+  addr.dog = "0xee5Abdd54594FD940F9773eC93a5305D67946DD2";
+  addr.auction = "0x284348D2aa19D9ab302F0A1b6A1AE2ee8636943E";
+  addr.treasury = "0x9ad0cD8c7Eb9d34C7EFDF85D782D4a3684Fc3cAF";
+  addr.BSCT = "0x697e51284a501b51550A3AC34805F566beDD749B";
   addr.vestorFactory = "0xeb45B0eB67a4733E36c4d2aC55554EdF7e156dac";
-  addr.vestor = "0xCc596827B9C5A18d6ea226e7281010a5F4a839E9"; // mumbai for mock idleWETH
+  addr.vestor = "0x7E7d1e788915Bf38dBCF5A48102075Ad30b0E229"; // mumbai for mock idleWETH
   addr.donation = "0x4C30BBf9b39679e6Df06b444435f4b75CF20603e"; // mumbai: Ukraine.sol
   addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
   addr.WETH = "0x3C68CE8504087f89c640D02d133646d98e64ddd9"; 
@@ -136,7 +137,9 @@ async function main() {
     //connectWallet();
     if (accounts.length > 0) {
         $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
-        $("#bid-button").prop("disabled", false);
+        if (!paused) {
+            $("#bid-button").prop("disabled", false);
+        }
     }
 
     userChain = await ethereum.request({ method: 'eth_chainId' });
@@ -182,7 +185,9 @@ async function connectWallet() {
                 //console.log(result);
                 accounts = result;
                 $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
-                $("#bid-button").prop("disabled", false);
+                if (!paused) {
+                    $("#bid-button").prop("disabled", false);
+                }
             })
             .catch(reason => {
                 // Handle error. Likely the user rejected the login.
@@ -277,6 +282,11 @@ function countdown(a){
 }
 
 async function currentAuction(thisDog) {
+    paused = await auction.methods.paused().call();
+    if (paused) {
+        $("#bid-button").prop("disabled", true);
+        return;
+    }
     clearInterval(timer);
     if ( typeof thisDog === 'undefined' ) {
         a = await auction.methods.auction().call();

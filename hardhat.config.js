@@ -53,7 +53,7 @@ module.exports = {
      },
       mumbai: {
           url: API_URL,
-          accounts: [`0x${PRIVATE_KEY}`],
+          accounts: [`0x${DEPLOYER_PRIV}`],
           gasMultiplier: 3,
           gasPrice: 1000000000 * 2
       },

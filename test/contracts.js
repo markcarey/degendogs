@@ -1770,12 +1770,12 @@ before('Deploy Contracts', async function () {
     await (await myDog.setMinter(auctionHouse.address)).wait();
     log("Minter set");
 
-    await (await auctionHouse.unpause()).wait();
-    log("Auction House Unpaused");
+    //await (await auctionHouse.unpause()).wait();
+    //log("Auction House Unpaused");
 
     const expectedProxyAddress = ethers.utils.getContractAddress({
       from: DEPLOYER_ADDR,
-      nonce: parseInt(nonce) + 9,
+      nonce: parseInt(nonce) + 8,
     });
     log("expected Proxy addr", expectedProxyAddress);
 
@@ -1817,6 +1817,11 @@ describe("Auction House", function () {
     it("Should have set Dog contract address", async function () {
         var dogs = await auctionHouse.dogs();
         expect(dogs.toString()).to.equal(myDog.address);
+    });
+
+    it("should unpause AuctionHouse", async function(){
+      await expect(auctionHouse.unpause())
+            .to.emit(auctionHouse, 'Unpaused')
     });
 
     it("Should not be paused", async function () {

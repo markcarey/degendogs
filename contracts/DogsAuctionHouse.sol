@@ -217,7 +217,6 @@ contract DogsAuctionHouse is IDogsAuctionHouse, PausableUpgradeable, ReentrancyG
      * @dev Checks hardcoded early cadence schedule and then defaults to {duration} after that
      */
     function _getDuration(uint256 id) internal view returns(uint256) {
-        return 60*10;               // TODO: CHANGE THIS!!!!!!!!!
         if ( id > 50 ) {
             return duration;
         } else if ( id > 46 ) {

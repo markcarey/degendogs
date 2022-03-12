@@ -1,5 +1,5 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "mumbai";
+var chain = "polygon";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
@@ -27,12 +27,12 @@ var paused;
 
 var addr = {};
 if (chain == "polygon") {
-  addr.dog = "";
-  addr.auction = "";
-  addr.treasury = "";
-  addr.BSCT = "";
-  addr.vestorFactory = "0x67514828B3b3aa5a0289d738bDCaDeEf7d644ab2"; //localhost
-  addr.vestor = "0xdbdF8EA5C514bd1ca8A294a1e6C361502592E457"; // localhost:polygon
+  addr.dog = "0xA920464B46548930bEfECcA5467860B2b4C2B5b9";
+  addr.auction = "0xC9F32Fc6aa9F4D3d734B1b3feC739d55c2f1C1A7";
+  addr.treasury = "0xb6021d0b1e63596911f2cCeEF5c14f2db8f28Ce1";
+  addr.BSCT = "0x600e5F4920f90132725b43412D47A76bC2219F92";
+  addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon
+  addr.vestor = "0xE0159F36b6A09e6407dF0c7debAc433a77511625"; // polygon
   addr.donation = "0x22B5CD016C8D9c6aC5338Cc08174a7FA824Bc5E4"; // polygon --> Unchain Ukraine
   addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
   addr.WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon

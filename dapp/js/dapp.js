@@ -173,7 +173,7 @@ async function main() {
         $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
         $(".connected").show();
         if (!paused) {
-            $("#bid-button").prop("disabled", false);
+            //$("#bid-button").prop("disabled", false);
         }
     }
 
@@ -222,7 +222,7 @@ async function connectWallet() {
                 $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
                 $(".connected").show();
                 if (!paused) {
-                    $("#bid-button").prop("disabled", false);
+                    //$("#bid-button").prop("disabled", false);
                 }
             })
             .catch(reason => {
@@ -416,12 +416,20 @@ async function currentAuction(thisDog) {
         countdown(a);
     }
     if (accounts.length > 0) {
-        $("#bid-button").prop("disabled", false);
+        //$("#bid-button").prop("disabled", false);
     }
     if (ethereum.selectedAddress) {
-        $("#bid-button").prop("disabled", false);
+        //$("#bid-button").prop("disabled", false);
         $("#settle-button").prop("disabled", false);
     }
+
+    $("#new-bid").keydown(function(){
+        var newBid = $(this).val();
+        if ( newBid ) {
+            $("#bid-button").prop("disabled", false);
+        }
+    });
+
     $("#bid-button").click(async function(){
         var newBid = $("#new-bid").val();
         if ( approved >= newBid ) {

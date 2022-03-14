@@ -86,6 +86,8 @@ ens["0xf55eF19fAC8ce476F6eD4B2b983c24eF890B1Edb"] = "metartx.eth";
 ens["0xfE015Cd6bC5e1dFADDC45eDbAeD9Ec32d375426a"] = "weedbit.eth";
 ens["0xD0ac50d9F7516be16e2449539394A3967BEa03C7"] = "jingge.eth";
 ens["0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661"] = "markcarey.eth";
+ens["0x09a900eb2ff6e9aca12d4d1a396ddc9be0307661"] = "markcarey.eth";
+ens["0xc6FfC3a5Af16fb93c86C75280413Ef7C48D79E36"] = "yieldyak.eth";
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -103,7 +105,7 @@ async function abbrAddress(address){
             console.log("ens not found");
             var name = await ensProvider.lookupAddress(address);
             if (name) {
-                console.log(`ens[${address}] = "${name}";`);
+                console.log(`ens["${address}"] = "${name}";`);
                 ens[address] = name;
                 resolve(name);
             } else {
@@ -380,7 +382,7 @@ async function currentAuction(thisDog) {
         //console.log(bid);
         if (index < 3) {
             bidsHTML += await getBidRowHTML(bid);
-            console.log("bidsHTML",bidsHTML);
+            //console.log("bidsHTML",bidsHTML);
         }
         bidsHTMLAll += await getBidRowHTML(bid, true);
     }

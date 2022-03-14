@@ -88,12 +88,27 @@ ens["0xD0ac50d9F7516be16e2449539394A3967BEa03C7"] = "jingge.eth";
 ens["0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661"] = "markcarey.eth";
 ens["0x09a900eb2ff6e9aca12d4d1a396ddc9be0307661"] = "markcarey.eth";
 ens["0xc6FfC3a5Af16fb93c86C75280413Ef7C48D79E36"] = "yieldyak.eth";
+ens["0x869eC00FA1DC112917c781942Cc01c68521c415e"] = "corbin.eth";
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
 
 async function abbrAddress(address){
+    return new Promise(async function(resolve) {
+        if (!address) {
+            address = ethereum.selectedAddress;
+        }
+        if ( address in ens ) {
+            console.log("ens found");
+            resolve(ens[address]);
+        } else {
+            resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
+        }
+    });
+}
+
+async function updateENS(address){
     return new Promise(async function(resolve) {
         if (!address) {
             address = ethereum.selectedAddress;
@@ -568,6 +583,14 @@ async function currentAuction(thisDog) {
         return false;
     });
 
+    $(".bid").find(".address").each(async function(){
+        var address = $(this).data("address");
+        var name = await updateENS(address);
+        if (name) {
+            $(this).text(name);
+        }
+    });
+
 }
 currentAuction();
 getFlows();
@@ -604,11 +627,11 @@ async function getBidRowHTML(bid, modal) {
     var address = await abbrAddress(bid.bidder);
     var date = moment(bid.date).format("MMMM DD [at] HH:mm");
     var html = `
-        <li class="BidHistory_bidRow__bc1Zf">
+        <li class="BidHistory_bidRow__bc1Zf bid">
             <div class="BidHistory_bidItem__13g5O">
             <div class="BidHistory_leftSectionWrapper__2T29z">
                 <div class="BidHistory_bidder__1hPgQ">
-                <div>${address}</div>
+                <div data-address="${bid.bidder}" class="address">${address}</div>
                 </div>
                 <div class="BidHistory_bidDate__32l9k">${date}</div>
             </div>
@@ -630,11 +653,11 @@ async function getBidRowHTML(bid, modal) {
     `;
     if ( modal ) {
         html = `
-        <li class="BidHistory_bidRow__31Sl2">
+        <li class="BidHistory_bidRow__31Sl2 bid">
                 <div class="BidHistory_bidItem__2EgHh">
                     <div class="BidHistory_leftSectionWrapper__3gsSj">
                     <div class="BidHistory_bidder__1R14A">
-                        <div>${address}</div>
+                        <div data-address="${bid.bidder}" class="address">${address}</div>
                     </div>
                     <div class="BidHistory_bidDate__3dDvg">${date}</div>
                     </div>

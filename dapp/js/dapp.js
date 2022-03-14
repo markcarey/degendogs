@@ -1,5 +1,5 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "polygon";
+var chain = "mumbai";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
@@ -100,7 +100,7 @@ async function addToken() {
     const tokenAddress = addr.BSCT;
     const tokenSymbol = "BSCT";
     const tokenDecimals = 18;
-    var tokenImage = "https://degendogs/images/BSCT.png";
+    var tokenImage = "https://degendogs.club/images/BSCT.png";
     //console.log("tokenImage", tokenImage);
 
     try {
@@ -137,6 +137,7 @@ async function main() {
     //connectWallet();
     if (accounts.length > 0) {
         $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
+        $(".connected").show();
         if (!paused) {
             $("#bid-button").prop("disabled", false);
         }
@@ -185,6 +186,7 @@ async function connectWallet() {
                 //console.log(result);
                 accounts = result;
                 $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
+                $(".connected").show();
                 if (!paused) {
                     $("#bid-button").prop("disabled", false);
                 }
@@ -231,7 +233,10 @@ async function getFlows() {
     console.log("userFlow", userFlow);
     console.log("userFlowRate", fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
+    var BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
+    BSCTbal = parseFloat(fromWei(BSCTbal));
 
+    $("#bsct").text(BSCTbal.toFixed(0));
     $("#treasury").text(dogBalance.toFixed(4));
     $("#account").text(userBalance.toFixed(4));
     flowTimer = setInterval(() => {
@@ -393,7 +398,7 @@ async function currentAuction(thisDog) {
             const tx = {
                 'from': ethereum.selectedAddress,
                 'to': addr.auction,
-                'gasPrice': gas,
+                //'gasPrice': gas,
                 'nonce': "" + nonce,
                 'data': auction.methods.createBid(a.dogId, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
             };
@@ -403,7 +408,7 @@ async function currentAuction(thisDog) {
                 method: 'eth_sendTransaction',
                 params: [tx],
             });
-            //console.log(txHash);
+            console.log(txHash);
             var pendingTxHash = txHash;
             web3.eth.subscribe('newBlockHeaders', async (error, event) => {
                 if (error) {
@@ -418,6 +423,7 @@ async function currentAuction(thisDog) {
                     //currentAuction();
                     var bid = {
                         "bid": parseFloat(newBid).toFixed(2),
+                        "txn": txHash,
                         "bidder": ethereum.selectedAddress,
                         "date": Date.now()
                     };
@@ -426,7 +432,8 @@ async function currentAuction(thisDog) {
                     $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
                     a.minBid = parseFloat(newBid) * 1.1;
                     $("#dog-min-bid").text(a.minBid.toFixed(2));
-                    $("#bid-button").text("Bid");
+                    $("#bid-button").text("Approve");
+                    approved = 0;
                     $("#new-bid").val("");
                     //setTimeout(currentAuction, 5000);
                     var subscription = web3.eth.subscribe('logs', {
@@ -447,7 +454,7 @@ async function currentAuction(thisDog) {
                         var bid = {
                             "bidder": event[0],
                             "bid": amt.toFixed(2),
-                            "txn": log.transactionHash,
+                            "txn": txHash,
                             "date": Date.now()
                         };
                         //console.log(bid);
@@ -465,7 +472,7 @@ async function currentAuction(thisDog) {
             const tx = {
                 'from': ethereum.selectedAddress,
                 'to': addr.WETH,
-                'gasPrice': gas,
+                //'gasPrice': gas,
                 'nonce': "" + nonce,
                 'data': WETH.methods.approve(addr.auction, web3.utils.toHex(web3.utils.toWei(newBid))).encodeABI()
             };
@@ -494,7 +501,7 @@ async function currentAuction(thisDog) {
         const tx = {
             'from': ethereum.selectedAddress,
             'to': addr.auction,
-            'gasPrice': gas,
+            //'gasPrice': gas,
             'nonce': "" + nonce,
             'data': auction.methods.settleCurrentAndCreateNewAuction().encodeABI()
         };
@@ -566,6 +573,9 @@ $( document ).ready(function() {
     $("#dao-nav").click(function(){
         $("#dao").click();
         return true;
+    });
+    $("#bsct-token").click(function(){
+        addToken();
     });
 
 });
@@ -695,6 +705,10 @@ async function getDogHTML(a) {
     const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
     var tempImage = new Image();
     tempImage.src = imageUrl;
+    var ukraine = "";
+    if (a.dogId == 1) {
+        ukraine = `<div class="AuctionActivity_activityRow__1xuKY row"><div class="AuctionActivity_fomoNounsLink__1DC-a col-lg-12"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg><a href="https://docs.degendogs.club/basics/donation#special-auction-ukraine-dog" target="_blank" rel="noreferrer">100% of Dog#1 proceeds go to 🇺🇦 Ukraine Relief</a></div></div>`;
+    }
     var html = `
         <div class="row">
             <div class="Auction_nounContentCol__1o5ER col-lg-6">
@@ -729,6 +743,7 @@ async function getDogHTML(a) {
                     </h2>
                     </div>
                 </div>
+                ${ukraine}
                 </div>
                 <div class="AuctionActivity_activityRow__1xuKY row">
                 <div class="col-lg-12">

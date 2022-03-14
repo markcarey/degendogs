@@ -17,7 +17,7 @@ var provider = new ethers.providers.JsonRpcProvider(prov);
 // Metamask provider
 provider = new ethers.providers.Web3Provider(window.ethereum)
 
-var ens = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
+var ensProvider = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
 var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
 //var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
@@ -78,6 +78,15 @@ var accounts;
 var approved = 0;
 var a; // current auction or Dog
 
+var ens = {};
+//temp:
+ens["0xF7C13AD0a87a9329d7dB754dAE372d21309C79e8"] = "rarbg.eth";
+ens["0xE0D508b85f5c2E591c6E3Fdc1DD6dbF4e0D13d89"] = "scallop.eth";
+ens["0xf55eF19fAC8ce476F6eD4B2b983c24eF890B1Edb"] = "metartx.eth";
+ens["0xfE015Cd6bC5e1dFADDC45eDbAeD9Ec32d375426a"] = "weedbit.eth";
+ens["0xD0ac50d9F7516be16e2449539394A3967BEa03C7"] = "jingge.eth";
+ens["0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661"] = "markcarey.eth";
+
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
@@ -87,11 +96,19 @@ async function abbrAddress(address){
         if (!address) {
             address = ethereum.selectedAddress;
         }
-        var name = await ens.lookupAddress(address);
-        if (name) {
-            resolve(name);
+        if ( address in ens ) {
+            console.log("ens found");
+            resolve(ens[address]);
         } else {
-            resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
+            console.log("ens not found");
+            var name = await ensProvider.lookupAddress(address);
+            if (name) {
+                console.log(`ens[${address}] = "${name}";`);
+                ens[address] = name;
+                resolve(name);
+            } else {
+                resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
+            }
         }
     });
 }

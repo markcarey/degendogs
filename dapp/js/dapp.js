@@ -1,5 +1,5 @@
 //var web3 = AlchemyWeb3.createAlchemyWeb3("wss://polygon-mumbai.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj");
-var chain = "mumbai";
+var chain = "polygon";
 
 var rpcURLs = {};
 rpcURLs.rinkeby = "eth-rinkeby.alchemyapi.io/v2/n_mDCfTpJ8I959arPP7PwiOptjubLm57";
@@ -208,30 +208,30 @@ var flowTimer;
 async function getFlows() {
     clearInterval(flowTimer);
     var dogBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.dog).call();
-    console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
+    //console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
     var dogBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.dog).call();
-    console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
+    //console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
     var treasuryBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.treasury).call();
-    console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
+    //console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
     var treasuryBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.treasury).call();
-    console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
+    //console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
     var vestorBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.vestor).call();
-    console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
+    //console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
     var dogBalance = parseFloat(dogBalanceIdleWETH / 1e18) + 
         parseFloat(dogBalanceIdleWETHx / 1e18) +
         parseFloat(treasuryBalanceIdleWETH / 1e18) + 
         parseFloat(treasuryBalanceIdleWETHx / 1e18) +
         parseFloat(vestorBalanceIdleWETHx / 1e18);
-    console.log("dogBalance", dogBalance);
+    //console.log("dogBalance", dogBalance);
     var userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
-    console.log("userBalance", fromWei(userBalance));
+    //console.log("userBalance", fromWei(userBalance));
     userBalance = parseFloat(fromWei(userBalance));
     var dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
-    console.log("dogFlow", fromWei(dogFlow));
+    //console.log("dogFlow", fromWei(dogFlow));
     dogFlow = parseFloat(fromWei(dogFlow));
     var userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
-    console.log("userFlow", userFlow);
-    console.log("userFlowRate", fromWei(userFlow.flowRate));
+    //console.log("userFlow", userFlow);
+    //console.log("userFlowRate", fromWei(userFlow.flowRate));
     userFlow = parseFloat(fromWei(userFlow.flowRate));
     var BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
     BSCTbal = parseFloat(fromWei(BSCTbal));
@@ -328,7 +328,7 @@ async function currentAuction(thisDog) {
 
     var logs = [];
     if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25377639&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
         //console.log(covEventsUrl);
         const response = await fetch(covEventsUrl);
         var covEvents = await response.json();
@@ -340,9 +340,9 @@ async function currentAuction(thisDog) {
     //$.each(logs, async function(index, log) {
     for (let index = 0; index < logs.length; index++) {
         var log = logs[index];
-        console.log(log);
+        //console.log(log);
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        console.log(event);
+        //console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
         if (index == 0) {
             a.amount = event[1];
@@ -360,7 +360,7 @@ async function currentAuction(thisDog) {
             "txn": log.tx_hash,
             "date": log.block_signed_at
         };
-        console.log(bid);
+        //console.log(bid);
         if (index < 3) {
             bidsHTML += await getBidRowHTML(bid);
             console.log("bidsHTML",bidsHTML);
@@ -377,7 +377,7 @@ async function currentAuction(thisDog) {
     a.duration = duration;
     var dogHTML = await getDogHTML(a);
     $("#dog").html(dogHTML);
-    console.log("duration", a.duration.asSeconds());
+    //console.log("duration", a.duration.asSeconds());
     if (a.duration.asSeconds() > 0) {
         countdown(a);
     }
@@ -408,7 +408,7 @@ async function currentAuction(thisDog) {
                 method: 'eth_sendTransaction',
                 params: [tx],
             });
-            console.log(txHash);
+            //console.log(txHash);
             var pendingTxHash = txHash;
             web3.eth.subscribe('newBlockHeaders', async (error, event) => {
                 if (error) {

@@ -672,7 +672,7 @@ async function getBidRowHTML(bid, modal) {
                     <div class="BidHistory_rightSectionWrapper__3N0DM">
                     <div class="BidHistory_bidAmount__3yfv7">Ξ ${bid.bid}</div>
                     <div class="BidHistory_linkSymbol__2qaZG"><a
-                        href="https://ppolygonscan.com/tx/${bid.txn}"
+                        href="https://polygonscan.com/tx/${bid.txn}"
                         target="_blank" rel="noreferrer"><svg aria-hidden="true" focusable="false" data-prefix="fas"
                             data-icon="external-link-alt" class="svg-inline--fa fa-external-link-alt fa-w-16 " role="img"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

@@ -14,8 +14,10 @@ const prov = {"url": "https://" + rpcURL};
 //const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
 
-// Metamask provider
-provider = new ethers.providers.Web3Provider(window.ethereum)
+if ("ethereum" in window) {
+    // Metamask provider
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+}
 
 var ensProvider = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 

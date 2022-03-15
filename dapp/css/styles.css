@@ -1535,4 +1535,8 @@ svg:not(:root).svg-inline--fa {
       display: none;
   }
 
+  .modal {
+      overflow: scroll;
+  }
+
 /*# sourceMappingURL=main.2d852e53.chunk.css.map */

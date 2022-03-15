@@ -79,6 +79,7 @@ var userChain;
 var accounts;
 var approved = 0;
 var a; // current auction or Dog
+var currentDogId;
 
 var ens = {};
 //temp:
@@ -329,8 +330,9 @@ async function currentAuction(thisDog) {
         return;
     }
     clearInterval(timer);
-    if ( typeof thisDog === 'undefined' ) {
+    if ( typeof thisDog === 'undefined' || thisDog == currentDogId ) {
         a = await auction.methods.auction().call();
+        currentDogId = a.dogId;
     } else {
         a = {
             "dogId": thisDog,

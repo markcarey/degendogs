@@ -323,6 +323,48 @@ function countdown(a){
     }, interval);
 }
 
+async function getBids(a) {
+
+    var logs = [];
+    if (dappChain != 31337) {
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        //console.log(covEventsUrl);
+        const response = await fetch(covEventsUrl);
+        var covEvents = await response.json();
+        //console.log(covEvents);
+        logs = covEvents.data.items;
+    }
+    for (let index = 0; index < logs.length; index++) {
+        var log = logs[index];
+        //console.log(log);
+        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
+        //console.log(event);
+        var amt = parseFloat(web3.utils.fromWei( event[1] ));
+        if (index == 0) {
+            a.amount = event[1];
+            a.bidder = event[0];
+            if (!a.endTime) {
+                a.endTime = moment(log.block_signed_at).format("X");
+            }
+            if (!a.startTime) {
+                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
+            }
+        }
+        var bid = {
+            "bidder": event[0],
+            "bid": amt.toFixed(2),
+            "txn": log.tx_hash,
+            "date": log.block_signed_at
+        };
+        //console.log(bid);
+        if (index < 3) {
+            bidsHTML += await getBidRowHTML(bid);
+            //console.log("bidsHTML",bidsHTML);
+        }
+        bidsHTMLAll += await getBidRowHTML(bid, true);
+    }
+}
+
 async function currentAuction(thisDog) {
     paused = await auction.methods.paused().call();
     if (paused) {
@@ -363,48 +405,11 @@ async function currentAuction(thisDog) {
 
     var dogIdTopic = web3.utils.padLeft(web3.utils.toHex(a.dogId), 64);
     //console.log(dogIdTopic);
-
-    var logs = [];
-    if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
-        //console.log(covEventsUrl);
-        const response = await fetch(covEventsUrl);
-        var covEvents = await response.json();
-        //console.log(covEvents);
-        logs = covEvents.data.items;
-    }
     var bidsHTML = "";
     var bidsHTMLAll = "";
-    //$.each(logs, async function(index, log) {
-    for (let index = 0; index < logs.length; index++) {
-        var log = logs[index];
-        //console.log(log);
-        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        //console.log(event);
-        var amt = parseFloat(web3.utils.fromWei( event[1] ));
-        if (index == 0) {
-            a.amount = event[1];
-            a.bidder = event[0];
-            if (!a.endTime) {
-                a.endTime = moment(log.block_signed_at).format("X");
-            }
-            if (!a.startTime) {
-                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
-            }
-        }
-        var bid = {
-            "bidder": event[0],
-            "bid": amt.toFixed(2),
-            "txn": log.tx_hash,
-            "date": log.block_signed_at
-        };
-        //console.log(bid);
-        if (index < 3) {
-            bidsHTML += await getBidRowHTML(bid);
-            //console.log("bidsHTML",bidsHTML);
-        }
-        bidsHTMLAll += await getBidRowHTML(bid, true);
-    }
+
+    // covalent was here
+    
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
     const endTime = a.endTime;
@@ -602,6 +607,49 @@ async function currentAuction(thisDog) {
             $(this).text(name);
         }
     });
+
+    var logs = [];
+    if (dappChain != 31337) {
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        //console.log(covEventsUrl);
+        const response = await fetch(covEventsUrl);
+        var covEvents = await response.json();
+        //console.log(covEvents);
+        logs = covEvents.data.items;
+    }
+    for (let index = 0; index < logs.length; index++) {
+        var log = logs[index];
+        //console.log(log);
+        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
+        //console.log(event);
+        var amt = parseFloat(web3.utils.fromWei( event[1] ));
+        if (index == 0) {
+            a.amount = event[1];
+            a.bidder = event[0];
+            if (!a.endTime) {
+                a.endTime = moment(log.block_signed_at).format("X");
+            }
+            if (!a.startTime) {
+                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
+            }
+        }
+        var bid = {
+            "bidder": event[0],
+            "bid": amt.toFixed(2),
+            "txn": log.tx_hash,
+            "date": log.block_signed_at
+        };
+        //console.log(bid);
+        if (index < 3) {
+            bidsHTML += await getBidRowHTML(bid);
+            //console.log("bidsHTML",bidsHTML);
+        }
+        bidsHTMLAll += await getBidRowHTML(bid, true);
+    }
+    a.bidsHTML = bidsHTML;
+    a.bidsHTMLAll = bidsHTMLAll;
+    dogHTML = await getDogHTML(a);
+    $("#dog").html(dogHTML);
 
 }
 currentAuction();

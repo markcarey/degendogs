@@ -133,11 +133,26 @@ async function updateENS(address){
     });
 }
 
-async function addToken() {
-    const tokenAddress = addr.BSCT;
-    const tokenSymbol = "BSCT";
-    const tokenDecimals = 18;
-    var tokenImage = "https://degendogs.club/images/BSCT.png";
+const tokens = {};
+tokens.BSCT = {
+    "address": addr.BSCT,
+    "symbol": "BSCT",
+    "decimals": 18,
+    "image": "https://degendogs.club/images/BSCT.png"
+}
+tokens.idleWETHx = {
+    "address": addr.idleWETHx,
+    "symbol": "idleWETHx",
+    "decimals": 18,
+    "image": "https://degendogs.club/images/idleWETH.svg"
+}
+
+async function addToken(symbol) {
+    var token = tokens[symbol];
+    const tokenAddress = token.address;
+    const tokenSymbol = token.symbol;
+    const tokenDecimals = token.decimals;
+    var tokenImage = token.image;
     //console.log("tokenImage", tokenImage);
 
     try {
@@ -530,12 +545,10 @@ $( document ).ready(function() {
             $(".card-header").not(this).next(".collapse.show").removeClass("show");
         }
     });
-    $("#dao-nav").click(function(){
-        $("#dao").click();
-        return true;
-    });
-    $("#bsct-token").click(function(){
-        addToken();
+    $(".add-to-metamask").click(function(){
+        var symbol = $(this).data("token");
+        addToken(symbol);
+        return false;
     });
 
     $( "#dog" ).on( "keydown", "#new-bid", async function() {

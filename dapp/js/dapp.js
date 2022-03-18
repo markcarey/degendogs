@@ -487,6 +487,10 @@ async function currentAuction(thisDog) {
     a.bidsHTMLAll = bidsHTMLAll;
     dogHTML = await getDogHTML(a);
     $("#dog").html(dogHTML);
+    if (ethereum.selectedAddress) {
+        //$("#bid-button").prop("disabled", false);
+        $("#settle-button").prop("disabled", false);
+    }
     $(".bid").find(".address").each(async function(){
         var address = $(this).data("address");
         var name = await updateENS(address);

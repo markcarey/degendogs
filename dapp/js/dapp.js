@@ -432,14 +432,108 @@ async function currentAuction(thisDog) {
         $("#settle-button").prop("disabled", false);
     }
 
-    $("#new-bid").keydown(function(){
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    var logs = [];
+    if (dappChain != 31337) {
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        //console.log(covEventsUrl);
+        const response = await fetch(covEventsUrl);
+        var covEvents = await response.json();
+        //console.log(covEvents);
+        logs = covEvents.data.items;
+    }
+    for (let index = 0; index < logs.length; index++) {
+        var log = logs[index];
+        //console.log(log);
+        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
+        //console.log(event);
+        var amt = parseFloat(web3.utils.fromWei( event[1] ));
+        if (index == 0) {
+            a.amount = event[1];
+            a.bidder = event[0];
+            if (!a.endTime) {
+                a.endTime = moment(log.block_signed_at).format("X");
+            }
+            if (!a.startTime) {
+                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
+            }
+        }
+        var bid = {
+            "bidder": event[0],
+            "bid": amt.toFixed(2),
+            "txn": log.tx_hash,
+            "date": log.block_signed_at
+        };
+        //console.log(bid);
+        if (index < 3) {
+            bidsHTML += await getBidRowHTML(bid);
+            //console.log("bidsHTML",bidsHTML);
+        }
+        bidsHTMLAll += await getBidRowHTML(bid, true);
+    }
+    a.bidsHTML = bidsHTML;
+    a.bidsHTMLAll = bidsHTMLAll;
+    dogHTML = await getDogHTML(a);
+    $("#dog").html(dogHTML);
+    $(".bid").find(".address").each(async function(){
+        var address = $(this).data("address");
+        var name = await updateENS(address);
+        if (name) {
+            $(this).text(name);
+        }
+    });
+
+}
+currentAuction();
+getFlows();
+
+
+
+$( document ).ready(function() {
+
+    // TODO: remove this for launch !!!!!!!!!
+    //$("#dog").remove();
+
+    $(".connect").click(function(){
+        connectWallet();
+        return false;
+    });
+    $(".card-header").click(function(){
+        $(this).next().toggleClass("show");
+        if ( $(this).next().hasClass("show") ) {
+            $(".card-header").not(this).next(".collapse.show").removeClass("show");
+        }
+    });
+    $("#dao-nav").click(function(){
+        $("#dao").click();
+        return true;
+    });
+    $("#bsct-token").click(function(){
+        addToken();
+    });
+
+    $( "#dog" ).on( "keydown", "#new-bid", async function() {
+    //$("#new-bid").keydown(function(){
         var newBid = $(this).val();
         if ( newBid ) {
             $("#bid-button").prop("disabled", false);
         }
     });
 
-    $("#bid-button").click(async function(){
+    $( "#dog" ).on( "click", "#bid-button", async function() {
+    //$("#bid-button").click(async function(){
         var newBid = $("#new-bid").val();
         if ( approved >= newBid ) {
             $("#bid-button").text("Bidding...");
@@ -545,7 +639,8 @@ async function currentAuction(thisDog) {
         }
     });
 
-    $("#settle-button").click(async function(){
+    $( "#dog" ).on( "click", "#settle-button", async function() {
+    //$("#settle-button").click(async function(){
         const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
 
         //the transaction
@@ -581,7 +676,8 @@ async function currentAuction(thisDog) {
         });
     });
 
-    $(".bid-history").click(function(){
+    $( "#dog" ).on( "click", ".bid-history", async function() {
+    //$(".bid-history").click(function(){
         var html = getBidHistoryModal(a);
         $("body").append(html);
         $(".close, .modal-backdrop").click(function(){
@@ -589,95 +685,18 @@ async function currentAuction(thisDog) {
         });
     });
 
-    $("#next-dog").click(function(){
+    $( "#dog" ).on( "click", "#next-dog", async function() {
+    //$("#next-dog").click(function(){
         var currentID = parseInt(a.dogId);
         currentAuction(currentID + 1);
         return false;
     });
-    $("#prev-dog").click(function(){
+
+    $( "#dog" ).on( "click", "#prev-dog", async function() {
+    //$("#prev-dog").click(function(){
         var currentID = parseInt(a.dogId);
         currentAuction(currentID - 1);
         return false;
-    });
-
-    $(".bid").find(".address").each(async function(){
-        var address = $(this).data("address");
-        var name = await updateENS(address);
-        if (name) {
-            $(this).text(name);
-        }
-    });
-
-    var logs = [];
-    if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=25934902&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
-        //console.log(covEventsUrl);
-        const response = await fetch(covEventsUrl);
-        var covEvents = await response.json();
-        //console.log(covEvents);
-        logs = covEvents.data.items;
-    }
-    for (let index = 0; index < logs.length; index++) {
-        var log = logs[index];
-        //console.log(log);
-        var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
-        //console.log(event);
-        var amt = parseFloat(web3.utils.fromWei( event[1] ));
-        if (index == 0) {
-            a.amount = event[1];
-            a.bidder = event[0];
-            if (!a.endTime) {
-                a.endTime = moment(log.block_signed_at).format("X");
-            }
-            if (!a.startTime) {
-                a.startTime = moment(log.block_signed_at).format("X") - 60*60;
-            }
-        }
-        var bid = {
-            "bidder": event[0],
-            "bid": amt.toFixed(2),
-            "txn": log.tx_hash,
-            "date": log.block_signed_at
-        };
-        //console.log(bid);
-        if (index < 3) {
-            bidsHTML += await getBidRowHTML(bid);
-            //console.log("bidsHTML",bidsHTML);
-        }
-        bidsHTMLAll += await getBidRowHTML(bid, true);
-    }
-    a.bidsHTML = bidsHTML;
-    a.bidsHTMLAll = bidsHTMLAll;
-    dogHTML = await getDogHTML(a);
-    $("#dog").html(dogHTML);
-
-}
-currentAuction();
-getFlows();
-
-
-
-$( document ).ready(function() {
-
-    // TODO: remove this for launch !!!!!!!!!
-    //$("#dog").remove();
-
-    $(".connect").click(function(){
-        connectWallet();
-        return false;
-    });
-    $(".card-header").click(function(){
-        $(this).next().toggleClass("show");
-        if ( $(this).next().hasClass("show") ) {
-            $(".card-header").not(this).next(".collapse.show").removeClass("show");
-        }
-    });
-    $("#dao-nav").click(function(){
-        $("#dao").click();
-        return true;
-    });
-    $("#bsct-token").click(function(){
-        addToken();
     });
 
 });

@@ -434,7 +434,12 @@ async function currentAuction(thisDog) {
 
     
 
-    
+    var allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+    console.log("allowance", allowance);
+    if (parseInt(allowance) > 0) {
+        approved = allowance / 1e18;
+        $("#bid-button").text("Bid");
+    }
 
     
 
@@ -491,6 +496,10 @@ async function currentAuction(thisDog) {
         //$("#bid-button").prop("disabled", false);
         $("#settle-button").prop("disabled", false);
     }
+    if (parseInt(allowance) > 0) {
+        approved = allowance / 1e18;
+        $("#bid-button").text("Bid");
+    }
     $(".bid").find(".address").each(async function(){
         var address = $(this).data("address");
         var name = await updateENS(address);
@@ -533,6 +542,13 @@ $( document ).ready(function() {
         var newBid = $(this).val();
         if ( newBid ) {
             $("#bid-button").prop("disabled", false);
+        }
+    });
+
+    $( "#dog" ).on( "change", "#new-bid", async function() {
+        var newBid = $(this).val();
+        if ( newBid > approved ) {
+            $("#bid-button").text("Approve");
         }
     });
 

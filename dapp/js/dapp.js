@@ -13,6 +13,9 @@ var rpcURL = rpcURLs[chain];
 const prov = {"url": "https://" + rpcURL};
 //const prov = {"url": "http://" + rpcURL};       // localhost only
 var provider = new ethers.providers.JsonRpcProvider(prov);
+var wssProvider = new ethers.providers.WebSocketProvider(
+    "wss://" + rpcURL
+);
 
 if ("ethereum" in window) {
     // Metamask provider
@@ -73,10 +76,13 @@ const idleWETHx = new web3.eth.Contract(tokenABI, addr.idleWETHx);
 const vestor = new web3.eth.Contract(vestorABI, addr.vestor);
 const BSCT = new web3.eth.Contract(tokenABI, addr.BSCT);
 
+const eAuction = new ethers.Contract(addr.auction, auctionABI, wssProvider);
+var bidFilter, settleFilter;
+
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei; // TODO: fix for production
 var dappChain = 80001; // default to Mumbai
 var userChain;
-var accounts;
+var accounts = [];
 var approved = 0;
 var a; // current auction or Dog
 var currentDogId;
@@ -185,7 +191,9 @@ async function main() {
     dappChain = await web3.eth.getChainId();
     //console.log("The chainId is " + dappChain);
 
-    accounts = await web3.eth.getAccounts();
+    if ("ethereum" in window) {
+        accounts = await web3.eth.getAccounts();
+    }
     //connectWallet();
     if (accounts.length > 0) {
         $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
@@ -195,8 +203,10 @@ async function main() {
         }
     }
 
-    userChain = await ethereum.request({ method: 'eth_chainId' });
-    //console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));
+    if ("ethereum" in window) {
+        userChain = await ethereum.request({ method: 'eth_chainId' });
+        //console.log("The chainId of connected account is " + web3.utils.hexToNumber(userChain));
+    }
 
     if ( !correctChain() ) {
         $("body").append(wrongNetworkModal());
@@ -205,16 +215,30 @@ async function main() {
         });
     }
 
-    window.ethereum.on('accountsChanged', function () {
-        web3.eth.getAccounts(function (error, accts) {
-            console.log(accts[0], 'current account after account change');
-            accounts = accts;
-            location.reload();
+    if ("ethereum" in window) {
+        window.ethereum.on('accountsChanged', function () {
+            web3.eth.getAccounts(function (error, accts) {
+                console.log(accts[0], 'current account after account change');
+                accounts = accts;
+                location.reload();
+            });
         });
-    });
 
-    window.ethereum.on('chainChanged', function () {
-      location.reload();
+        window.ethereum.on('chainChanged', function () {
+        location.reload();
+        });
+    }
+
+    bidFilter = await eAuction.filters.AuctionBid();
+    settleFilter = await eAuction.filters.AuctionSettled();
+    eAuction.on(bidFilter, async (dogId, bidder, value, extended, event) => { 
+        console.log("event bid", dogId, event);
+        if ( "dogId" in a ) {
+            if (parseInt(dogId) == parseInt(a.dogId)) {
+                // update the display with new bid
+                currentAuction();
+            }
+        }
     });
 }
 main();
@@ -223,6 +247,9 @@ function correctChain() {
   var correct = false;
   if (dappChain == userChain) {
     correct = true;
+  }
+  if ( !("ethereum" in window) ) {
+      correct = true;
   }
   return correct;
 }
@@ -275,18 +302,24 @@ async function getFlows() {
         parseFloat(treasuryBalanceIdleWETHx / 1e18) +
         parseFloat(vestorBalanceIdleWETHx / 1e18);
     //console.log("dogBalance", dogBalance);
-    var userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
-    //console.log("userBalance", fromWei(userBalance));
-    userBalance = parseFloat(fromWei(userBalance));
-    var dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
-    //console.log("dogFlow", fromWei(dogFlow));
-    dogFlow = parseFloat(fromWei(dogFlow));
-    var userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
-    //console.log("userFlow", userFlow);
-    //console.log("userFlowRate", fromWei(userFlow.flowRate));
-    userFlow = parseFloat(fromWei(userFlow.flowRate));
-    var BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
-    BSCTbal = parseFloat(fromWei(BSCTbal));
+    var BSCTbal = 0;
+    var userFlow = 0;
+    var dogFlow = 0;
+    var userBalance = 0;
+    if ("ethereum" in window) {
+        userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
+        //console.log("userBalance", fromWei(userBalance));
+        userBalance = parseFloat(fromWei(userBalance));
+        dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
+        //console.log("dogFlow", fromWei(dogFlow));
+        dogFlow = parseFloat(fromWei(dogFlow));
+        userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
+        //console.log("userFlow", userFlow);
+        //console.log("userFlowRate", fromWei(userFlow.flowRate));
+        userFlow = parseFloat(fromWei(userFlow.flowRate));
+        BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
+        BSCTbal = parseFloat(fromWei(BSCTbal));
+    }
 
     $("#bsct").text(BSCTbal.toFixed(0));
     $("#treasury").text(dogBalance.toFixed(4));
@@ -444,14 +477,18 @@ async function currentAuction(thisDog) {
     if (accounts.length > 0) {
         //$("#bid-button").prop("disabled", false);
     }
-    if (ethereum.selectedAddress) {
-        //$("#bid-button").prop("disabled", false);
-        $("#settle-button").prop("disabled", false);
+    if ("ethereum" in window) {
+        if (ethereum.selectedAddress) {
+            //$("#bid-button").prop("disabled", false);
+            $("#settle-button").prop("disabled", false);
+        }
     }
 
-    
+    var allowance = 0;    
 
-    var allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+    if ("ethereum" in window) {
+        allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+    }
     console.log("allowance", allowance);
     if (parseInt(allowance) > 0) {
         approved = allowance / 1e18;
@@ -509,9 +546,11 @@ async function currentAuction(thisDog) {
     a.bidsHTMLAll = bidsHTMLAll;
     dogHTML = await getDogHTML(a);
     $("#dog").html(dogHTML);
-    if (ethereum.selectedAddress) {
-        //$("#bid-button").prop("disabled", false);
-        $("#settle-button").prop("disabled", false);
+    if ("ethereum" in window) {
+        if (ethereum.selectedAddress) {
+            //$("#bid-button").prop("disabled", false);
+            $("#settle-button").prop("disabled", false);
+        }
     }
     if (parseInt(allowance) > 0) {
         approved = allowance / 1e18;

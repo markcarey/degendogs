@@ -401,6 +401,7 @@ async function currentAuction(thisDog) {
         };
     } 
     var startingBlock = 26060775;
+    startingBlock = 25818530; // auction creation block
     //console.log(a);
     const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
     var tempImage = new Image();
@@ -468,7 +469,7 @@ async function currentAuction(thisDog) {
 
     var logs = [];
     if (dappChain != 31337) {
-        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=" + startingBlock + "&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af";
+        const covEventsUrl = "https://api.covalenthq.com/v1/" + dappChain + "/events/topics/0x1159164c56f277e6fc99c11731bd380e0347deb969b75523398734c252706ea3/?starting-block=" + startingBlock + "&ending-block=latest&sender-address=" + addr.auction + "&match=%7B%22raw_log_topics.1%22%3A%22" + dogIdTopic + "%22%7D&sort=%7B%22block_signed_at%22%3A%22-1%22%7D&key=ckey_ac7c55f53e19476b85f0a1099af&page-size=1000";
         //console.log(covEventsUrl);
         const response = await fetch(covEventsUrl);
         var covEvents = await response.json();

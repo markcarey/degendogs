@@ -494,14 +494,6 @@ async function currentAuction(thisDog) {
         approved = allowance / 1e18;
         $("#bid-button").text("Bid");
     }
-
-    
-
-    
-
-    
-    
-
     
 
     var logs = [];
@@ -519,7 +511,7 @@ async function currentAuction(thisDog) {
         var event = web3.eth.abi.decodeParameters(['address', 'uint256', 'bool'], log.raw_log_data);
         //console.log(event);
         var amt = parseFloat(web3.utils.fromWei( event[1] ));
-        if (index == 0) {
+        if ( (a.dogId != currentDogId) && (index == 0) ) {
             a.amount = event[1];
             a.bidder = event[0];
             if (!a.endTime) {

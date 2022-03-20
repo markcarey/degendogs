@@ -307,18 +307,22 @@ async function getFlows() {
     var dogFlow = 0;
     var userBalance = 0;
     if ("ethereum" in window) {
-        userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
-        //console.log("userBalance", fromWei(userBalance));
-        userBalance = parseFloat(fromWei(userBalance));
+        if (ethereum.selectedAddress) {
+            userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
+            //console.log("userBalance", fromWei(userBalance));
+            userBalance = parseFloat(fromWei(userBalance));
+        }
         dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
         //console.log("dogFlow", fromWei(dogFlow));
         dogFlow = parseFloat(fromWei(dogFlow));
-        userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
-        //console.log("userFlow", userFlow);
-        //console.log("userFlowRate", fromWei(userFlow.flowRate));
-        userFlow = parseFloat(fromWei(userFlow.flowRate));
-        BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
-        BSCTbal = parseFloat(fromWei(BSCTbal));
+        if (ethereum.selectedAddress) {
+            userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
+            //console.log("userFlow", userFlow);
+            //console.log("userFlowRate", fromWei(userFlow.flowRate));
+            userFlow = parseFloat(fromWei(userFlow.flowRate));
+            BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
+            BSCTbal = parseFloat(fromWei(BSCTbal));
+        }
     }
 
     $("#bsct").text(BSCTbal.toFixed(0));
@@ -488,7 +492,9 @@ async function currentAuction(thisDog) {
     var allowance = 0;    
 
     if ("ethereum" in window) {
-        allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+        if (ethereum.selectedAddress) {
+            allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+        }
     }
     console.log("allowance", allowance);
     if (parseInt(allowance) > 0) {

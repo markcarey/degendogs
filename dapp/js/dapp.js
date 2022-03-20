@@ -449,8 +449,10 @@ async function currentAuction(thisDog) {
     $("#dog-date").text(date);
     var currentBid = parseFloat(web3.utils.fromWei(a.amount));
     $(".dog-current-bid").text("Ξ " + currentBid.toFixed(2));
-    var minBid = web3.utils.fromWei(a.amount) * 1.1
-    minBid = Math.floor(minBid * 100) / 100;
+    var minBid = web3.utils.fromWei(a.amount) * 1.1;
+    //console.log("b4 floor", minBid);
+    minBid = Math.ceil(minBid * 100) / 100;
+    //console.log("after floor", minBid);
     if ( minBid == 0 ) {
         // reserve price
         minBid = 0.05;

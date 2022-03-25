@@ -84,6 +84,7 @@ var dappChain = 80001; // default to Mumbai
 var userChain;
 var accounts = [];
 var approved = 0;
+var launchReady = false;
 var a; // current auction or Dog
 var currentDogId;
 
@@ -98,6 +99,16 @@ ens["0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661"] = "markcarey.eth";
 ens["0x09a900eb2ff6e9aca12d4d1a396ddc9be0307661"] = "markcarey.eth";
 ens["0xc6FfC3a5Af16fb93c86C75280413Ef7C48D79E36"] = "yieldyak.eth";
 ens["0x869eC00FA1DC112917c781942Cc01c68521c415e"] = "corbin.eth";
+ens["0xaec80B4fbE227198720b1d1B82a12968bAA0B144"] = "changning.eth";
+ens["0xb3D1e41F84AcD0E77F83473aa62fc8560C2A3c0C"] = "anti-ens.eth";
+ens["0x17Fe4ED21e35B5ad800179b0c20447cA3F5280Db"] = "11223.eth";
+ens["0xb8832d516D0f3094b4BDc5400E36a2A6984233Ea"] = "bujinmei.eth";
+ens["0xbb909b914F1E39b0E5C30b4fe6E5d984331519B9"] = "yeitoi.eth";
+ens["0x00493aA44BCfd6F0c2EcC7F8B154e4fB352d1c81"] = "kirinparadise.eth";
+ens["0x01974549C9B9a30d47c548A16b120b1cAa7B586C"] = "blanker.eth";
+ens["0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac"] = "vijay.eth";
+ens["0xEccC484DD4093F62fC24c4725800013FBc2C1D15"] = "creampp.eth";
+ens["0x84da37133a088Fbf4e21D80Aec2CC260B52eA116"] = "k.mirror.xyz";
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -496,6 +507,14 @@ async function currentAuction(thisDog) {
     if ("ethereum" in window) {
         if (ethereum.selectedAddress) {
             allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
+            var canLaunch = await vestor.methods.launchReady(ethereum.selectedAddress).call();
+            console.log("canLaunch", canLaunch);
+            if ("canExec" in canLaunch) {
+                launchReady = canLaunch.canExec;
+            }
+            if (launchReady) {
+                $("a.claim").show();
+            }
         }
     }
     console.log("allowance", allowance);
@@ -590,6 +609,44 @@ $( document ).ready(function() {
         var symbol = $(this).data("token");
         addToken(symbol);
         return false;
+    });
+
+    $(".claim").click(async function(){
+        const $button = $(this);
+        $button.text("CLAIMING");
+        const nonce = await web3.eth.getTransactionCount(accounts[0], 'latest');
+
+        //the transaction
+        const tx = {
+            'from': ethereum.selectedAddress,
+            'to': addr.vestor,
+            'nonce': "" + nonce,
+            'data': vestor.methods.launchVestingToSender().encodeABI()
+        };
+        //console.log(tx);
+
+        $("#status").text("Waiting for claim transaction...");
+
+        const txHash = await ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [tx],
+        });
+        //console.log(txHash);
+        var pendingTxHash = txHash;
+        web3.eth.subscribe('newBlockHeaders', async (error, event) => {
+            if (error) {
+                console.log("error", error);
+            }
+            const blockTxHashes = (await web3.eth.getBlock(event.hash)).transactions;
+
+            if (blockTxHashes.includes(pendingTxHash)) {
+                web3.eth.clearSubscriptions();
+                console.log("Claimed!");
+                $button.text("CLAIMED");
+                currentAuction();
+                getFlows();
+            }
+        });
     });
 
     $( "#dog" ).on( "keydown", "#new-bid", async function() {

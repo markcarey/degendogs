@@ -1539,4 +1539,12 @@ svg:not(:root).svg-inline--fa {
       overflow: scroll;
   }
 
+  a.NavBar_nounsNavLink__1_qpP.btn-primary.claim {
+    display: none;
+    color: #FFF !important;
+    background-color: #000;
+    border-color: #000;
+    padding: 0.025rem 0.4rem !important;
+  }
+
 /*# sourceMappingURL=main.2d852e53.chunk.css.map */

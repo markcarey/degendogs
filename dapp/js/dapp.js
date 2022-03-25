@@ -585,7 +585,32 @@ async function currentAuction(thisDog) {
     });
 
 }
-currentAuction();
+
+function goToDog(jumpId) {
+    if (jumpId) {
+        currentAuction(jumpId);
+    } else {
+        var hash = window.location.hash;
+        if (hash) {
+            var hashId = hash.split("#dog");
+            if (hashId.length > 1) {
+                currentAuction(parseInt(hashId[1]));
+            }
+        }
+    }
+    return;
+}
+
+var dogToLoad;
+var hash = window.location.hash;
+if (hash) {
+    var hashId = hash.split("#dog");
+    if (hashId.length > 1) {
+        dogToLoad = parseInt(hashId[1]);
+    }
+}
+
+currentAuction(dogToLoad);
 getFlows();
 
 
@@ -594,6 +619,8 @@ $( document ).ready(function() {
 
     // TODO: remove this for launch !!!!!!!!!
     //$("#dog").remove();
+
+    
 
     $(".connect").click(function(){
         connectWallet();

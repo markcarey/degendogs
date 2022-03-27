@@ -507,14 +507,6 @@ async function currentAuction(thisDog) {
     if ("ethereum" in window) {
         if (ethereum.selectedAddress) {
             allowance = await WETH.methods.allowance(ethereum.selectedAddress, addr.auction).call();
-            var canLaunch = await vestor.methods.launchReady(ethereum.selectedAddress).call();
-            console.log("canLaunch", canLaunch);
-            if ("canExec" in canLaunch) {
-                launchReady = canLaunch.canExec;
-            }
-            if (launchReady) {
-                $("a.claim").show();
-            }
         }
     }
     console.log("allowance", allowance);
@@ -583,6 +575,20 @@ async function currentAuction(thisDog) {
             $(this).text(name);
         }
     });
+
+    // do this last, might have been slowing stuff down...
+    if ("ethereum" in window) {
+        if (ethereum.selectedAddress) {
+            var canLaunch = await vestor.methods.launchReady(ethereum.selectedAddress).call();
+            console.log("canLaunch", canLaunch);
+            if ("canExec" in canLaunch) {
+                launchReady = canLaunch.canExec;
+            }
+            if (launchReady) {
+                $("a.claim").show();
+            }
+        }
+    }
 
 }
 

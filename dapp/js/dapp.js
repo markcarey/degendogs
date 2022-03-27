@@ -28,7 +28,7 @@ var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
 //var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;
-var paused;
+var paused = false;
 
 var addr = {};
 if (chain == "polygon") {
@@ -80,8 +80,8 @@ const eAuction = new ethers.Contract(addr.auction, auctionABI, wssProvider);
 var bidFilter, settleFilter;
 
 var gas = web3.utils.toHex(new BN('2000000000')); // 2 Gwei; // TODO: fix for production
-var dappChain = 80001; // default to Mumbai
-var userChain;
+var dappChain = 137; // default to Mumbai
+var userChain = 137;
 var accounts = [];
 var approved = 0;
 var launchReady = false;
@@ -109,23 +109,22 @@ ens["0x01974549C9B9a30d47c548A16b120b1cAa7B586C"] = "blanker.eth";
 ens["0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac"] = "vijay.eth";
 ens["0xEccC484DD4093F62fC24c4725800013FBc2C1D15"] = "creampp.eth";
 ens["0x84da37133a088Fbf4e21D80Aec2CC260B52eA116"] = "k.mirror.xyz";
+ens["0xb34e7e91D2E6E9D130AC3B51812F189Cb4b12ae2"] = "newboy1.eth";
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
 
-async function abbrAddress(address){
-    return new Promise(async function(resolve) {
-        if (!address) {
-            address = ethereum.selectedAddress;
-        }
-        if ( address in ens ) {
-            console.log("ens found");
-            resolve(ens[address]);
-        } else {
-            resolve( address.slice(0,4) + "..." + address.slice(address.length - 4) );
-        }
-    });
+function abbrAddress(address){
+    if (!address) {
+        address = ethereum.selectedAddress;
+    }
+    if ( address in ens ) {
+        console.log("ens found");
+        return ens[address];
+    } else {
+        return address.slice(0,4) + "..." + address.slice(address.length - 4);
+    }
 }
 
 async function updateENS(address){
@@ -207,7 +206,7 @@ async function main() {
     }
     //connectWallet();
     if (accounts.length > 0) {
-        $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
+        $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
         $(".connected").show();
         if (!paused) {
             //$("#bid-button").prop("disabled", false);
@@ -275,7 +274,7 @@ async function connectWallet() {
                 // Metamask is ready to go!
                 //console.log(result);
                 accounts = result;
-                $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + await abbrAddress());
+                $(".connect").html(`<span class="NavBar_greenStatusCircle__1zBA7"></span>` + abbrAddress());
                 $(".connected").show();
                 if (!paused) {
                     //$("#bid-button").prop("disabled", false);
@@ -298,21 +297,21 @@ var flowTimer;
 async function getFlows() {
     clearInterval(flowTimer);
     var dogBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.dog).call();
-    //console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
+    console.log("dogBalanceIdleWETH", parseFloat(dogBalanceIdleWETH / 1e18));
     var dogBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.dog).call();
-    //console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
+    console.log("dogBalanceIdleWETHx", parseFloat(dogBalanceIdleWETHx / 1e18));
     var treasuryBalanceIdleWETH = await idleWETH.methods.balanceOf(addr.treasury).call();
-    //console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
+    console.log("treasuryBalanceIdleWETH", treasuryBalanceIdleWETH);
     var treasuryBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.treasury).call();
-    //console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
+    console.log("treasuryBalanceIdleWETHx", treasuryBalanceIdleWETHx);
     var vestorBalanceIdleWETHx = await idleWETHx.methods.balanceOf(addr.vestor).call();
-    //console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
+    console.log("vestorBalanceIdleWETHx", vestorBalanceIdleWETHx);
     var dogBalance = parseFloat(dogBalanceIdleWETH / 1e18) + 
         parseFloat(dogBalanceIdleWETHx / 1e18) +
         parseFloat(treasuryBalanceIdleWETH / 1e18) + 
         parseFloat(treasuryBalanceIdleWETHx / 1e18) +
         parseFloat(vestorBalanceIdleWETHx / 1e18);
-    //console.log("dogBalance", dogBalance);
+    console.log("dogBalance", dogBalance);
     var BSCTbal = 0;
     var userFlow = 0;
     var dogFlow = 0;
@@ -320,16 +319,16 @@ async function getFlows() {
     if ("ethereum" in window) {
         if (ethereum.selectedAddress) {
             userBalance = await idleWETHx.methods.balanceOf(ethereum.selectedAddress).call();
-            //console.log("userBalance", fromWei(userBalance));
+            console.log("userBalance", fromWei(userBalance));
             userBalance = parseFloat(fromWei(userBalance));
         }
         dogFlow = await cfa.methods.getNetFlow(addr.idleWETHx, addr.vestor).call();
-        //console.log("dogFlow", fromWei(dogFlow));
+        console.log("dogFlow", fromWei(dogFlow));
         dogFlow = parseFloat(fromWei(dogFlow));
         if (ethereum.selectedAddress) {
             userFlow = await cfa.methods.getFlow(addr.idleWETHx, addr.vestor, ethereum.selectedAddress).call();
-            //console.log("userFlow", userFlow);
-            //console.log("userFlowRate", fromWei(userFlow.flowRate));
+            console.log("userFlow", userFlow);
+            console.log("userFlowRate", fromWei(userFlow.flowRate));
             userFlow = parseFloat(fromWei(userFlow.flowRate));
             BSCTbal = await BSCT.methods.balanceOf(ethereum.selectedAddress).call();
             BSCTbal = parseFloat(fromWei(BSCTbal));
@@ -361,8 +360,8 @@ function countdown(a){
         if (duration.asSeconds() < 0) {
             // time's up
             clearInterval(timer);
-            var a = await auction.methods.auction().call();
-            var winner = await abbrAddress(a.bidder);
+            a = await auction.methods.auction().call();
+            var winner = abbrAddress(a.bidder);
             $("#timer").html(`
                 <h2>${winner}</h2>
             `
@@ -421,22 +420,24 @@ async function getBids(a) {
         };
         //console.log(bid);
         if (index < 3) {
-            bidsHTML += await getBidRowHTML(bid);
+            bidsHTML += getBidRowHTML(bid);
             //console.log("bidsHTML",bidsHTML);
         }
-        bidsHTMLAll += await getBidRowHTML(bid, true);
+        bidsHTMLAll += getBidRowHTML(bid, true);
     }
 }
 
 async function currentAuction(thisDog) {
-    paused = await auction.methods.paused().call();
+    //paused = await auction.methods.paused().call();
     if (paused) {
         $("#bid-button").prop("disabled", true);
         return;
     }
     clearInterval(timer);
-    if ( typeof thisDog === 'undefined' || thisDog == currentDogId ) {
+    if ( typeof thisDog === 'undefined' || thisDog == null || thisDog == currentDogId ) {
+        console.log("b4 auction()");
         a = await auction.methods.auction().call();
+        console.log("after auction()", a);
         currentDogId = a.dogId;
     } else {
         a = {
@@ -486,7 +487,7 @@ async function currentAuction(thisDog) {
     //diffTime = 86400; // TODO: change this!!!!
     let duration = moment.duration(diffTime * 1000, 'milliseconds');
     a.duration = duration;
-    var dogHTML = await getDogHTML(a);
+    var dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     //console.log("duration", a.duration.asSeconds());
     if (a.duration.asSeconds() > 0) {
@@ -549,14 +550,14 @@ async function currentAuction(thisDog) {
         };
         //console.log(bid);
         if (index < 3) {
-            bidsHTML += await getBidRowHTML(bid);
+            bidsHTML += getBidRowHTML(bid);
             //console.log("bidsHTML",bidsHTML);
         }
-        bidsHTMLAll += await getBidRowHTML(bid, true);
+        bidsHTMLAll += getBidRowHTML(bid, true);
     }
     a.bidsHTML = bidsHTML;
     a.bidsHTMLAll = bidsHTMLAll;
-    dogHTML = await getDogHTML(a);
+    dogHTML = getDogHTML(a);
     $("#dog").html(dogHTML);
     if ("ethereum" in window) {
         if (ethereum.selectedAddress) {
@@ -579,7 +580,9 @@ async function currentAuction(thisDog) {
     // do this last, might have been slowing stuff down...
     if ("ethereum" in window) {
         if (ethereum.selectedAddress) {
+            console.log("b4 launchReady");
             var canLaunch = await vestor.methods.launchReady(ethereum.selectedAddress).call();
+            console.log("after launchReady");
             console.log("canLaunch", canLaunch);
             if ("canExec" in canLaunch) {
                 launchReady = canLaunch.canExec;
@@ -737,7 +740,7 @@ $( document ).ready(function() {
                         "bidder": ethereum.selectedAddress,
                         "date": Date.now()
                     };
-                    var bidHTML = await getBidRowHTML(bid);
+                    var bidHTML = getBidRowHTML(bid);
                     $("#bid-history").prepend(bidHTML);
                     $("#dog-current-bid").text("Ξ " + parseFloat(newBid).toFixed(2)); 
                     a.minBid = parseFloat(newBid) * 1.1;
@@ -768,7 +771,7 @@ $( document ).ready(function() {
                             "date": Date.now()
                         };
                         //console.log(bid);
-                        bidsHTML += await getBidRowHTML(bid);
+                        bidsHTML += getBidRowHTML(bid);
                         $("#bid-history").prepend(bidHTML);
                     })
                 }
@@ -867,8 +870,8 @@ $( document ).ready(function() {
 });
 
 // HTML templates
-async function getBidRowHTML(bid, modal) {
-    var address = await abbrAddress(bid.bidder);
+function getBidRowHTML(bid, modal) {
+    var address = abbrAddress(bid.bidder);
     var date = moment(bid.date).format("MMMM DD [at] HH:mm");
     var html = `
         <li class="BidHistory_bidRow__bc1Zf bid">
@@ -921,7 +924,7 @@ async function getBidRowHTML(bid, modal) {
                 </li>
         `;
     }
-    return Promise.resolve(html);
+    return html;
 }
 
 function bidFormHTML(a) {
@@ -954,7 +957,7 @@ function bidFormHTML(a) {
     return html;
 }
 
-async function getTimerHTML(a) {
+function getTimerHTML(a) {
     var html = `
     <div class="AuctionTimer_timerSection__2RlJK"><span>0<span
                             class="AuctionTimer_small__3FXgu">h</span></span></div>
@@ -964,16 +967,17 @@ async function getTimerHTML(a) {
                             class="AuctionTimer_small__3FXgu">s</span></span></div>
     `;
     if (a.duration.asSeconds() < 0) {
-        html = await abbrAddress(a.bidder);
+        html = abbrAddress(a.bidder);
     }
-    return Promise.resolve(html);
+    return html;
 }
 
-async function getDogHTML(a) {
+function getDogHTML(a) {
+    console.log("getDogHTML", a);
     a.date = moment.utc(a.startTime, "X").format("MMMM D YYYY");
     a.currentBid = parseFloat(web3.utils.fromWei(a.amount)).toFixed(2);
     a.formHTML = bidFormHTML(a);
-    a.timerHTML = await getTimerHTML(a);
+    a.timerHTML = getTimerHTML(a);
     var next = `disabled=""`;
     var prev = ""
     if ( a.settled ) {
@@ -1050,7 +1054,7 @@ async function getDogHTML(a) {
             </div>
         </div>
     `;
-    return Promise.resolve(html);
+    return html;
 }
 
 function getBidHistoryModal(a) {

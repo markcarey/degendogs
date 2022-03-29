@@ -641,6 +641,10 @@ $( document ).ready(function() {
             $(".card-header").not(this).next(".collapse.show").removeClass("show");
         }
     });
+    $(".navbar-toggler").click(function(){
+        $(".navbar-collapse").toggleClass("show");
+        return false;
+    });
     $(".add-to-metamask").click(function(){
         var symbol = $(this).data("token");
         addToken(symbol);

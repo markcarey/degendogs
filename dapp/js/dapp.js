@@ -24,7 +24,7 @@ if ("ethereum" in window) {
 
 var ensProvider = new ethers.providers.JsonRpcProvider({"url": "https://" + rpcURLs.ethereum});
 
-var web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + rpcURL);
+var web3 = AlchemyWeb3.createAlchemyWeb3("https://" + rpcURL);
 //var web3 = AlchemyWeb3.createAlchemyWeb3("http://localhost:8545");
 
 var BN = web3.utils.BN;

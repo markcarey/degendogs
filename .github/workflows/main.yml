@@ -19,6 +19,6 @@ jobs:
         with:
           upload-dir: dapp
           skynet-jwt: ${{ secrets.SKYNET_JWT || '' }}
-          portal-url: https://fileportal.org
+          portal-url: https://skynetfree.net
           github-token: ${{ secrets.GITHUB_TOKEN }}
           registry-seed: ${{ secrets.SKYNET_REGISTRY_SEED || '' }}

@@ -1,6 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const networkName = hre.network.name;
+console.log(networkName);
+return;
+
 require('dotenv').config();
 var BN = web3.utils.BN;
 const API_URL = process.env.API_URL;

@@ -31,8 +31,13 @@ contract AuctionBidder is Ownable, IERC721Receiver {
     IERC721 public dogs;
     AuctionHouse public auctionHouse;
 
+    uint256 public minBid;
     uint256 public maxBid;
 
+    event MinBidUpdated(
+        uint256 oldMinBid,
+        uint256 newMinBid
+    );
     event MaxBidUpdated(
         uint256 oldMaxBid,
         uint256 newMaxBid
@@ -44,13 +49,22 @@ contract AuctionBidder is Ownable, IERC721Receiver {
         dogs = IERC721(_dogs);
         treasury = _treasury;
 
-        // @dev max approve auctionHouse
+        // @dev max approve auctionHouse && treasury
         weth.approve(address(_auctionHouse), 2**256 - 1);
+        weth.approve(address(treasury), 2**256 - 1);
 
         // TODO: set Owner == treasury?
         // _transferOwnership(treasury)
     }
 
+    function _balance() internal view returns(uint256) {
+        return weth.balanceOf(address(this));
+    }
+
+    function setMinBid(uint256 _minBid) external onlyOwner {
+        emit MinBidUpdated(minBid, _minBid);
+        minBid = _minBid;
+    }
     function setMaxBid(uint256 _maxBid) external onlyOwner {
         emit MaxBidUpdated(maxBid, _maxBid);
         maxBid = _maxBid;
@@ -61,7 +75,8 @@ contract AuctionBidder is Ownable, IERC721Receiver {
         if ( 
             ( block.timestamp < auction.endTime ) && 
             ( maxBid >= auction.amount + (( auction.amount * auctionHouse.minBidIncrementPercentage() ) / 100) ) &&
-            ( auction.bidder != address(this) ) 
+            ( auction.bidder != address(this) ) &&
+            ( _balance() >= minBid )
         ) {
             ready = true;
         }
@@ -75,6 +90,9 @@ contract AuctionBidder is Ownable, IERC721Receiver {
         if (amount == 0) {
             amount = auctionHouse.reservePrice();
         }
+        if (minBid > amount) {
+            amount = minBid;
+        }
         // @dev double-check, just in case
         require(amount <= maxBid, "too rich");
         auctionHouse.createBid(auction.dogId, amount);
@@ -85,7 +103,7 @@ contract AuctionBidder is Ownable, IERC721Receiver {
         dogs.transferFrom(address(this), treasury, dogId);
     }
 
-    // @dev for BSCT, idleWETHx, etc
+    // @dev for BSCT, WETH, idleWETHx, etc
     function transferERC20(address token) external {
         uint256 amount = IERC20(token).balanceOf(address(this));
         IERC20(token).safeTransfer(treasury, amount);

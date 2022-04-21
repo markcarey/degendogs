@@ -5,7 +5,8 @@ import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC721 } from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
-import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 interface AuctionHouse {
     struct Auction {
@@ -22,7 +23,7 @@ interface AuctionHouse {
     function createBid(uint256 dogId, uint256 amount) external payable;
 }
 
-contract AuctionBidder is Ownable, IERC721Receiver {
+contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -51,7 +52,7 @@ contract AuctionBidder is Ownable, IERC721Receiver {
 
         // @dev max approve auctionHouse && treasury
         weth.approve(address(_auctionHouse), 2**256 - 1);
-        weth.approve(address(treasury), 2**256 - 1);
+        weth.approve(address(_treasury), 2**256 - 1);
 
         // TODO: set Owner == treasury?
         // _transferOwnership(treasury)
@@ -82,11 +83,19 @@ contract AuctionBidder is Ownable, IERC721Receiver {
         }
     }
 
+    // @dev this function can be used as trigger on Gelato network
+    function bidReadyGelato() external view returns(bool canExec, bytes memory execPayload) {
+        canExec = this.bidReady();
+        if (canExec == true) {
+            execPayload = abi.encodeWithSelector(this.bid.selector);
+        }
+    }
+
     function bid() external {
         require(this.bidReady() == true, "can't bid");
         AuctionHouse.Auction memory auction = auctionHouse.auction();
         // @dev bid the minimum
-        uint256 amount = ( auction.amount * auctionHouse.minBidIncrementPercentage() ) / 100;
+        uint256 amount = auction.amount + (( auction.amount * auctionHouse.minBidIncrementPercentage() ) / 100);
         if (amount == 0) {
             amount = auctionHouse.reservePrice();
         }

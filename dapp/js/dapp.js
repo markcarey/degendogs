@@ -113,6 +113,8 @@ ens["0xb34e7e91D2E6E9D130AC3B51812F189Cb4b12ae2"] = "newboy1.eth";
 ens["0xE8D848debB3A3e12AA815b15900c8E020B863F31"] = "dennisonbertram.eth";
 ens["0xd964aB7E202Bab8Fbaa28d5cA2B2269A5497Cf68"] = "sunnyjaycer.eth";
 ens["0x2F980B046509d8Ff974FF34333A32c305429b01E"] = "changan666.eth";
+ens["0xc4Cd57b06C9f735aBd6240A2683026E308f716C7"] = "grantschneider.eth";
+ens["0x28ff8e457feF9870B9d1529FE68Fbb95C3181f64"] = "carlosbeltran.eth";
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -454,7 +456,7 @@ async function currentAuction(thisDog) {
     } 
     var startingBlock = 26060775;
     startingBlock = 25818530; // auction creation block
-    startingBlock = 26400530; // fix this....
+    startingBlock = 27000530; // fix this....
     //console.log(a);
     const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
     var tempImage = new Image();

@@ -112,10 +112,17 @@ contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
         dogs.transferFrom(address(this), treasury, dogId);
     }
 
-    // @dev for BSCT, WETH, idleWETHx, etc
+    // @dev for BSCT,idleWETHx, etc
     function transferERC20(address token) external {
+        require(token != address(weth), "use transferWETH function");
         uint256 amount = IERC20(token).balanceOf(address(this));
         IERC20(token).safeTransfer(treasury, amount);
+    }
+
+    // @dev for WETH
+    function transferWETH() external onlyOwner {
+        uint256 amount = weth.balanceOf(address(this));
+        weth.safeTransfer(treasury, amount);
     }
 
     function onERC721Received(
@@ -126,9 +133,5 @@ contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
     {
         return IERC721Receiver.onERC721Received.selector;
     }
-
-    receive() external payable {}
-
-    fallback() external payable {}
 
 }

@@ -101,6 +101,23 @@ describe.only("Test Bidder Contract", function() {
     expect(await BSCT.balanceOf(treasuryAddress)).to.be.gt(treasuryBal);
   });
 
+  it("should revert transfering WETH using transferERC20", async function(){
+    var bidderBal = await WETH.balanceOf(bidder.address);
+    var treasuryBal = await WETH.balanceOf(treasuryAddress);
+    expect(parseInt(bidderBal)).to.be.gt(0);
+    await expect(bidder.transferERC20(wethAddress))
+      .to.be.revertedWith('use transferWETH function');
+  });
+
+  it("should transfer WETH to treasury", async function(){
+    var bidderBal = await WETH.balanceOf(bidder.address);
+    var treasuryBal = await WETH.balanceOf(treasuryAddress);
+    expect(parseInt(bidderBal)).to.be.gt(0);
+    await ( await bidder.transferWETH() ).wait();
+    expect(await WETH.balanceOf(bidder.address)).to.equal(0);
+    expect(await WETH.balanceOf(treasuryAddress)).to.be.gt(treasuryBal);
+  });
+
   it("should transfer Dog to treasury", async function(){
     this.timeout(2400000);
     var auction = await auctionHouse.auction();
@@ -114,15 +131,6 @@ describe.only("Test Bidder Contract", function() {
     await (await bidder.transferDog(auction.dogId)).wait();
     expect(await DOG.ownerOf(auction.dogId))
       .to.equal(treasuryAddress); 
-  });
-
-  it("should transfer WETH to treasury", async function(){
-    var bidderBal = await WETH.balanceOf(bidder.address);
-    var treasuryBal = await WETH.balanceOf(treasuryAddress);
-    expect(bidderBal).to.be.gt(0);
-    await ( await bidder.transferERC20(wethAddress) ).wait();
-    expect(await WETH.balanceOf(bidder.address)).to.equal(0);
-    expect(await WETH.balanceOf(treasuryAddress)).to.be.gt(treasuryBal);
   });
 
 });

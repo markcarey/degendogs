@@ -76,6 +76,7 @@ contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
         if ( 
             ( block.timestamp < auction.endTime ) && 
             ( maxBid >= auction.amount + (( auction.amount * auctionHouse.minBidIncrementPercentage() ) / 100) ) &&
+            ( _balance() >= auction.amount + (( auction.amount * auctionHouse.minBidIncrementPercentage() ) / 100) ) &&
             ( auction.bidder != address(this) ) &&
             ( _balance() >= minBid )
         ) {
@@ -102,8 +103,6 @@ contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
         if (minBid > amount) {
             amount = minBid;
         }
-        // @dev double-check, just in case
-        require(amount <= maxBid, "too rich");
         auctionHouse.createBid(auction.dogId, amount);
     }
 

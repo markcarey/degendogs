@@ -54,8 +54,7 @@ contract AuctionBidder is Ownable, ERC1155Holder, IERC721Receiver {
         weth.approve(address(_auctionHouse), 2**256 - 1);
         weth.approve(address(_treasury), 2**256 - 1);
 
-        // TODO: set Owner == treasury?
-        // _transferOwnership(treasury)
+        transferOwnership(treasury);
     }
 
     function _balance() internal view returns(uint256) {

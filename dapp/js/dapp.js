@@ -36,8 +36,10 @@ if (chain == "polygon") {
   addr.auction = "0xC9F32Fc6aa9F4D3d734B1b3feC739d55c2f1C1A7";
   addr.treasury = "0xb6021d0b1e63596911f2cCeEF5c14f2db8f28Ce1";
   addr.BSCT = "0x600e5F4920f90132725b43412D47A76bC2219F92";
-  addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon
-  addr.vestor = "0xE0159F36b6A09e6407dF0c7debAc433a77511625"; // polygon
+  //addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon
+  //addr.vestor = "0xE0159F36b6A09e6407dF0c7debAc433a77511625"; // polygon
+  addr.vestorFactory = "0x70dd79Dc80e7aeCD00445F5827744397ee7F256E"; // v2
+  addr.vestor = "0x98A63F98E9B952B5C6CCBA47C631461388e78d7A"; // v2
   addr.donation = "0x22B5CD016C8D9c6aC5338Cc08174a7FA824Bc5E4"; // polygon --> Unchain Ukraine
   addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
   addr.WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"; // polygon

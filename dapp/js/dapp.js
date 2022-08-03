@@ -459,7 +459,7 @@ async function currentAuction(thisDog) {
     } 
     var startingBlock = 26060775;
     startingBlock = 25818530; // auction creation block
-    startingBlock = 28725290; // fix this....
+    startingBlock = 31424175; // fix this....
     //console.log(a);
     const imageUrl = "https://api.degendogs.club/images/" + a.dogId + ".png";
     var tempImage = new Image();

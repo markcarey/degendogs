@@ -162,13 +162,13 @@ tokens.BSCT = {
     "address": addr.BSCT,
     "symbol": "BSCT",
     "decimals": 18,
-    "image": "https://degendogs.club/images/BSCT.png"
+    "image": "https://degendogs.club/img/BSCT.png"
 }
 tokens.idleWETHx = {
     "address": addr.idleWETHx,
     "symbol": "idleWETHx",
     "decimals": 18,
-    "image": "https://degendogs.club/images/idleWETH.svg"
+    "image": "https://degendogs.club/img/idleWETH.svg"
 }
 
 async function addToken(symbol) {

@@ -1,0 +1,155 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
+contract Airdrop {
+    using SafeERC20 for IERC20;
+
+    IERC20 public weth = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+    IERC721 public dog = IERC721(0xA920464B46548930bEfECcA5467860B2b4C2B5b9);
+    address treasury = 0xb6021d0b1e63596911f2cCeEF5c14f2db8f28Ce1;
+    mapping(address => uint256) public wethOwed;
+    mapping(address => uint256) public dogsOwed;
+
+    constructor() {
+        // @dev set values for weth owed
+        wethOwed[0xF38776b27a552eC051b121D796154fd5bDC036e7] = 1826446280991740000; // 1.82 WETH
+        wethOwed[0x2E62Ee3af78d005a0DffB116295b13EF45b6F2C0] = 1719008264462810000; // 1.72 WETH
+        wethOwed[0xbd819B297E4F42d595B17F3e565896ab31867488] = 644628099173554000; // 0.64 WETH
+        wethOwed[0xB0331b22161cA290A15f825A29C008dCB5e1ff68] = 537190082644628000; // 0.53 WETH
+        wethOwed[0xf8a025B42B07db05638FE596cce339707ec3cC71] = 537190082644628000; // etc...
+        wethOwed[0x05F4Bc6D7a052E45CEe250510cb39329CfaCbc19] = 322314049586777000;
+        wethOwed[0x7B9EFF2ABd33Bc2aF23c7D74Ad92BBd3e48e7478] = 322314049586777000;
+        wethOwed[0xc4Cd57b06C9f735aBd6240A2683026E308f716C7] = 322314049586777000;
+        wethOwed[0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2] = 322314049586777000;
+        wethOwed[0x1c2c4C9053C4913beBB198E43B8B4467F0F60f2b] = 214876033057851000;
+        wethOwed[0x1c81F6A5dbD715BE1a66a38F7Ed3Bbcd4098EDd4] = 214876033057851000;
+        wethOwed[0x869eC00FA1DC112917c781942Cc01c68521c415e] = 214876033057851000;
+        wethOwed[0x2A0660e203C9FD5BA5a9E77E9b7517741f54E2Aa] = 214876033057851000;
+        wethOwed[0x96584F1C9f9A69A65Ab5264a8384C28c94A3539a] = 214876033057851000;
+        wethOwed[0xbb909b914F1E39b0E5C30b4fe6E5d984331519B9] = 214876033057851000;
+        wethOwed[0xC9d7858797ACf8F67515828401423A6B02A646B5] = 214876033057851000;
+        wethOwed[0xe86CD820cE3702771A50Be8D43A7e98E3182D2a7] = 214876033057851000;
+        wethOwed[0xE8D848debB3A3e12AA815b15900c8E020B863F31] = 214876033057851000;
+        wethOwed[0x689E50E2BD5dD19f27BE266E24B52c5041441Ad6] = 107438016528926000;
+        wethOwed[0x69cac784D1F0387Eac5f6caC903865eA8804Ed38] = 107438016528926000;
+        wethOwed[0x6EAA11eec98c663ba096593cc779217A7e20665a] = 107438016528926000;
+        wethOwed[0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac] = 107438016528926000;
+        wethOwed[0x84da37133a088Fbf4e21D80Aec2CC260B52eA116] = 107438016528926000;
+        wethOwed[0x8C9EfF5ab18800C51CB79857aF0B74C3d37c0D8a] = 107438016528926000;
+        wethOwed[0xa31e99Ab181D8db8Fb3f84C8f18bbB6229893746] = 107438016528926000;
+        wethOwed[0x156BBe5C1CC60232df6E1f8ad5fa670FE38670C8] = 107438016528926000;
+        wethOwed[0xaec80B4fbE227198720b1d1B82a12968bAA0B144] = 107438016528926000;
+        wethOwed[0x00493aA44BCfd6F0c2EcC7F8B154e4fB352d1c81] = 107438016528926000;
+        wethOwed[0xB0504fFD91835De1d3C027cFb70b2022e79C3350] = 107438016528926000;
+        wethOwed[0xb34e7e91D2E6E9D130AC3B51812F189Cb4b12ae2] = 107438016528926000;
+        wethOwed[0xb47A9B6F062c33ED78630478dFf9056687F840f2] = 107438016528926000;
+        wethOwed[0x014C8f89fEF419EeC11DEA3bdC6E3932e1B63364] = 107438016528926000;
+
+        wethOwed[0xb8832d516D0f3094b4BDc5400E36a2A6984233Ea] = 107438016528926000;
+        wethOwed[0x01974549C9B9a30d47c548A16b120b1cAa7B586C] = 107438016528926000;
+        wethOwed[0x06c9018Ad287bD949E231Bb5dBc196fE22d97675] = 107438016528926000;
+        wethOwed[0xC02519071c68Fa12b8aeD81CB8c6Fd3986Cebe4d] = 107438016528926000;
+        wethOwed[0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661] = 107438016528926000;
+        wethOwed[0xc6FfC3a5Af16fb93c86C75280413Ef7C48D79E36] = 107438016528926000;
+        wethOwed[0xC7E5fe913B97687bad305230262E2c6Eeb08407D] = 107438016528926000;
+        wethOwed[0x0aD5D1F88a6c27f1eA4e3f45bE0F4751baFc26C5] = 107438016528926000;
+        wethOwed[0x17Fe4ED21e35B5ad800179b0c20447cA3F5280Db] = 107438016528926000;
+        wethOwed[0xE5bD8b07f960e77feA96F4B73271efb53F5dC00d] = 107438016528926000;
+        wethOwed[0x28ff8e457feF9870B9d1529FE68Fbb95C3181f64] = 107438016528926000;
+        wethOwed[0x3CdC7e2da5181C852fB4323166318dC62395Bcf1] = 107438016528926000;
+        wethOwed[0xEccC484DD4093F62fC24c4725800013FBc2C1D15] = 107438016528926000;
+        wethOwed[0xeEcce11aF9d72ae9Ff15d7c106f13349D336aEaf] = 107438016528926000;
+        wethOwed[0x3E32c70B82F79DD243dcd32AE9231C2c19f5ae23] = 107438016528926000;
+        wethOwed[0xF7287D45E290d11858d113FD0250b1C2C6Aab044] = 107438016528926000;
+        wethOwed[0xF813da092804b243F820BDD8C7Fb299C01969838] = 107438016528926000;
+        wethOwed[0x4444aD20879051B696A1C14cCF6e3B0459466666] = 107438016528926000;
+        wethOwed[0x629898596DC5f16c31aF69382AB7985654332e78] = 107438016528926000;
+        wethOwed[0xf9Dd1a4aea6B41818BEcF953BAa26BeCa0735D2e] = 107438016528926000;
+
+        // @dev set values for dogs owed
+        dogsOwed[0xF38776b27a552eC051b121D796154fd5bDC036e7] = 10; // 10 dogs
+        dogsOwed[0x2E62Ee3af78d005a0DffB116295b13EF45b6F2C0] = 9; // 9 dogs
+        dogsOwed[0xbd819B297E4F42d595B17F3e565896ab31867488] = 3; // 3 dogs
+        dogsOwed[0xB0331b22161cA290A15f825A29C008dCB5e1ff68] = 3; // etc...
+        dogsOwed[0xf8a025B42B07db05638FE596cce339707ec3cC71] = 3;
+        dogsOwed[0xb5d8A3281f21617F27e624b56a6b97c28c2dAe3C] = 2;
+        dogsOwed[0xD0ac50d9F7516be16e2449539394A3967BEa03C7] = 2;
+        dogsOwed[0x05F4Bc6D7a052E45CEe250510cb39329CfaCbc19] = 1;
+        dogsOwed[0x7B9EFF2ABd33Bc2aF23c7D74Ad92BBd3e48e7478] = 1;
+        dogsOwed[0xc4Cd57b06C9f735aBd6240A2683026E308f716C7] = 1;
+        dogsOwed[0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2] = 1;
+        dogsOwed[0x1c2c4C9053C4913beBB198E43B8B4467F0F60f2b] = 1;
+        dogsOwed[0x1c81F6A5dbD715BE1a66a38F7Ed3Bbcd4098EDd4] = 1;
+        dogsOwed[0x869eC00FA1DC112917c781942Cc01c68521c415e] = 1;
+        dogsOwed[0x2A0660e203C9FD5BA5a9E77E9b7517741f54E2Aa] = 1;
+        dogsOwed[0x96584F1C9f9A69A65Ab5264a8384C28c94A3539a] = 1;
+        dogsOwed[0xbb909b914F1E39b0E5C30b4fe6E5d984331519B9] = 1;
+        dogsOwed[0xC9d7858797ACf8F67515828401423A6B02A646B5] = 1;
+        dogsOwed[0xe86CD820cE3702771A50Be8D43A7e98E3182D2a7] = 1;
+        dogsOwed[0xE8D848debB3A3e12AA815b15900c8E020B863F31] = 1;
+        dogsOwed[0x689E50E2BD5dD19f27BE266E24B52c5041441Ad6] = 1;
+        dogsOwed[0x69cac784D1F0387Eac5f6caC903865eA8804Ed38] = 1;
+        dogsOwed[0x6EAA11eec98c663ba096593cc779217A7e20665a] = 1;
+        dogsOwed[0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac] = 1;
+        dogsOwed[0x84da37133a088Fbf4e21D80Aec2CC260B52eA116] = 1;
+        dogsOwed[0x8C9EfF5ab18800C51CB79857aF0B74C3d37c0D8a] = 1;
+        dogsOwed[0xa31e99Ab181D8db8Fb3f84C8f18bbB6229893746] = 1;
+        dogsOwed[0x156BBe5C1CC60232df6E1f8ad5fa670FE38670C8] = 1;
+        dogsOwed[0xaec80B4fbE227198720b1d1B82a12968bAA0B144] = 1;
+        dogsOwed[0x00493aA44BCfd6F0c2EcC7F8B154e4fB352d1c81] = 1;
+        dogsOwed[0xB0504fFD91835De1d3C027cFb70b2022e79C3350] = 1;
+        dogsOwed[0xb34e7e91D2E6E9D130AC3B51812F189Cb4b12ae2] = 1;
+        dogsOwed[0xb47A9B6F062c33ED78630478dFf9056687F840f2] = 1;
+        dogsOwed[0x014C8f89fEF419EeC11DEA3bdC6E3932e1B63364] = 1;
+
+        dogsOwed[0xb8832d516D0f3094b4BDc5400E36a2A6984233Ea] = 1;
+        dogsOwed[0x01974549C9B9a30d47c548A16b120b1cAa7B586C] = 1;
+        dogsOwed[0x06c9018Ad287bD949E231Bb5dBc196fE22d97675] = 1;
+        dogsOwed[0xC02519071c68Fa12b8aeD81CB8c6Fd3986Cebe4d] = 1;
+        dogsOwed[0x09A900eB2ff6e9AcA12d4d1a396DdC9bE0307661] = 1;
+        dogsOwed[0xc6FfC3a5Af16fb93c86C75280413Ef7C48D79E36] = 1;
+        dogsOwed[0xC7E5fe913B97687bad305230262E2c6Eeb08407D] = 1;
+        dogsOwed[0x0aD5D1F88a6c27f1eA4e3f45bE0F4751baFc26C5] = 1;
+        dogsOwed[0x17Fe4ED21e35B5ad800179b0c20447cA3F5280Db] = 1;
+        dogsOwed[0xE5bD8b07f960e77feA96F4B73271efb53F5dC00d] = 1;
+        dogsOwed[0x28ff8e457feF9870B9d1529FE68Fbb95C3181f64] = 1;
+        dogsOwed[0x3CdC7e2da5181C852fB4323166318dC62395Bcf1] = 1;
+        dogsOwed[0xEccC484DD4093F62fC24c4725800013FBc2C1D15] = 1;
+        dogsOwed[0xeEcce11aF9d72ae9Ff15d7c106f13349D336aEaf] = 1;
+        dogsOwed[0x3E32c70B82F79DD243dcd32AE9231C2c19f5ae23] = 1;
+        dogsOwed[0xF7287D45E290d11858d113FD0250b1C2C6Aab044] = 1;
+        dogsOwed[0xF813da092804b243F820BDD8C7Fb299C01969838] = 1;
+        dogsOwed[0x4444aD20879051B696A1C14cCF6e3B0459466666] = 1;
+        dogsOwed[0x629898596DC5f16c31aF69382AB7985654332e78] = 1;
+        dogsOwed[0xf9Dd1a4aea6B41818BEcF953BAa26BeCa0735D2e] = 1;
+    }
+
+    /**
+     * @notice Claiming Functions
+     * @dev These functions can only succeed after the treasury, by way of a
+     * has sent approval transactions to the WETH and Dog contracts to enable
+     * this contract to transfer WETH and Dogs on its behalf.
+    */
+
+
+    // @dev can be called by anyone, but weth goes only to addresses above
+    function claimWETH(address recipient) external {
+        require(wethOwed[recipient] > 0, "no WETH owed");
+        uint256 amount = wethOwed[recipient];
+        wethOwed[recipient] = 0;
+        weth.safeTransferFrom(treasury, recipient, amount);
+    }
+
+    // @dev can be called by only by addresses above, call once for each dog owed
+    function claimDog(uint256 tokenId) external {
+        require(block.timestamp < 1713630000, "too late"); // @dev must claim Dogs before 2024-04-20 4:20pm GMT
+        require(dogsOwed[msg.sender] > 0, "no dogs owed");
+        dogsOwed[msg.sender]--; // @dev decrement owed dogs
+        dog.safeTransferFrom(treasury, msg.sender, tokenId);
+    }
+    
+}

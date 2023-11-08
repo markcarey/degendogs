@@ -145,11 +145,11 @@ contract Airdrop {
     }
 
     // @dev can be called by only by addresses above, call once for each dog owed
-    function claimDog(uint256 tokenId) external {
+    function claimDog(address recipient, uint256 tokenId) external {
         require(block.timestamp < 1713630000, "too late"); // @dev must claim Dogs before 2024-04-20 4:20pm GMT
         require(dogsOwed[msg.sender] > 0, "no dogs owed");
         dogsOwed[msg.sender]--; // @dev decrement owed dogs
-        dog.safeTransferFrom(treasury, msg.sender, tokenId);
+        dog.safeTransferFrom(treasury, recipient, tokenId);
     }
     
 }

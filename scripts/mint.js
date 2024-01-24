@@ -8,7 +8,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 var BN = web3.utils.BN;
 
 const contract = require("../artifacts/contracts/Dog.sol/Dog.json");
-const contractAddress = "0x281E88Ed346bFF38c053c947Bc15575331Da4e79";
+const contractAddress = "0xa920464b46548930befecca5467860b2b4c2b5b9";
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 var ERC20abi = [
@@ -731,7 +731,7 @@ async function issue(newOwner, tokenId, amount) {
 //transfer(0, "0xD89311d9613b6b3Fc45E2Ba64E4d8B5161Dc4c58");
 //setStreamonomics();
 //setTreasury("0x369e06C46790d7174Bd96Da75Db5c2977647Ce11");
-//ownerOf(0);
+ownerOf(79);
 //getSome("0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x5c5a4ae893c4232a050b01a84e193e107dd80ca2");
-getSome("0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x72A53cDBBcc1b9efa39c834A540550e23463AAcB");
+//getSome("0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x72A53cDBBcc1b9efa39c834A540550e23463AAcB");
 

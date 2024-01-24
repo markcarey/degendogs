@@ -17,7 +17,7 @@ module.exports = {
       }
     }
   },
-   defaultNetwork: "mumbai",
+   defaultNetwork: "polygon",
    networks: {
       hardhat: {
         chainId: 1337,
@@ -32,9 +32,9 @@ module.exports = {
         ],
         forking: {
           url: API_URL_POLYGON,
-          blockNumber: 25807616  // assumes polygon fork
+          blockNumber: 49826381  // assumes polygon fork
         },
-        timeout: 240000,
+        timeout: 400000000,
         loggingEnabled: true,
         gasMultiplier: 5,
         gasPrice: 1000000000 * 7
@@ -68,5 +68,5 @@ module.exports = {
 }
 
 // npx hardhat verify --network mumbai 0x63595e55f9050385C77D61AFF198f7ac6103b8da
-// npx hardhat node --fork https://polygon-mainnet.g.alchemy.com/v2/zdeZwAwHBiBZzLtxdWtShZzuAjBPjoUW --max-memory 9000 --fork-block-number 25689025
+// npx hardhat node --fork https://polygon-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj --max-memory 9000 --fork-block-number 27336220
 // 

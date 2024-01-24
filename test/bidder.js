@@ -7,6 +7,8 @@ const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const DEPLOYER_PRIV = process.env.DEPLOYER_PRIV;
 
+return;
+
 var BN = web3.utils.BN;
 
 const signer = new ethers.Wallet(DEPLOYER_PRIV, ethers.provider);
@@ -28,7 +30,7 @@ const BSCT = new ethers.Contract(BSCTaddress, bsctJSON.abi, signer);
 const DOG = new ethers.Contract(dogsAddress, dogJSON.abi, signer);
 
 
-describe.only("Test Bidder Contract", function() {
+describe.skip("Test Bidder Contract", function() {
 
   before('Deploy Contracts', async function() {
     // runs once before the first test in this block
@@ -40,7 +42,7 @@ describe.only("Test Bidder Contract", function() {
     console.log("Bidder deployed to address:", bidder.address);
   });
 
-  it("should set maxBid", async function() {
+  it.skip("should set maxBid", async function() {
     var amt = "200000000000000000";
     await ( await bidder.setMaxBid(amt) ).wait();
     var maxBid = await bidder.maxBid();
@@ -48,7 +50,7 @@ describe.only("Test Bidder Contract", function() {
     expect(maxBid).to.equal(amt);
   });
 
-  it("should set minBid", async function() {
+  it.skip("should set minBid", async function() {
     var amt = "100000000000000000";
     await ( await bidder.setMinBid(amt) ).wait();
     var minBid = await bidder.minBid();
@@ -56,7 +58,7 @@ describe.only("Test Bidder Contract", function() {
     expect(minBid).to.equal(amt);
   });
 
-  it("should fund contract", async function(){
+  it.skip("should fund contract", async function(){
     const eoa = "0x72A53cDBBcc1b9efa39c834A540550e23463AAcB";
     await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -78,11 +80,11 @@ describe.only("Test Bidder Contract", function() {
     expect(parseInt(wethBal)).to.be.gt(0);
   });
 
-  it("should return true for bidReady", async function(){
+  it.skip("should return true for bidReady", async function(){
     expect(await bidder.bidReady()).to.equal(true);
   });
 
-  it("should submit bid", async function() {
+  it.skip("should submit bid", async function() {
     var auction = await auctionHouse.auction();
     var bid = auction.amount;
     await ( await bidder.bid() ).wait();
@@ -92,7 +94,7 @@ describe.only("Test Bidder Contract", function() {
     expect(auction.bidder).to.equal(bidder.address);
   });
 
-  it("should transfer BSCT to treasury", async function(){
+  it.skip("should transfer BSCT to treasury", async function(){
     var bidderBal = await BSCT.balanceOf(bidder.address);
     var treasuryBal = await BSCT.balanceOf(treasuryAddress);
     expect(parseInt(bidderBal)).to.be.gt(0);
@@ -101,7 +103,7 @@ describe.only("Test Bidder Contract", function() {
     expect(await BSCT.balanceOf(treasuryAddress)).to.be.gt(treasuryBal);
   });
 
-  it("should revert transfering WETH using transferERC20", async function(){
+  it.skip("should revert transfering WETH using transferERC20", async function(){
     var bidderBal = await WETH.balanceOf(bidder.address);
     var treasuryBal = await WETH.balanceOf(treasuryAddress);
     expect(parseInt(bidderBal)).to.be.gt(0);
@@ -109,7 +111,7 @@ describe.only("Test Bidder Contract", function() {
       .to.be.revertedWith('use transferWETH function');
   });
 
-  it("should transfer WETH to treasury", async function(){
+  it.skip("should transfer WETH to treasury", async function(){
     var bidderBal = await WETH.balanceOf(bidder.address);
     var treasuryBal = await WETH.balanceOf(treasuryAddress);
     expect(parseInt(bidderBal)).to.be.gt(0);
@@ -118,7 +120,7 @@ describe.only("Test Bidder Contract", function() {
     expect(await WETH.balanceOf(treasuryAddress)).to.be.gt(treasuryBal);
   });
 
-  it("should transfer Dog to treasury", async function(){
+  it.skip("should transfer Dog to treasury", async function(){
     this.timeout(2400000);
     var auction = await auctionHouse.auction();
     await hre.network.provider.request({

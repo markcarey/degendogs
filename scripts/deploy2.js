@@ -19,7 +19,8 @@ var network;
 var addr = {};
 var chain = "polygon";
 if (chain == "polygon") {
-  addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon mainnet
+  //addr.vestorFactory = "0x70210B719b90BcA3D81cb8026BFC8677F65EB1d7"; // polygon mainnet v1
+  addr.vestorFactory = "0x70dd79Dc80e7aeCD00445F5827744397ee7F256E"; // v2 deployed July 27th 2022
   addr.vestor = "0xdbdF8EA5C514bd1ca8A294a1e6C361502592E457"; // localhost:polygon
   addr.donation = "0x22B5CD016C8D9c6aC5338Cc08174a7FA824Bc5E4"; // polygon --> Unchain Ukraine
   addr.unchain = "0xb37b3b78022E6964fe80030C9161525880274010"; // polygon gnosis safe for Unchain Ukraine
@@ -1542,7 +1543,7 @@ async function extra() {
   log(`npx hardhat verify --network ${chain} ${myBsct.address} "${bidTokenName}" ${bidTokenSymbol}`);
 }
 
-extra()
+main()
 .then(() => process.exit(0))
 .catch(error => {
   console.error(error);

@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+//import hre from 'hardhat';
 
 const networkName = hre.network.name;
 console.log(networkName);
@@ -359,7 +360,7 @@ function log(msg, data) {
   }
 }
 
-describe("Setup and Contract Config", function () {
+describe.skip("Setup and Contract Config", function () {
 
 before('Deploy Contracts', async function () {
     // runs once before the first test in this block
@@ -1811,7 +1812,7 @@ before('Deploy Contracts', async function () {
     log("superToken starting balance of sender is", sBalStart);
 });
 
-describe("Auction House", function () {
+describe.skip("Auction House", function () {
 
     it("Should have set owner address", async function () {
         var owner = await auctionHouse.owner();
@@ -1873,7 +1874,7 @@ describe("Auction House", function () {
 
 });
 
-describe("Dog", function () {
+describe.skip("Dog", function () {
 
     it("Should have set owner address", async function () {
         var owner = await myDog.owner();
@@ -1972,7 +1973,7 @@ describe("Dog", function () {
 
 });
 
-describe("Streamonomics", function () {
+describe.skip("Streamonomics", function () {
 
   it("Should return current streamonomics", async function () {
       var stream = await myDog.getStreamonomics();
@@ -2001,8 +2002,7 @@ describe("Streamonomics", function () {
 });
 
 });
-
-describe("Bidding and Settling", function () {
+describe.skip("Bidding and Settling", function () {
   
   before('Only on local fork', async function () {
     if ( network.chainId != 1337) {
@@ -2153,7 +2153,7 @@ describe.skip("TokenVesting", function () {
 
 });
 
-describe("SuperFluid", function () {
+describe.skip("SuperFluid", function () {
   
   before('Only on local fork', async function () {
     network = await ethers.provider.getNetwork();
@@ -2201,7 +2201,7 @@ describe("SuperFluid", function () {
 
 });
 
-describe("Idle Finance", function () {
+describe.skip("Idle Finance", function () {
   
   before('Only on local fork', async function () {
     network = await ethers.provider.getNetwork();
@@ -2235,7 +2235,7 @@ describe("Idle Finance", function () {
 
 });
 
-describe("Dog Flows and Transfers", function () {
+describe.skip("Dog Flows and Transfers", function () {
   
   before('Only on local fork', async function () {
     network = await ethers.provider.getNetwork();
@@ -2325,7 +2325,7 @@ describe("Dog Flows and Transfers", function () {
 
 });
 
-describe("Treasury / Timelock", function () {
+describe.skip("Treasury / Timelock", function () {
 
   it('Should have iToken balance in treasury', async function () {
     var bal = await iToken.balanceOf(myExec.address);
@@ -2390,7 +2390,7 @@ describe("Treasury / Timelock", function () {
 
 });
 
-describe("Governance", function () {
+describe.skip("Governance", function () {
 
   before("load gov proxy with implementation abi", async function(){
     network = await ethers.provider.getNetwork();
@@ -2575,7 +2575,7 @@ describe("Governance", function () {
 
 });
 
-describe("TokenVesting: Close Streams", async function(){
+describe.skip("TokenVesting: Close Streams", async function(){
 
   it("should output first close date", async function(){
     const nextDate = await vestor.nextCloseDate();

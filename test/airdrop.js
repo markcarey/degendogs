@@ -319,30 +319,233 @@ function log(msg, data) {
   }
 }
 
-describe("Setup and Contract Config", function () {
+describe("Degen Dog Airdrop and Auction Settings", function () {
 
-before('Deploy Contracts', async function () {
-    // runs once before the first test in this block
-    this.timeout(2400000);
-    network = await ethers.provider.getNetwork();
-    log(network.chainId);
-    const Airdrop = await ethers.getContractFactory("Airdrop");
-    airdrop = await Airdrop.deploy();
-    addr.airdrop = airdrop.address;
-    log("Airdrop deployed to address:", airdrop.address);
+  it('should deploy Airdrop contract', async function () {
+      // runs once before the first test in this block
+      this.timeout(2400000);
+      network = await ethers.provider.getNetwork();
+      log(network.chainId);
+      const Airdrop = await ethers.getContractFactory("Airdrop");
+      airdrop = await Airdrop.deploy();
+      addr.airdrop = airdrop.address;
+      log("Airdrop deployed to address:", airdrop.address);
 
-    // already deployed
-    myDog = new ethers.Contract(addr.dog, dogJSON.abi, signer);
-    auctionHouse = new ethers.Contract(addr.auctionHouse, houseJSON.abi, signer);
-    gov = new ethers.Contract(addr.gov, govJSON.abi, signer);
-});
+      // already deployed
+      myDog = new ethers.Contract(addr.dog, dogJSON.abi, signer);
+      auctionHouse = new ethers.Contract(addr.auctionHouse, houseJSON.abi, signer);
+      gov = new ethers.Contract(addr.gov, govJSON.abi, signer);
+  });
 
-describe("Auction House", function () {
+  describe("Auction House", function () {
 
-    it("should pause AuctionHouse", async function(){
-      await expect(auctionHouse.pause())
-            .to.emit(auctionHouse, 'Paused')
+      it("should pause AuctionHouse", async function(){
+        await expect(auctionHouse.pause())
+              .to.emit(auctionHouse, 'Paused')
+      });
+
+  });
+
+
+  describe("Governance", function () {
+
+    before("load gov proxy with implementation abi", async function(){
+      network = await ethers.provider.getNetwork();
+      gov = new ethers.Contract(addr.gov, govJSON.abi, signer);
     });
+
+
+    it('Should create proposal with 4 txns', async function () {
+      var targets = [];
+      var values = [];
+      var signatures = [];
+      var callDatas = [];
+
+      // Txn 1: Redeem 13 idleWETH to WETH
+      targets.push(addr.idleWETH);
+      values.push(0);
+      signatures.push('redeemIdleToken(uint256)');
+      callDatas.push(encodeParameters(['uint256'], ['13000000000000000000']));
+
+      // Txn 2: Approve 13 WETH to Airdrop contract
+      targets.push(addr.WETH);
+      values.push(0);
+      signatures.push('approve(address,uint256)');
+      callDatas.push(encodeParameters(['address','uint256'], [addr.airdrop, '13000000000000000000']));
+
+      // Txn 3: SetApprovalForAll() to Aridrop contract for Dog contract
+      targets.push(addr.dog);
+      values.push(0);
+      signatures.push('setApprovalForAll(address,bool)');
+      callDatas.push(encodeParameters(['address','bool'], [addr.airdrop, true]));
+
+      var description = "1. Downgrade 13 idleWETHx to idleWETH. 2. Redeem 13 idleWETH to WETH. 3. Approve 13 WETH to Airdrop contract. 4. SetApprovalForAll() to Aridrop contract for Dog contract";
+      const pCount = await gov.proposalCount();
+
+      // proposer must have votes:
+      await hre.network.provider.request({
+        method: "hardhat_impersonateAccount",
+        params: [voters[0]]
+      });
+      var proposerSigner = await ethers.getSigner(voters[0]);
+
+      await expect(gov.connect(proposerSigner).propose(targets, values, signatures, callDatas, description))
+              .to.emit(gov, 'ProposalCreated');
+      const id = await gov.proposalCount();
+      log("proposal id", id);
+      expect(id - pCount).to.equal(1);
+    });
+
+    it('Should submit votes FOR proposal', async function () {
+      this.timeout(2400000);
+      const id = await gov.proposalCount();
+      const state = await gov.state(id);
+      log("state", state);
+      const proposal = await gov.proposals(id);
+      log("proposal", proposal);
+      log("start block", parseInt(proposal.startBlock));
+      const support = 1; // 0=against, 1=for, 2=abstain
+      //advance blocks
+      var blocks = voteDelay + 100;
+      if ( network.chainId == 1337) {
+        await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
+      }
+      for (let i = 0; i < voters.length; i++) {
+        // impersonate voter with hardhat
+        await hre.network.provider.request({
+          method: "hardhat_impersonateAccount",
+          params: [voters[i]]
+        });
+        var voterSigner = await ethers.getSigner(voters[i]);
+        await expect(gov.connect(voterSigner).castVote(id, support))
+              .to.emit(gov, 'VoteCast');
+        await hre.network.provider.request({
+          method: "hardhat_stopImpersonatingAccount",
+          params: [voters[i]]
+        });
+      }
+    });
+
+    it('Should QUEUE proposal', async function () {
+      this.timeout(2400000);
+      const id = await gov.proposalCount();
+      const state = await gov.state(id);
+      log("state", state);
+      const proposal = await gov.proposals(id);
+      log("proposal", proposal);
+      log("endblock", parseInt(proposal.endBlock));
+      //advance blocks
+      var blocks = votePeriod + 100;
+      await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
+      await expect(gov.connect(signer).queue(id))
+              .to.emit(gov, 'ProposalQueued');
+    });
+
+
+    it('Should EXECUTE proposal', async function () {
+      this.timeout(240000);
+      const id = await gov.proposalCount();
+      const state = await gov.state(id);
+      log("state", state);
+      const proposal = await gov.proposals(id);
+      log("proposal", proposal);
+      const eta = proposal.eta;
+      chainTime = parseInt(eta) + 1;
+      await hre.network.provider.request({
+        method: "evm_setNextBlockTimestamp",
+        params: [chainTime],
+      });
+      await expect(gov.execute(id))
+              .to.emit(gov, 'ProposalExecuted');
+    });
+
+
+  });
+
+  describe("Airdrop", function () {
+
+    var claimerSigner;
+
+    before("impesonate airpdrop recipient", async function(){
+      // claimer must be listed in Airdrop contract:
+      await hre.network.provider.request({
+        method: "hardhat_impersonateAccount",
+        params: [voters[1]]
+      });
+      claimerSigner = await ethers.getSigner(voters[1]);
+    });
+
+    it("should be owed WETH", async function(){
+      const owed = await airdrop.wethOwed(claimerSigner.address);
+      expect(parseInt(owed)).to.be.gt(0);
+    });
+
+    it("should claim WETH", async function(){
+      const weth = new ethers.Contract(addr.WETH, ERC20abi, claimerSigner);
+      var before = await weth.balanceOf(claimerSigner.address);
+      await (await airdrop.connect(claimerSigner).claimWETH(claimerSigner.address)).wait();
+      var after = await weth.balanceOf(claimerSigner.address);
+      expect(parseInt(after)).to.be.gt(parseInt(before));
+    });
+
+    it("should NOT be owed WETH", async function(){
+      const owed = await airdrop.wethOwed(claimerSigner.address);
+      expect(parseInt(owed)).to.be.equal(0);
+    });
+
+    var dogsOwed = 0;
+
+    it("should be owed at least one Dog", async function(){
+      dogsOwed = await airdrop.dogsOwed(claimerSigner.address);
+      //console.log("dogsOwed", dogsOwed);
+      expect(parseInt(dogsOwed)).to.be.gt(0);
+    });
+
+    it("should claim Dog", async function(){
+      this.timeout(400000000);
+      const tokenId = 178;  // owned by treasury
+      await (await airdrop.connect(claimerSigner).claimDog(claimerSigner.address, tokenId)).wait();
+      var owner = await myDog.ownerOf(tokenId);
+      expect(owner).to.equal(claimerSigner.address);
+    });
+
+    it("should be owed ONE LESS Dog", async function(){
+      const newDogsOwed = await airdrop.dogsOwed(claimerSigner.address);
+      //console.log("newDogsOwed", newDogsOwed);
+      expect(parseInt(dogsOwed)).to.equal(parseInt(newDogsOwed) + 1);
+    });
+
+    it("should claim ANOTHER Dog", async function(){
+      this.timeout(2400000);
+      dogsOwed = await airdrop.dogsOwed(claimerSigner.address);
+      //console.log("dogsOwed", dogsOwed);
+      const tokenId = 173;  // owned by treasury
+      await (await airdrop.connect(claimerSigner).claimDog(claimerSigner.address, tokenId)).wait();
+      var owner = await myDog.ownerOf(tokenId);
+      expect(owner).to.equal(claimerSigner.address);
+    });
+
+    it("should be owed ONE LESS Dog", async function(){
+      const newDogsOwed = await airdrop.dogsOwed(claimerSigner.address);
+      //console.log("newDogsOwed", newDogsOwed);
+      expect(parseInt(dogsOwed)).to.equal(parseInt(newDogsOwed) + 1);
+    });
+
+  });
+
+  describe("Dog", function () {
+
+    it("Should set donation percentage", async function () {
+      const don = await myDog.donationPercentage();
+      await expect(myDog.setDonationPercentage(newDonationPercentage))
+          .to.emit(myDog, 'DonationPercentageUpdated')
+          .withArgs(don, newDonationPercentage);
+      expect(parseInt(await myDog.donationPercentage())).to.equal(newDonationPercentage);
+    });
+
+  });
+
+  describe("Auction House", function () {
 
     it("Should set Reserve price and emit AuctionReservePriceUpdated", async function () {
       await expect(auctionHouse.setReservePrice(minBid))
@@ -356,207 +559,9 @@ describe("Auction House", function () {
             .to.emit(auctionHouse, 'Unpaused')
     });
 
-});
-
-describe("Dog", function () {
-
-    it("Should set donation percentage", async function () {
-      const don = await myDog.donationPercentage();
-      await expect(myDog.setDonationPercentage(newDonationPercentage))
-          .to.emit(myDog, 'DonationPercentageUpdated')
-          .withArgs(don, newDonationPercentage);
-      expect(parseInt(await myDog.donationPercentage())).to.equal(newDonationPercentage);
-    });
-
-});
-
-
-});
-
-
-describe("Governance", function () {
-
-  before("load gov proxy with implementation abi", async function(){
-    network = await ethers.provider.getNetwork();
-    gov = new ethers.Contract(addr.gov, govJSON.abi, signer);
-  });
-
-
-  it('Should create proposal with 4 txns', async function () {
-    var targets = [];
-    var values = [];
-    var signatures = [];
-    var callDatas = [];
-
-    // Txn 1: Redeem 13 idleWETH to WETH
-    targets.push(addr.idleWETH);
-    values.push(0);
-    signatures.push('redeemIdleToken(uint256)');
-    callDatas.push(encodeParameters(['uint256'], ['13000000000000000000']));
-
-    // Txn 2: Approve 13 WETH to Airdrop contract
-    targets.push(addr.WETH);
-    values.push(0);
-    signatures.push('approve(address,uint256)');
-    callDatas.push(encodeParameters(['address','uint256'], [addr.airdrop, '13000000000000000000']));
-
-    // Txn 3: SetApprovalForAll() to Aridrop contract for Dog contract
-    targets.push(addr.dog);
-    values.push(0);
-    signatures.push('setApprovalForAll(address,bool)');
-    callDatas.push(encodeParameters(['address','bool'], [addr.airdrop, true]));
-
-    var description = "1. Downgrade 13 idleWETHx to idleWETH. 2. Redeem 13 idleWETH to WETH. 3. Approve 13 WETH to Airdrop contract. 4. SetApprovalForAll() to Aridrop contract for Dog contract";
-    const pCount = await gov.proposalCount();
-
-    // proposer must have votes:
-    await hre.network.provider.request({
-      method: "hardhat_impersonateAccount",
-      params: [voters[0]]
-    });
-    var proposerSigner = await ethers.getSigner(voters[0]);
-
-    await expect(gov.connect(proposerSigner).propose(targets, values, signatures, callDatas, description))
-            .to.emit(gov, 'ProposalCreated');
-    const id = await gov.proposalCount();
-    log("proposal id", id);
-    expect(id - pCount).to.equal(1);
-  });
-
-  it('Should submit votes FOR proposal', async function () {
-    this.timeout(2400000);
-    const id = await gov.proposalCount();
-    const state = await gov.state(id);
-    log("state", state);
-    const proposal = await gov.proposals(id);
-    log("proposal", proposal);
-    log("start block", parseInt(proposal.startBlock));
-    const support = 1; // 0=against, 1=for, 2=abstain
-    //advance blocks
-    var blocks = voteDelay + 100;
-    if ( network.chainId == 1337) {
-      await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
-    }
-    for (let i = 0; i < voters.length; i++) {
-      // impersonate voter with hardhat
-      await hre.network.provider.request({
-        method: "hardhat_impersonateAccount",
-        params: [voters[i]]
-      });
-      var voterSigner = await ethers.getSigner(voters[i]);
-      await expect(gov.connect(voterSigner).castVote(id, support))
-            .to.emit(gov, 'VoteCast');
-      await hre.network.provider.request({
-        method: "hardhat_stopImpersonatingAccount",
-        params: [voters[i]]
-      });
-    }
-  });
-
-  it('Should QUEUE proposal', async function () {
-    this.timeout(2400000);
-    const id = await gov.proposalCount();
-    const state = await gov.state(id);
-    log("state", state);
-    const proposal = await gov.proposals(id);
-    log("proposal", proposal);
-    log("endblock", parseInt(proposal.endBlock));
-    //advance blocks
-    var blocks = votePeriod + 100;
-    await hre.network.provider.send("hardhat_mine", [ethers.utils.hexStripZeros(ethers.utils.hexlify(blocks)), ethers.utils.hexStripZeros(ethers.utils.hexlify(2))]);
-    await expect(gov.connect(signer).queue(id))
-            .to.emit(gov, 'ProposalQueued');
-  });
-
-
-  it('Should EXECUTE proposal', async function () {
-    this.timeout(240000);
-    const id = await gov.proposalCount();
-    const state = await gov.state(id);
-    log("state", state);
-    const proposal = await gov.proposals(id);
-    log("proposal", proposal);
-    const eta = proposal.eta;
-    chainTime = parseInt(eta) + 1;
-    await hre.network.provider.request({
-      method: "evm_setNextBlockTimestamp",
-      params: [chainTime],
-    });
-    await expect(gov.execute(id))
-            .to.emit(gov, 'ProposalExecuted');
-  });
-
-
-});
-
-describe("Airdrop", function () {
-
-  var claimerSigner;
-
-  before("impesonate airpdrop recipient", async function(){
-     // claimer must be listed in Airdrop contract:
-     await hre.network.provider.request({
-      method: "hardhat_impersonateAccount",
-      params: [voters[1]]
-    });
-    claimerSigner = await ethers.getSigner(voters[1]);
-  });
-
-  it("should be owed WETH", async function(){
-    const owed = await airdrop.wethOwed(claimerSigner.address);
-    expect(parseInt(owed)).to.be.gt(0);
-  });
-
-  it("should claim WETH", async function(){
-    const weth = new ethers.Contract(addr.WETH, ERC20abi, claimerSigner);
-    var before = await weth.balanceOf(claimerSigner.address);
-    await (await airdrop.connect(claimerSigner).claimWETH(claimerSigner.address)).wait();
-    var after = await weth.balanceOf(claimerSigner.address);
-    expect(parseInt(after)).to.be.gt(parseInt(before));
-  });
-
-  it("should NOT be owed WETH", async function(){
-    const owed = await airdrop.wethOwed(claimerSigner.address);
-    expect(parseInt(owed)).to.be.equal(0);
-  });
-
-  var dogsOwed = 0;
-
-  it("should be owed at least one Dog", async function(){
-    dogsOwed = await airdrop.dogsOwed(claimerSigner.address);
-    //console.log("dogsOwed", dogsOwed);
-    expect(parseInt(dogsOwed)).to.be.gt(0);
-  });
-
-  it("should claim Dog", async function(){
-    this.timeout(400000000);
-    const tokenId = 178;  // owned by treasury
-    await (await airdrop.connect(claimerSigner).claimDog(claimerSigner.address, tokenId)).wait();
-    var owner = await myDog.ownerOf(tokenId);
-    expect(owner).to.equal(claimerSigner.address);
-  });
-
-  it("should be owed ONE LESS Dog", async function(){
-    const newDogsOwed = await airdrop.dogsOwed(claimerSigner.address);
-    //console.log("newDogsOwed", newDogsOwed);
-    expect(parseInt(dogsOwed)).to.equal(parseInt(newDogsOwed) + 1);
-  });
-
-  it("should claim ANOTHER Dog", async function(){
-    this.timeout(2400000);
-    dogsOwed = await airdrop.dogsOwed(claimerSigner.address);
-    //console.log("dogsOwed", dogsOwed);
-    const tokenId = 173;  // owned by treasury
-    await (await airdrop.connect(claimerSigner).claimDog(claimerSigner.address, tokenId)).wait();
-    var owner = await myDog.ownerOf(tokenId);
-    expect(owner).to.equal(claimerSigner.address);
-  });
-
-  it("should be owed ONE LESS Dog", async function(){
-    const newDogsOwed = await airdrop.dogsOwed(claimerSigner.address);
-    //console.log("newDogsOwed", newDogsOwed);
-    expect(parseInt(dogsOwed)).to.equal(parseInt(newDogsOwed) + 1);
   });
 
 });
+
+
 

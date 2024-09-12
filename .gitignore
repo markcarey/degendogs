@@ -1,6 +1,7 @@
 cache/
 artifacts/
 .DS_STORE
+.vscode/
 
 # Logs
 logs

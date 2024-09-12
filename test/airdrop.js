@@ -20,6 +20,9 @@ const govJSON = require("../artifacts/contracts/governance/DegenDAOLogicV1.sol/D
 
 const newDonationPercentage = 0;
 
+//var options = { "maxPriorityFee": 33.851539864, "maxFee": 66.924109542 };
+const gasOptions = {"maxPriorityFeePerGas": "34000000000", "maxFeePerGas": "67000000016" };
+
 // Auction Settings
 const minBid = "5000000000000000"; // 0.005 ETH
 
@@ -43,7 +46,7 @@ function encodeParameters(types, values) {
 
 function commaify(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
-const signer = new ethers.Wallet(DEPLOYER_PRIV, ethers.provider);
+const signer = new ethers.Wallet(process.env.PK, ethers.provider);
 const signers = [
   new ethers.Wallet(process.env.PRIVATE_KEY, ethers.provider),
   new ethers.Wallet(process.env.BIDDER1_PRIV, ethers.provider),
@@ -296,6 +299,8 @@ if (chain == "polygon") {
   addr.gov = "0x18288e01e2247166d7dF094743a5669BF7fDAaD2"; // deployed address (proxy)
   addr.auctionHouse = "0xC9F32Fc6aa9F4D3d734B1b3feC739d55c2f1C1A7"; // deployed address
   addr.treasury = "0xb6021d0b1e63596911f2cCeEF5c14f2db8f28Ce1"; // deployed address
+
+  addr.airdrop = "0xd712cbd788f2657ca687a6ea11db8949d7ce3e96"; // deployed to Polygon jan 24 2024
 }
 
 var myDog, auctionHouse, gov, airdrop;
@@ -321,7 +326,7 @@ function log(msg, data) {
 
 describe("Degen Dog Airdrop and Auction Settings", function () {
 
-  it('should deploy Airdrop contract', async function () {
+  it.skip('should deploy Airdrop contract', async function () {
       // runs once before the first test in this block
       this.timeout(2400000);
       network = await ethers.provider.getNetwork();
@@ -339,7 +344,8 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
 
   describe("Auction House", function () {
 
-      it("should pause AuctionHouse", async function(){
+      it.skip("should pause AuctionHouse", async function(){
+        this.timeout(4000000000);
         await expect(auctionHouse.pause())
               .to.emit(auctionHouse, 'Paused')
       });
@@ -356,6 +362,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
 
 
     it('Should create proposal with 4 txns', async function () {
+      this.timeout(4000000000);
       var targets = [];
       var values = [];
       var signatures = [];
@@ -383,20 +390,21 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
       const pCount = await gov.proposalCount();
 
       // proposer must have votes:
-      await hre.network.provider.request({
-        method: "hardhat_impersonateAccount",
-        params: [voters[0]]
-      });
-      var proposerSigner = await ethers.getSigner(voters[0]);
+      //await hre.network.provider.request({
+      //  method: "hardhat_impersonateAccount",
+      //  params: [voters[0]]
+      //});
+      //var proposerSigner = await ethers.getSigner(voters[0]);
+      var proposerSigner = signer;
 
-      await expect(gov.connect(proposerSigner).propose(targets, values, signatures, callDatas, description))
+      await expect(gov.connect(proposerSigner).propose(targets, values, signatures, callDatas, description, gasOptions))
               .to.emit(gov, 'ProposalCreated');
       const id = await gov.proposalCount();
       log("proposal id", id);
       expect(id - pCount).to.equal(1);
     });
 
-    it('Should submit votes FOR proposal', async function () {
+    it.skip('Should submit votes FOR proposal', async function () {
       this.timeout(2400000);
       const id = await gov.proposalCount();
       const state = await gov.state(id);
@@ -426,7 +434,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
       }
     });
 
-    it('Should QUEUE proposal', async function () {
+    it.skip('Should QUEUE proposal', async function () {
       this.timeout(2400000);
       const id = await gov.proposalCount();
       const state = await gov.state(id);
@@ -442,7 +450,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
     });
 
 
-    it('Should EXECUTE proposal', async function () {
+    it.skip('Should EXECUTE proposal', async function () {
       this.timeout(240000);
       const id = await gov.proposalCount();
       const state = await gov.state(id);
@@ -462,11 +470,11 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
 
   });
 
-  describe("Airdrop", function () {
+  describe.skip("Airdrop", function () {
 
     var claimerSigner;
 
-    before("impesonate airpdrop recipient", async function(){
+    before("impersonate airpdrop recipient", async function(){
       // claimer must be listed in Airdrop contract:
       await hre.network.provider.request({
         method: "hardhat_impersonateAccount",
@@ -502,7 +510,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
     });
 
     it("should claim Dog", async function(){
-      this.timeout(400000000);
+      this.timeout(4000000000);
       const tokenId = 178;  // owned by treasury
       await (await airdrop.connect(claimerSigner).claimDog(claimerSigner.address, tokenId)).wait();
       var owner = await myDog.ownerOf(tokenId);
@@ -533,7 +541,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
 
   });
 
-  describe("Dog", function () {
+  describe.skip("Dog", function () {
 
     it("Should set donation percentage", async function () {
       const don = await myDog.donationPercentage();
@@ -545,7 +553,7 @@ describe("Degen Dog Airdrop and Auction Settings", function () {
 
   });
 
-  describe("Auction House", function () {
+  describe.skip("Auction House", function () {
 
     it("Should set Reserve price and emit AuctionReservePriceUpdated", async function () {
       await expect(auctionHouse.setReservePrice(minBid))

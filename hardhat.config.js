@@ -32,7 +32,7 @@ module.exports = {
         ],
         forking: {
           url: API_URL_POLYGON,
-          blockNumber: 49826381  // assumes polygon fork
+          blockNumber: 52922328          // assumes polygon fork
         },
         timeout: 400000000,
         loggingEnabled: true,

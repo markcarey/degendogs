@@ -14,7 +14,7 @@ const govJSON = require("../artifacts/contracts/governance/DegenDAOLogicV1.sol/D
 const gov = new ethers.Contract(govAddress, govJSON.abi, signer);
 
 // Gas
-const gasOptions = {"maxPriorityFeePerGas": "45000000000", "maxFeePerGas": "45000000016" };
+const gasOptions = {"maxPriorityFeePerGas": "34000000000", "maxFeePerGas": "67000000016" };
 
 var addr = {};
 addr.idleWETH = "0xfdA25D931258Df948ffecb66b5518299Df6527C4";
@@ -71,6 +71,11 @@ async function veto(id) {
   console.log("vetoed " + id);
 }
 
+async function voteFOR(id) {
+  await (await gov.castVote(id, 1, gasOptions)).wait();
+  console.log("voted FOR " + id);
+}
+
 async function delegate() {
   var targets = [addr.dogs];
   var values = [0];
@@ -108,9 +113,10 @@ async function fundVestor() {
 }
 
 //state(1)
-//getProposal(22)
+getProposal(23)
+//voteFOR(23)
 //veto(22)
-quorumVotes()
+//quorumVotes()
 //setVotingPeriod()
 //propose()
 //delegate()

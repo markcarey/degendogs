@@ -14,6 +14,7 @@ contract ERC721PoolManager is AccessControl {
 
     address public nft;
     DistributionPool public pool;
+    uint128 public unitIncrement = 1;
 
     constructor(address _nft, DistributionPool _pool) {
         nft = _nft;
@@ -30,6 +31,11 @@ contract ERC721PoolManager is AccessControl {
     function setNft(address _nft) external {
         require(hasRole(MANAGER_ROLE, msg.sender), "ERC721PoolManager: must have manager role to set NFT");
         nft = _nft;
+    }
+
+    function setUnitIncrement(uint128 _unitIncrement) external {
+        require(hasRole(MANAGER_ROLE, msg.sender), "ERC721PoolManager: must have manager role to set unit increment");
+        unitIncrement = _unitIncrement;
     }
 
     function updateMemberUnits(address memberAddr, uint128 newUnits) external {
@@ -49,13 +55,15 @@ contract ERC721PoolManager is AccessControl {
         if (from != address(0)) {
             uint128 senderUnits = pool.getUnits(from);
             if (senderUnits > 0) {
-                pool.updateMemberUnits(from, senderUnits - 1);
+                // newUnits is max(0, senderUnits - unitIncrement):
+                uint128 newUnits = senderUnits > unitIncrement ? senderUnits - unitIncrement : 0;
+                pool.updateMemberUnits(from, newUnits);
             }
         }
         // now adjust recipient's units:
         if (to != address(0)) {
             uint128 recipientUnits = pool.getUnits(to);
-            pool.updateMemberUnits(to, recipientUnits + 1);
+            pool.updateMemberUnits(to, recipientUnits + unitIncrement);
         }
     }
 

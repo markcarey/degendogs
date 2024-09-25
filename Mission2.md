@@ -20,3 +20,5 @@ Super high-level: use treasury funds to earn Degen as a form of yield, which is 
 
 ### Updates
 - Pool Manager deployed to testnet https://sepolia.basescan.org/address/0x968c61b9F7E492EBB7352c3A0E08408c6443e1E8
+
+- Tesnet Pool at https://explorer.superfluid.finance/base-sepolia/pools/0x9Ce2062b085A2268E8d769fFC040f6692315fd2c

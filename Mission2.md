@@ -18,7 +18,18 @@ Super high-level: use treasury funds to earn Degen as a form of yield, which is 
 - Daily auctions continue on Degen Chain -- or some other distribution mechanism (ideas welcome)
 - Primary UI is Farcaster frames, heavy emphasis on social to build/expand community
 
+### ERC721PoolManager
+
+- ERC721 Hook contract
+- Separate contract called from the `_beforeTokenTransfer()` hook in the ERC721 contract
+- NFT holders get units in the Distribution pool
+- when tokens are minted, burned, or transferred, the PoolManager contract will automatically adjust the member units in the pool accordingly.
+- if you send or sell your NFT, your pool membership units go to the new receipient.
+- The `ERC721PoolManager` contract also provides an admin function enabling an admin to `updateMemberUnits()` outside of NFT transfers (TODO: maybe add a means to disable this function)
+- general use cases: yield, rewards, incentives for onchain communities -- or attaching the same to game NFT assets
+- Degen Dogs use case: one Dog equals one Pool unit. Dog owners receive a share of a SuperFluid-wrapped bonding-curve token. The `flowRate` to the pool will be adjusted periodically (daily?).
+
 ### Updates
 - Pool Manager deployed to testnet https://sepolia.basescan.org/address/0x968c61b9F7E492EBB7352c3A0E08408c6443e1E8
 
-- Tesnet Pool at https://explorer.superfluid.finance/base-sepolia/pools/0x9Ce2062b085A2268E8d769fFC040f6692315fd2c
+- Testnet Pool at https://explorer.superfluid.finance/base-sepolia/pools/0x9Ce2062b085A2268E8d769fFC040f6692315fd2c

@@ -33,3 +33,5 @@ Super high-level: use treasury funds to earn Degen as a form of yield, which is 
 - Pool Manager deployed to testnet https://sepolia.basescan.org/address/0x968c61b9F7E492EBB7352c3A0E08408c6443e1E8
 
 - Testnet Pool at https://explorer.superfluid.finance/base-sepolia/pools/0x9Ce2062b085A2268E8d769fFC040f6692315fd2c
+
+- Oct 2024: - Pool Manager deployed to Base as part of "Found Pixel Nouns" collection on Base. This collection is not related to Degen Dogs, but serves as a pilot with real users. So far, very smooth. But any feeback or learnings could lead to improvements to the ERC721PoolManager contract prior to Mission 2 Launch. Pool: https://explorer.superfluid.finance/base-mainnet/pools/0x80f1D6CBa779D1E401C689D9a6c27C4548C362CC Collection: https://opensea.io/collection/pixelnouns PoolManager contract: https://basescan.org/address/0x2afb79be1e80f0d2ed0c415a147b28fa84fee4dd#code

@@ -73,7 +73,7 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
      * @notice Mints a token to {to}
      * @dev Permissioned, only MINTER_ROLE can mint -- could be server EOA or minter contract (ie. auctionHouse)
      */
-    function mint(address to) public onlyRole(MINTER_ROLE) {
+    function mintTo(address to) public onlyRole(MINTER_ROLE) {
         if (_nextTokenId <= 420 && _nextTokenId % 11 == 0) {
             // see https://docs.degendogs.club/basics/founders-reward
             _safeMint(_owner, _nextTokenId++);
@@ -81,6 +81,21 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
     }
+
+    
+    /**
+     * @notice Mints a token to msg.sender
+     * @dev Requires MINTER_ROLE, mints to msg.sender -- used by AuctionHouse contract
+     */
+    function mint() public onlyRole(MINTER_ROLE) returns (uint256 tokenId) {
+        if (_nextTokenId <= 420 && _nextTokenId % 11 == 0) {
+            // see https://docs.degendogs.club/basics/founders-reward
+            _mint(_owner, _nextTokenId++);
+        }
+        tokenId = _nextTokenId++;
+        _mint(msg.sender, tokenId);
+    }
+
 
     /**
      * @notice Mints an explict tokenid to {to}

@@ -58,6 +58,7 @@ contract PoolStreamer is AccessControl {
     function setPool(ISuperFluidPool _pool) external {
         require(hasRole(MANAGER_ROLE, msg.sender), "PoolStreamer: must have manager role to set pool");
         pool = _pool;
+        _underlyingToken().approve(address(_superToken()), type(uint256).max);
     }
 
     function setStreamPeriodSeconds(int96 _streamPeriodSeconds) external {

@@ -54,6 +54,9 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
     // The active auction
     INounsAuctionHouse.Auction public auction;
 
+    // The address of the SuperToken contract -- can be address(0)
+    address public superToken;
+
     /**
      * @notice Initialize the auction house and base contracts,
      * populate configuration values, and pause the contract.
@@ -95,6 +98,13 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
      */
     function settleAuction() external override whenPaused nonReentrant {
         _settleAuction();
+    }
+
+    /**
+     * @notice Settle the current auction, mint a new Noun, and put it up for auction.
+     */
+    function extendAuction() external nonReentrant whenNotPaused {
+        _extendAuction();
     }
 
     /**
@@ -179,6 +189,14 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
     }
 
     /**
+     * @notice Set super token address
+     * @dev Only callable by the owner.
+     */
+    function setSuperToken(address _superToken) external onlyOwner {
+        superToken = _superToken;
+    }
+
+    /**
      * @notice Set the auction minimum bid increment percentage.
      * @dev Only callable by the owner.
      */
@@ -215,12 +233,29 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
     }
 
     /**
+     * @notice Extends an auction for a full duration
+     * @dev Auction must have ended with zero bids
+     */
+    function _extendAuction() internal {
+        INounsAuctionHouse.Auction memory _auction = auction;
+
+        require(_auction.amount == 0, 'Auction has bids');
+        require(block.timestamp >= _auction.endTime, 'Auction still live');
+
+        auction.endTime = block.timestamp + duration;
+
+        emit AuctionExtended(_auction.nounId, auction.endTime);
+    }
+
+    /**
      * @notice Settle an auction, finalizing the bid and paying out to the owner.
      * @dev If there are no bids, the Noun is burned.
      */
     function _settleAuction() internal {
         INounsAuctionHouse.Auction memory _auction = auction;
 
+        // can't settle aution with no bids, extend instead:
+        require(_auction.amount > 0, 'Auction needs bids to settle');
         require(_auction.startTime != 0, "Auction hasn't begun");
         require(!_auction.settled, 'Auction has already been settled');
         require(block.timestamp >= _auction.endTime, "Auction hasn't completed");
@@ -236,6 +271,13 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
 
         if (_auction.amount > 0) {
             _safeTransferETHWithFallback(owner(), _auction.amount);
+        }
+
+        if (superToken != address(0)) {
+            uint256 balance = IERC20(superToken).balanceOf(address(this)); 
+            if (balance > 0) {
+                IERC20(superToken).transfer(msg.sender, balance);
+            }
         }
 
         emit AuctionSettled(_auction.nounId, _auction.bidder, _auction.amount);

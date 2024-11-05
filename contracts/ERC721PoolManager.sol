@@ -63,7 +63,7 @@ contract ERC721PoolManager is AccessControl {
         // now adjust recipient's units:
         if (to != address(0)) {
             uint128 recipientUnits = pool.getUnits(to);
-             try pool.updateMemberUnits(to, recipientUnits + unitIncrement) returns (bool) {
+            try pool.updateMemberUnits(to, recipientUnits + unitIncrement) returns (bool) {
                 // success
             } catch {
                 // if recipient is contract that doesn't support receiving PoolMember NFTs, do nothing

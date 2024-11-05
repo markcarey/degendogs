@@ -102,7 +102,7 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
      * @dev Permissioned, used for claiming Dogs minted previously on Polygon, tokenIds 0-200
      */
     function airdrop(address to, uint256 tokenId) public onlyRole(MINTER_ROLE) {
-        require(_ownerOf(tokenId) != address(0), "Token already minted");
+        require(_ownerOf(tokenId) == address(0), "Token already minted");
         require(tokenId < 201, "TokenId out of range");
         _safeMint(to, tokenId);
     }

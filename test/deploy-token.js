@@ -43,8 +43,7 @@ describe("MintClub", function() {
         const receipt = await tx.wait();
         console.log("Gas used:", receipt.gasUsed.toString());
         console.log("receipt:", receipt);
-        const addr = receipt.events[0].args[0];
-        console.log("Token deployed to address:", addr);
+        expect(receipt.status).to.equal(1);
     });
 
 });

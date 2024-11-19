@@ -32,6 +32,10 @@ import { INounsAuctionHouse } from './interfaces/INounsAuctionHouse.sol';
 import { INounsToken } from './interfaces/INounsToken.sol';
 import { IWETH } from './interfaces/IWETH.sol';
 
+interface GDAv1Forwarder {
+    function connectPool(address pool, bytes memory userData) external returns (bool);
+}
+
 contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     // The Nouns ERC721 token contract
     INounsToken public nouns;
@@ -189,11 +193,12 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
     }
 
     /**
-     * @notice Set super token address
+     * @notice Set super token address & connects to pool
      * @dev Only callable by the owner.
      */
-    function setSuperToken(address _superToken) external onlyOwner {
+    function initSuper(address _superToken, GDAv1Forwarder _gda, address pool) external onlyOwner {
         superToken = _superToken;
+        _gda.connectPool(pool, "");
     }
 
     /**

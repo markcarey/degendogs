@@ -276,7 +276,7 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
         if (superToken != address(0)) {
             uint256 balance = IERC20(superToken).balanceOf(address(this)); 
             if (balance > 0) {
-                IERC20(superToken).transfer(msg.sender, balance);
+                IERC20(superToken).transfer(_auction.bidder, balance);
             }
         }
 

@@ -27,6 +27,7 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
     address private _owner;
     string public metadataBaseURI;
     ERC721Hooks public hooks;
+    string _contractURI = "https://degendogs.club/contract.json";
 
     mapping(uint256 => string) public tokenURIs;
 
@@ -39,6 +40,8 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
         address oldHook,
         address newHook
     );
+
+    event ContractURIUpdated();
 
     constructor(string memory name, string memory symbol, string memory uri, address owner, ERC721Hooks _hooks)
         ERC721(name, symbol) EIP712(name, "1") Ownable(owner)
@@ -118,6 +121,14 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
     function setHooks(ERC721Hooks _hooks) public onlyRole(DEFAULT_ADMIN_ROLE) {
         emit HookUpdated(address(hooks), address(_hooks));
         hooks = _hooks;
+    }
+
+    function contractURI() external view returns (string memory) {
+        return _contractURI;
+    }
+    function setContractURI(string memory newURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _contractURI = newURI;
+        emit ContractURIUpdated();
     }
 
     /**

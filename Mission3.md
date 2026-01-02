@@ -29,6 +29,8 @@ The Dogs are teleporting to Base Mainnet. Woof.
 
 ## Base WOOF Token Allocation
 
-10% - WOOF Vault members. 30 day lock, 365 day stream.
-10% - Staking rewards. 30 day lock, 365 day stream.
-80% - Locked LP
+- 10% - WOOF Vault members. 30 day lock, 365 day stream.
+
+- 10% - Staking rewards. 30 day lock, 365 day stream.
+
+- 80% - Locked LP

@@ -7,7 +7,7 @@ The Dogs are teleporting to Base Mainnet. Woof.
 1. Degen Chain auctions will be paused. Bids can still be made in the active auction. I will settle that final auction. The winner gets the Dog as usual, and will be able to teleport it to Base.
 2. The `WOOFx` stream to Dog owners on Degen chain will be stopped.
 3. The not-yet-streamed `WOOFx` will be unwrapped and withdrawn from the contract and deposited into the WOOF Vault by dogmaster.eth
-4. Deposits into the WOOF Vault will be closed (paused).
+4. Deposits into the [WOOF Vault](https://explorer.degen.tips/address/0x14acda738D7773d16fFACF9449790229c9Ab21C9?tab=read_write_contract#0xb6b55f25) will be closed (paused).
 5. Proportional share data will be saved via the `membersWithUnits()` view function.
 6. The WOOF in the vault will be withdrawn via `adminWithdraw()` function.
 7. The vault WOOF will be swapped (burned) via Mint Club for `DEGEN`.

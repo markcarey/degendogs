@@ -1,6 +1,12 @@
 ### Degen Dogs - Mission 3
 
-The Dogs are teleporting to Base Mainnet. Woof.
+In January 2026, the Degen Dogs teleported from Degen Chain L3 to the parent chain: Base Mainnet.
+
+- Daily auctions, via the Farcaster mini app, started on Base started with Dog 590. Bids are now in (native) ETH, with a minimum bid of `0.0005 ETH`
+- A new `$WOOF` has been deployed on Base via Streme.fun as a Pure Super Token powered by Superfluid. It natively supports streaming (there is no need for a WOOFx on Base). The deployment included a prebuy of `2.6 ETH` for `19.8M $WOOF` for those who deposited their Degen Chain WOOF into the "WOOF Vault". These prebuy proceeds were staked on behalf of each member, and this was locked for the 30-day locking period that applies to all staked `$WOOF`. 10% of the supply has been allocated to streaming staking rewards and 10% as streaming airdrop to WOOF Vault participants -- both stream over 365 days. The CA for `$WOOF` is `0x3e5c4FA0cAA794516eD0DF77f31daA534918d492`, tradeable via all major aggregators and wallets.
+- As before, auction proceeds and trading fees will be used to buy `$WOOF` ... and maybe sometimes `$SUP`. New in Mission 3, DOG owners get added to **two** streaming pools for each Dog they own: one pool streams `$WOOF` and the other streams `$SUP`. Proceeds may first be used for `$SUP` yield maximiziation before beginning to stream to Dog owners.
+- From January 8 through Feb 26th, Degen Dogs has be allocated 1.9M SUP in "season 4" of Superfluid SUP rewards. This equates to 1,100 USD worth of SUP each day. There are two ways to get your share: get 1 XP for teleporting each of your Dogs to Base AND get 100XP for each auction you win (on Base).
+
 
 ## Key Steps
 

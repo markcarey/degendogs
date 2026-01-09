@@ -7,10 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-//import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4906.sol";
-//import "@openzeppelin/contracts/utils/Strings.sol";
-//import "@openzeppelin/contracts/utils/Base64.sol";
 
 interface ERC721Hooks {
     function _beforeTokenTransfer(
@@ -52,8 +49,8 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
         metadataBaseURI = uri;
         _owner = owner;
         hooks = _hooks;
-        // start ids at 201 because 0-200 were minted on Polygon
-        _nextTokenId = 201;
+        // start ids at 590 because 0-200 were minted on Polygon
+        _nextTokenId = 590;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -77,10 +74,6 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
      * @dev Permissioned, only MINTER_ROLE can mint -- could be server EOA or minter contract (ie. auctionHouse)
      */
     function mintTo(address to) public onlyRole(MINTER_ROLE) {
-        if (_nextTokenId <= 420 && _nextTokenId % 11 == 0) {
-            // see https://docs.degendogs.club/basics/founders-reward
-            _safeMint(_owner, _nextTokenId++);
-        }
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
     }
@@ -91,10 +84,6 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
      * @dev Requires MINTER_ROLE, mints to msg.sender -- used by AuctionHouse contract
      */
     function mint() public onlyRole(MINTER_ROLE) returns (uint256 tokenId) {
-        if (_nextTokenId <= 420 && _nextTokenId % 11 == 0) {
-            // see https://docs.degendogs.club/basics/founders-reward
-            _mint(_owner, _nextTokenId++);
-        }
         tokenId = _nextTokenId++;
         _mint(msg.sender, tokenId);
     }
@@ -106,7 +95,7 @@ contract DegenDog is ERC721, AccessControl, EIP712, ERC721Votes, IERC4906, Ownab
      */
     function airdrop(address to, uint256 tokenId) public onlyRole(MINTER_ROLE) {
         require(_ownerOf(tokenId) == address(0), "Token already minted");
-        require(tokenId < 201, "TokenId out of range");
+        require(tokenId < 590, "TokenId out of range");
         _safeMint(to, tokenId);
     }
 

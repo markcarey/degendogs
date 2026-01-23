@@ -208,6 +208,7 @@ contract DegenDAOLogicV1 is DegenDAOStorageV1, DegenDAOEvents {
 
         newProposal.id = proposalCount;
         newProposal.proposer = msg.sender;
+        newProposal.creationBlock = block.number;
         newProposal.proposalThreshold = temp.proposalThreshold;
         newProposal.quorumVotes = bps2Uint(quorumVotesBPS, temp.totalSupply);
         newProposal.eta = 0;
@@ -494,7 +495,7 @@ contract DegenDAOLogicV1 is DegenDAOStorageV1, DegenDAOEvents {
         Receipt storage receipt = proposal.receipts[voter];
         require(receipt.hasVoted == false, 'DegenDAO::castVoteInternal: voter already voted');
 
-        uint96 votes = dogs.getPriorVotes(voter, proposal.startBlock - votingDelay);
+        uint96 votes = dogs.getPriorVotes(voter, proposal.creationBlock);
 
         if (support == 0) {
             proposal.againstVotes = proposal.againstVotes + votes;

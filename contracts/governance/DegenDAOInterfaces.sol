@@ -145,6 +145,7 @@ contract DegenDAOStorageV1 is DegenDAOProxyStorage {
     struct Proposal {
         uint256 id;
         address proposer;
+        uint256 creationBlock;
         uint256 proposalThreshold;
         uint256 quorumVotes;
         uint256 eta;

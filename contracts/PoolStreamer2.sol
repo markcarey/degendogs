@@ -256,7 +256,7 @@ contract PoolStreamer2 is AccessControl {
         // downgrade amount from super token to underlying token
         _superToken(pool).downgrade(amount);
         // transfer amount to msg.sender
-        _superToken(pool).transfer(msg.sender, amount);
+        _underlyingToken(pool).transfer(msg.sender, amount);
     }
 
     function superToken(ISuperFluidPool pool) external view returns (address) {

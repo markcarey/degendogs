@@ -32,6 +32,7 @@ contract Streamonomics is Ownable {
         delete streamonomics;
         uint256 total;
         for(uint i = 0; i < percentage.length; i++) {
+            require(step[i] > 0, "!step");
             streamonomics.push(Streamonomic(percentage[i], start[i], step[i], limit[i]));
             emit StreamonomicAdded(percentage[i], start[i], step[i], limit[i]);
             total += percentage[i];
